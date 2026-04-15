@@ -1,0 +1,267 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { buildMetadata } from "@/lib/metadata";
+import { blogPosts } from "@/data/blogPosts";
+
+export const metadata: Metadata = buildMetadata({
+  title: "머니계산기 | 대출이자·원리금·전세대출 무료 계산기",
+  description:
+    "대출이자 계산기, 원리금균등·원금균등 상환 계산기, 전세대출 계산기, 중도상환 계산기를 무료로 이용하세요. 복잡한 금융 계산을 쉽고 빠르게.",
+});
+
+const CALCULATORS = [
+  {
+    title: "대출이자 계산기",
+    desc: "원금·금리·기간으로 월 이자, 총 이자를 즉시 계산",
+    href: "/loan-interest-calculator",
+    icon: "🏦",
+    badge: "인기",
+  },
+  {
+    title: "원리금상환 계산기",
+    desc: "균등·원금 방식 비교, 월별 상환 스케줄 확인",
+    href: "/amortization-calculator",
+    icon: "📊",
+    badge: null,
+  },
+  {
+    title: "전세대출 계산기",
+    desc: "대출 한도·월 이자·DTI 비율 한번에 계산",
+    href: "/jeonse-loan-calculator",
+    icon: "🏠",
+    badge: null,
+  },
+  {
+    title: "중도상환 계산기",
+    desc: "수수료 제하고 실질 이득이 있는지 확인",
+    href: "/prepayment-calculator",
+    icon: "💸",
+    badge: null,
+  },
+];
+
+const latestPosts = blogPosts.slice(0, 3);
+
+const HOME_FAQ = [
+  {
+    q: "계산 결과가 실제 은행과 다를 수 있나요?",
+    a: "네, 본 계산기는 참고용이며 실제 금융 상품과 차이가 있을 수 있습니다. 우대금리, 가산금리, 수수료 등이 은행마다 다르므로 최종 결정 전 반드시 해당 금융기관에 확인하세요.",
+  },
+  {
+    q: "입력 데이터가 저장되나요?",
+    a: "아니요. 계산기에 입력한 수치는 서버로 전송되지 않으며 브라우저에서만 처리됩니다. 입력값은 URL 파라미터에만 저장되어 공유가 편리합니다.",
+  },
+  {
+    q: "모바일에서도 사용 가능한가요?",
+    a: "네, 모든 계산기는 모바일·태블릿·PC에서 동일하게 이용할 수 있습니다.",
+  },
+  {
+    q: "어떤 계산기를 먼저 써볼까요?",
+    a: "주택담보대출이나 신용대출 계획 중이라면 대출이자 계산기 → 원리금상환 계산기 순서로 이용하시면 됩니다. 전세를 알아보고 있다면 전세대출 계산기를 바로 이용해 보세요.",
+  },
+];
+
+export default function HomePage() {
+  return (
+    <>
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 px-4 py-16 text-white">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-200">
+            무료 금융 계산기
+          </p>
+
+          <h1 className="mb-4 text-3xl font-black leading-tight md:text-5xl">
+            복잡한 금융 계산,
+            <br />
+            쉽고 빠르게
+          </h1>
+
+          <p className="mx-auto mb-8 max-w-xl text-base text-brand-100 md:text-xl">
+            대출이자·원리금·전세대출·중도상환 계산을 무료로. 입력하면 즉시
+            결과를 확인할 수 있어요.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/loan-interest-calculator"
+              className="rounded-xl bg-white px-6 py-3 font-bold text-brand-700 shadow-lg transition hover:bg-brand-50"
+            >
+              대출이자 계산하기 →
+            </Link>
+
+            <Link
+              href="/prepayment-calculator"
+              className="rounded-xl border border-brand-400 bg-brand-500 px-6 py-3 font-bold text-white transition hover:bg-brand-400"
+            >
+              중도상환 손익 계산 →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 계산기 그리드 */}
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+        <h2 className="mb-6 text-xl font-black text-slate-800">전체 계산기</h2>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {CALCULATORS.map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              className="group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md"
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <span className="text-3xl">{c.icon}</span>
+
+                {c.badge && (
+                  <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-700">
+                    {c.badge}
+                  </span>
+                )}
+              </div>
+
+              <h3 className="mb-1.5 font-black text-slate-900 transition-colors group-hover:text-brand-600">
+                {c.title}
+              </h3>
+
+              <p className="text-sm leading-relaxed text-slate-500">{c.desc}</p>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-yellow-200 bg-yellow-50 p-5 text-center">
+          <p className="mb-2 text-sm font-bold text-slate-800">
+            💡 어떤 계산기부터 써야 할지 모르겠다면
+          </p>
+          <p className="mb-3 text-sm text-slate-600">
+            대출 계획이 있다면 대출이자 계산기부터, 상환 부담이 궁금하다면
+            원리금상환 계산기부터 시작해보세요.
+          </p>
+          <Link
+            href="/loan-interest-calculator"
+            className="inline-block rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800"
+          >
+            가장 많이 쓰는 계산기 바로가기
+          </Link>
+        </div>
+      </section>
+
+      {/* 최신 금융 가이드 */}
+      <section className="border-t border-slate-100 bg-slate-50 py-14">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-xl font-black text-slate-800">
+              최신 금융 가이드
+            </h2>
+
+            <Link
+              href="/blog"
+              className="text-sm font-semibold text-brand-600 hover:underline"
+            >
+              전체 보기 →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {latestPosts.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md"
+              >
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-600">
+                  {post.category}
+                </span>
+
+                <h3 className="mt-3 mb-1.5 text-sm font-bold leading-snug text-slate-900 transition-colors group-hover:text-brand-600">
+                  {post.title}
+                </h3>
+
+                <p className="mb-3 text-xs leading-relaxed text-slate-500">
+                  {post.description}
+                </p>
+
+                <p className="text-xs text-slate-300">{post.date}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 홈 FAQ */}
+      <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
+        <h2 className="mb-6 text-xl font-black text-slate-800">
+          자주 묻는 질문
+        </h2>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: HOME_FAQ.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: f.a,
+                },
+              })),
+            }),
+          }}
+        />
+
+        <div className="space-y-3">
+          {HOME_FAQ.map((item, i) => (
+            <details
+              key={i}
+              className="group overflow-hidden rounded-xl border border-slate-100 bg-white"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50">
+                <span>Q. {item.q}</span>
+
+                <svg
+                  className="ml-3 h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+
+              <div className="border-t border-slate-50 px-5 pt-3 pb-4 text-sm leading-relaxed text-slate-600">
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* 신뢰 안내 */}
+      <section className="py-10">
+        <div className="mx-auto max-w-2xl px-4">
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm">
+            <p className="mb-2 text-xs text-slate-400">🔒 개인정보 보호</p>
+
+            <p className="text-sm font-semibold text-slate-800">
+              입력한 계산 값은 서버에 저장되지 않습니다
+            </p>
+
+            <p className="mt-1 text-xs text-slate-500">
+              모든 계산은 브라우저에서 바로 처리되며 별도의 회원가입 없이 이용할
+              수 있습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
