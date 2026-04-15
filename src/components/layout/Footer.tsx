@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 import Link from "next/link";
 
 const CALC_LINKS = [
@@ -20,7 +21,6 @@ export function Footer() {
     <footer className="bg-slate-900 text-slate-400">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Brand */}
           <div>
             <Link
               href="/"
@@ -34,9 +34,18 @@ export function Footer() {
               <br />
               입력값은 서버에 전송되지 않습니다.
             </p>
+
+            <div className="mt-4 text-sm">
+              <p className="text-slate-500 mb-1">운영 문의</p>
+              <a
+                href="mailto:support@머니계산기.kr"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                support@머니계산기.kr
+              </a>
+            </div>
           </div>
 
-          {/* Calculators */}
           <div>
             <h3 className="text-slate-200 font-bold mb-3 text-xs uppercase tracking-widest">
               계산기
@@ -55,7 +64,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Info */}
           <div>
             <h3 className="text-slate-200 font-bold mb-3 text-xs uppercase tracking-widest">
               안내

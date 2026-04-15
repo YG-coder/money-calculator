@@ -1,3 +1,4 @@
+// src/app/terms/page.tsx
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -105,8 +106,16 @@ export default function TermsPage() {
         <section>
           <h2 className="mb-2 text-base font-bold text-slate-800">9. 문의</h2>
           <p>
-            서비스 이용과 관련한 문의 사항은 문의하기 페이지를 통해 접수할 수
-            있습니다.
+            서비스 이용과 관련한 문의 사항은 아래 이메일로 접수할 수 있습니다.
+          </p>
+          <p className="mt-2">
+            이메일:{" "}
+            <a
+              href="mailto:support@머니계산기.kr"
+              className="font-semibold text-brand-600 underline-offset-2 hover:underline"
+            >
+              support@머니계산기.kr
+            </a>
           </p>
         </section>
 

@@ -1,3 +1,4 @@
+// src/app/privacy-policy/page.tsx
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -100,8 +101,16 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="mb-2 text-base font-bold text-slate-800">8. 문의</h2>
           <p>
-            개인정보 처리와 관련한 문의는 문의하기 페이지를 통해 접수할 수
-            있습니다.
+            개인정보 처리와 관련한 문의는 아래 이메일로 접수하실 수 있습니다.
+          </p>
+          <p className="mt-2">
+            이메일:{" "}
+            <a
+              href="mailto:support@머니계산기.kr"
+              className="font-semibold text-brand-600 underline-offset-2 hover:underline"
+            >
+              support@머니계산기.kr
+            </a>
           </p>
         </section>
 

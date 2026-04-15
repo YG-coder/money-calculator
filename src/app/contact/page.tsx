@@ -25,10 +25,10 @@ export default function ContactPage() {
             <p className="mb-1 font-bold text-slate-800">이메일 문의</p>
 
             <a
-              href="mailto:hygcorp0@gmail.com"
+              href="mailto:support@머니계산기.kr"
               className="font-semibold text-brand-600 underline-offset-2 hover:underline"
             >
-              hygcorp0@gmail.com
+              support@머니계산기.kr
             </a>
 
             <p className="mt-1 text-xs text-slate-400">
