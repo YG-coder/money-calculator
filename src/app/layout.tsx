@@ -25,6 +25,11 @@ export const metadata: Metadata = {
     "머니계산기",
   ],
 
+  // 🔥 구글 인증 추가
+  verification: {
+    google: "esF2Zr1HJuwM5slp-24iq4uYhUHTAeTz49oERjMm73k",
+  },
+
   authors: [
     {
       name: "머니계산기",
