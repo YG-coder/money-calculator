@@ -1,32 +1,41 @@
+// src/app/sitemap.ts
 import type { MetadataRoute } from "next";
 import { BASE_URL } from "@/lib/metadata";
 import { blogPosts } from "@/data/blogPosts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = [
-    "",
-    "about",
-    "contact",
-    "terms",
-    "privacy-policy",
-    "blog",
-    "loan-interest-calculator",
-    "amortization-calculator",
-    "jeonse-loan-calculator",
-    "prepayment-calculator",
+  const staticPages: {
+    path: string;
+    priority: number;
+    freq: MetadataRoute.Sitemap[0]["changeFrequency"];
+  }[] = [
+    { path: "",                                        priority: 1.0, freq: "daily"   },
+    { path: "loan",                                    priority: 0.8, freq: "weekly"  },
+    { path: "loan-interest-calculator",                priority: 0.9, freq: "weekly"  },
+    { path: "amortization-calculator",                 priority: 0.9, freq: "weekly"  },
+    { path: "jeonse-loan-calculator",                  priority: 0.9, freq: "weekly"  },
+    { path: "prepayment-calculator",                   priority: 0.9, freq: "weekly"  },
+    { path: "real-estate",                             priority: 0.8, freq: "weekly"  },
+    { path: "real-estate/acquisition-tax-calculator",  priority: 0.9, freq: "weekly"  },
+    { path: "real-estate/jeonse-vs-wolse-calculator",  priority: 0.9, freq: "weekly"  },
+    { path: "blog",                                    priority: 0.8, freq: "daily"   },
+    { path: "about",                                   priority: 0.6, freq: "monthly" },
+    { path: "contact",                                 priority: 0.5, freq: "monthly" },
+    { path: "terms",                                   priority: 0.4, freq: "monthly" },
+    { path: "privacy-policy",                          priority: 0.4, freq: "monthly" },
   ];
 
-  const staticEntries = staticPages.map((path) => ({
-    url: path ? `${BASE_URL}/${path}` : BASE_URL,
+  const staticEntries: MetadataRoute.Sitemap = staticPages.map((p) => ({
+    url: p.path ? `${BASE_URL}/${p.path}` : BASE_URL,
     lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: path === "" ? 1 : 0.8,
+    changeFrequency: p.freq,
+    priority: p.priority,
   }));
 
-  const blogEntries = blogPosts.map((post) => ({
+  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: new Date(),
-    changeFrequency: "monthly" as const,
+    changeFrequency: "monthly",
     priority: 0.7,
   }));
 

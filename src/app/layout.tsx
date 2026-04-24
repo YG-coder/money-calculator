@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://머니계산기.kr"),
 
   title: {
-    default: "머니계산기 | 무료 금융 계산기",
+    default: "머니계산기 | 무료 금융·부동산 계산기",
     template: "%s | 머니계산기",
   },
 
   description:
-    "대출이자 계산기, 원리금균등·원금균등 상환 계산기, 전세대출 계산기, 중도상환 계산기를 무료로 제공합니다.",
+    "대출이자·원리금·전세대출·중도상환·취득세·월세 vs 전세 계산기를 무료로 제공합니다. 복잡한 금융·부동산 계산을 쉽고 빠르게.",
 
   keywords: [
     "대출이자계산기",
@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     "원금균등상환",
     "전세대출계산기",
     "중도상환계산기",
+    "취득세계산기",
+    "월세전세비교",
+    "부동산계산기",
     "금융계산기",
     "머니계산기",
   ],
@@ -33,19 +36,13 @@ export const metadata: Metadata = {
     },
   },
 
-  authors: [
-    {
-      name: "머니계산기",
-      url: "https://머니계산기.kr",
-    },
-  ],
-
+  authors: [{ name: "머니계산기", url: "https://머니계산기.kr" }],
   creator: "머니계산기",
   publisher: "머니계산기",
 
   openGraph: {
-    title: "머니계산기 | 무료 금융 계산기",
-    description: "대출이자, 원리금, 전세대출 계산기를 무료로 이용하세요.",
+    title: "머니계산기 | 무료 금융·부동산 계산기",
+    description: "대출이자·원리금·취득세·월세 vs 전세 계산기를 무료로 이용하세요.",
     url: "https://머니계산기.kr",
     siteName: "머니계산기",
     locale: "ko_KR",
@@ -54,18 +51,13 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "머니계산기 | 무료 금융 계산기",
-    description: "대출이자, 원리금, 전세대출 계산기를 무료로 이용하세요.",
+    title: "머니계산기 | 무료 금융·부동산 계산기",
+    description: "대출이자·원리금·취득세·월세 vs 전세 계산기를 무료로 이용하세요.",
   },
 
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 
-  alternates: {
-    canonical: "https://머니계산기.kr",
-  },
+  alternates: { canonical: "https://머니계산기.kr" },
 
   category: "finance",
 };
@@ -85,7 +77,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased">
         <Header />
         <main className="flex-1">{children}</main>

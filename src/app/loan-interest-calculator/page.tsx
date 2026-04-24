@@ -1,3 +1,4 @@
+// src/app/loan-interest-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata } from "@/lib/metadata";
@@ -21,8 +22,8 @@ const EXAMPLES: CalcExample[] = [
       { label: "기간", value: "12개월" },
     ],
     results: [
-      { label: "월 이자", value: "333,333원", highlight: true },
-      { label: "총 이자", value: "400만" },
+      { label: "월 이자",      value: "333,333원", highlight: true },
+      { label: "총 이자",      value: "400만" },
       { label: "만기 총 상환", value: "1억 400만" },
     ],
     note: "만기일시상환 기준으로, 원금은 만기에 한 번에 상환하고 매달 이자만 납부합니다.",
@@ -36,8 +37,8 @@ const EXAMPLES: CalcExample[] = [
       { label: "기간", value: "24개월" },
     ],
     results: [
-      { label: "월 이자", value: "1,125,000원", highlight: true },
-      { label: "총 이자", value: "2,700만" },
+      { label: "월 이자",      value: "1,125,000원", highlight: true },
+      { label: "총 이자",      value: "2,700만" },
       { label: "만기 총 상환", value: "3억 2,700만" },
     ],
     note: "금리가 0.5%p만 낮아져도 총 이자 차이가 커질 수 있습니다.",
@@ -70,7 +71,6 @@ export default function LoanInterestCalculatorPage() {
         calculator={
           <>
             <LoanInterestCalc />
-
             <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
               <p className="mb-2 text-sm font-bold text-slate-800">
                 ⚠️ 금리 0.5% 차이로 수백만 원 손해 가능
@@ -106,6 +106,15 @@ export default function LoanInterestCalculatorPage() {
         }
         examples={EXAMPLES}
         faq={FAQ}
+        relatedCalcs={[
+          { label: "원리금상환 계산기", href: "/amortization-calculator",  icon: "📊" },
+          { label: "전세대출 계산기",   href: "/jeonse-loan-calculator",   icon: "🏠" },
+          { label: "중도상환 계산기",   href: "/prepayment-calculator",    icon: "💸" },
+        ]}
+        relatedGuides={[
+          { label: "대출 갈아타기 전략 완벽 가이드",     href: "/blog/loan-refinancing-strategy" },
+          { label: "대출 종류 총정리 (주담대·신용·전세)", href: "/blog/loan-types-guide" },
+        ]}
       />
     </Suspense>
   );

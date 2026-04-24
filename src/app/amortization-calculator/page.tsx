@@ -1,3 +1,4 @@
+// src/app/amortization-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata } from "@/lib/metadata";
@@ -24,7 +25,7 @@ const EXAMPLES: CalcExample[] = [
     results: [
       { label: "월 납입액", value: "1,520,060원", highlight: true },
       { label: "총 납입액", value: "5억 4,722만원" },
-      { label: "총 이자", value: "2억 4,722만원" },
+      { label: "총 이자",   value: "2억 4,722만원" },
     ],
     note: "원금의 약 82% 수준의 이자를 30년간 부담할 수 있습니다.",
   },
@@ -39,8 +40,8 @@ const EXAMPLES: CalcExample[] = [
     ],
     results: [
       { label: "첫달 납입액", value: "1,958,333원", highlight: true },
-      { label: "총 납입액", value: "5억 306만원" },
-      { label: "총 이자", value: "2억 306만원" },
+      { label: "총 납입액",   value: "5억 306만원" },
+      { label: "총 이자",     value: "2억 306만원" },
     ],
     note: "원리금균등 대비 총 이자를 크게 줄일 수 있지만 초반 부담은 더 큽니다.",
   },
@@ -72,7 +73,6 @@ export default function AmortizationCalculatorPage() {
         calculator={
           <>
             <AmortizationCalc />
-
             <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
               <p className="mb-2 text-sm font-bold text-slate-800">
                 ⚠️ 상환 방식 선택 잘못하면 수천만 원 차이
@@ -109,6 +109,15 @@ export default function AmortizationCalculatorPage() {
         }
         examples={EXAMPLES}
         faq={FAQ}
+        relatedCalcs={[
+          { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
+          { label: "중도상환 계산기", href: "/prepayment-calculator",    icon: "💸" },
+          { label: "전세대출 계산기", href: "/jeonse-loan-calculator",   icon: "🏠" },
+        ]}
+        relatedGuides={[
+          { label: "원리금균등 vs 원금균등 완벽 비교", href: "/blog/equal-payment-vs-equal-principal" },
+          { label: "대출 종류 총정리",                  href: "/blog/loan-types-guide" },
+        ]}
       />
     </Suspense>
   );

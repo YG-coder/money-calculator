@@ -23,7 +23,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 원금, 금리, 기간이 핵심 요소입니다.",
     ],
   },
-
   {
     slug: "interest-rate-difference-impact",
     category: "금리 절약",
@@ -39,7 +38,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 금리는 가장 중요한 요소입니다.",
     ],
   },
-
   {
     slug: "equal-payment-vs-equal-principal",
     category: "상환 방식",
@@ -54,7 +52,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 개인 상황에 따라 선택해야 합니다.",
     ],
   },
-
   {
     slug: "prepayment-fee-timing",
     category: "중도상환",
@@ -69,7 +66,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 계산 후 판단해야 합니다.",
     ],
   },
-
   {
     slug: "jeonse-loan-hug-hf-sgi",
     category: "전세 대출",
@@ -84,7 +80,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 조건별 선택이 중요합니다.",
     ],
   },
-
   {
     slug: "jeonse-loan-limit-calculation",
     category: "전세 대출",
@@ -99,7 +94,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 사전 계산이 중요합니다.",
     ],
   },
-
   {
     slug: "loan-refinancing-strategy",
     category: "금리 절약",
@@ -114,7 +108,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 비교 후 결정해야 합니다.",
     ],
   },
-
   {
     slug: "how-to-reduce-loan-interest",
     category: "금리 절약",
@@ -129,7 +122,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 여러 방법을 조합해야 합니다.",
     ],
   },
-
   {
     slug: "credit-score-interest-rate",
     category: "금리 절약",
@@ -144,7 +136,6 @@ export const blogPosts: BlogPost[] = [
       "결론적으로 신용이 핵심입니다.",
     ],
   },
-
   {
     slug: "dsr-dti-difference",
     category: "대출 기초",
@@ -157,6 +148,81 @@ export const blogPosts: BlogPost[] = [
       "DSR은 전체 부채 기준입니다.",
       "최근에는 DSR이 더 중요합니다.",
       "결론적으로 DSR 중심으로 봐야 합니다.",
+    ],
+  },
+  {
+    slug: "loan-types-guide",
+    category: "대출 기초",
+    title: "주택담보대출·신용대출·전세대출 완벽 정리",
+    description:
+      "대출 종류별 특징과 금리 구조, 선택 기준을 한눈에 정리했습니다.",
+    date: "2026.04.20",
+    content: [
+      "대출 종류에 따라 금리와 조건이 크게 달라집니다.",
+      "주택담보대출은 담보가 있어 금리가 낮은 편입니다.",
+      "신용대출은 빠르지만 금리가 상대적으로 높습니다.",
+      "전세대출은 보증기관에 따라 한도와 금리가 결정됩니다.",
+      "결론적으로 목적에 맞는 대출 선택이 이자를 줄이는 핵심입니다.",
+    ],
+  },
+  {
+    slug: "acquisition-tax-guide",
+    category: "부동산 세금",
+    title: "취득세 완벽 가이드 — 1·2·3주택 세율과 계산법",
+    description:
+      "주택 수와 취득가액에 따른 취득세 세율과 농특세·지방교육세 계산 방법을 정리했습니다.",
+    date: "2026.04.20",
+    content: [
+      "취득세는 부동산을 취득할 때 납부하는 지방세입니다.",
+      "1주택의 경우 6억 이하는 1%, 6~9억은 구간 세율, 9억 초과는 3%입니다.",
+      "2주택 이상이면 조정대상지역 여부에 따라 세율이 크게 달라집니다.",
+      "농어촌특별세와 지방교육세가 취득세에 추가로 붙습니다.",
+      "결론적으로 매수 전 취득세를 반드시 계산해 자금 계획에 반영하세요.",
+    ],
+  },
+  {
+    slug: "real-estate-tax-summary",
+    category: "부동산 세금",
+    title: "부동산 매매 시 내야 하는 세금 한눈에 정리",
+    description:
+      "취득세부터 양도소득세까지, 부동산 거래 단계별로 발생하는 세금을 정리했습니다.",
+    date: "2026.04.20",
+    content: [
+      "부동산 거래에는 취득·보유·처분 단계마다 세금이 발생합니다.",
+      "취득 시에는 취득세, 농어촌특별세, 지방교육세를 냅니다.",
+      "보유 중에는 재산세와 종합부동산세(종부세)가 부과될 수 있습니다.",
+      "매도 시에는 양도소득세가 발생하며 보유 기간과 주택 수에 따라 세율이 달라집니다.",
+      "결론적으로 총 세금 부담을 사전에 시뮬레이션하는 것이 필수입니다.",
+    ],
+  },
+  {
+    slug: "jeonse-vs-wolse",
+    category: "부동산 임대",
+    title: "전세 vs 월세, 어떤 게 더 유리할까? 기회비용으로 따져보기",
+    description:
+      "전세 보증금의 기회비용과 월세 실질 비용을 기준으로 어떤 선택이 유리한지 분석합니다.",
+    date: "2026.04.20",
+    content: [
+      "전세와 월세는 단순히 월 납입금만으로 비교할 수 없습니다.",
+      "전세 보증금을 묶어두면 그 돈으로 얻을 수 있는 이자 수익을 포기하는 것입니다.",
+      "이 기회비용이 월세보다 크다면 월세가 오히려 유리할 수 있습니다.",
+      "이자율이 높은 시기일수록 전세의 기회비용도 함께 커집니다.",
+      "결론적으로 이자율과 보증금 차이를 기준으로 손익분기점을 계산해야 합니다.",
+    ],
+  },
+  {
+    slug: "jeonse-insurance-guide",
+    category: "부동산 임대",
+    title: "전세보증보험 완벽 가이드 — 가입 조건·비용·절차",
+    description:
+      "전세 보증금을 지키는 전세보증보험의 가입 조건과 보험료 계산법, 청구 절차를 정리했습니다.",
+    date: "2026.04.20",
+    content: [
+      "전세보증보험은 집주인이 보증금을 돌려주지 못할 때 보험사가 대신 지급하는 상품입니다.",
+      "HUG(주택도시보증공사)와 SGI서울보증 등에서 가입할 수 있습니다.",
+      "보험료는 보증금의 약 0.1~0.2% 수준으로 비교적 저렴합니다.",
+      "가입 조건으로 전입신고와 확정일자가 반드시 필요합니다.",
+      "결론적으로 전세 계약 시 반드시 전세보증보험 가입을 검토하는 것이 안전합니다.",
     ],
   },
 ];

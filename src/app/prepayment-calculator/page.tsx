@@ -1,3 +1,4 @@
+// src/app/prepayment-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata } from "@/lib/metadata";
@@ -18,12 +19,12 @@ const EXAMPLES: CalcExample[] = [
     inputs: [
       { label: "잔여 원금", value: "20,000만원" },
       { label: "상환 금액", value: "5,000만원" },
-      { label: "금리", value: "연 4.5%" },
+      { label: "금리",      value: "연 4.5%" },
       { label: "잔여 기간", value: "30개월" },
-      { label: "수수료율", value: "1.2%" },
+      { label: "수수료율",  value: "1.2%" },
     ],
     results: [
-      { label: "수수료", value: "60만" },
+      { label: "수수료",    value: "60만" },
       { label: "실질 이득", value: "계산값 기준 확인", highlight: true },
     ],
     note: "원리금균등상환 기준의 참고용 계산입니다.",
@@ -65,7 +66,6 @@ export default function PrepaymentCalculatorPage() {
         calculator={
           <>
             <PrepaymentCalc />
-
             <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
               <p className="mb-2 text-sm font-bold text-slate-800">
                 ⚠️ 지금 갚으면 오히려 손해일 수 있습니다
@@ -101,6 +101,15 @@ export default function PrepaymentCalculatorPage() {
         }
         examples={EXAMPLES}
         faq={FAQ}
+        relatedCalcs={[
+          { label: "대출이자 계산기",  href: "/loan-interest-calculator", icon: "🏦" },
+          { label: "원리금상환 계산기", href: "/amortization-calculator",  icon: "📊" },
+          { label: "전세대출 계산기",  href: "/jeonse-loan-calculator",   icon: "🏠" },
+        ]}
+        relatedGuides={[
+          { label: "중도상환 타이밍 완벽 가이드", href: "/blog/prepayment-fee-timing" },
+          { label: "대출 갈아타기 전략",           href: "/blog/loan-refinancing-strategy" },
+        ]}
       />
     </Suspense>
   );

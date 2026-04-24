@@ -1,3 +1,4 @@
+// src/app/jeonse-loan-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata } from "@/lib/metadata";
@@ -17,13 +18,13 @@ const EXAMPLES: CalcExample[] = [
     desc: "보증금 3억, LTV 80%, 금리 3.5%, 24개월",
     inputs: [
       { label: "보증금", value: "30,000만원" },
-      { label: "금리", value: "연 3.5%" },
-      { label: "기간", value: "24개월" },
-      { label: "LTV", value: "80%" },
+      { label: "금리",   value: "연 3.5%" },
+      { label: "기간",   value: "24개월" },
+      { label: "LTV",    value: "80%" },
     ],
     results: [
       { label: "대출 금액", value: "2억 4,000만", highlight: true },
-      { label: "월 이자", value: "700,000원" },
+      { label: "월 이자",   value: "700,000원" },
       { label: "자기 부담", value: "6,000만" },
     ],
     note: "실제 상품은 보증기관, 소득, 주택 조건에 따라 달라질 수 있습니다.",
@@ -33,13 +34,13 @@ const EXAMPLES: CalcExample[] = [
     desc: "보증금 2억, LTV 80%, 금리 3.8%, 24개월",
     inputs: [
       { label: "보증금", value: "20,000만원" },
-      { label: "금리", value: "연 3.8%" },
-      { label: "기간", value: "24개월" },
-      { label: "LTV", value: "80%" },
+      { label: "금리",   value: "연 3.8%" },
+      { label: "기간",   value: "24개월" },
+      { label: "LTV",    value: "80%" },
     ],
     results: [
       { label: "대출 금액", value: "1억 6,000만", highlight: true },
-      { label: "월 이자", value: "506,667원" },
+      { label: "월 이자",   value: "506,667원" },
       { label: "자기 부담", value: "4,000만" },
     ],
     note: "보증금이 높아질수록 자기 자금과 이자 부담을 함께 고려해야 합니다.",
@@ -72,7 +73,6 @@ export default function JeonseLoanCalculatorPage() {
         calculator={
           <>
             <JeonseLoanCalc />
-
             <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
               <p className="mb-2 text-sm font-bold text-slate-800">
                 ⚠️ 보증기관 선택에 따라 한도 차이 발생
@@ -109,6 +109,15 @@ export default function JeonseLoanCalculatorPage() {
         }
         examples={EXAMPLES}
         faq={FAQ}
+        relatedCalcs={[
+          { label: "월세 vs 전세 계산기",  href: "/real-estate/jeonse-vs-wolse-calculator", icon: "⚖️" },
+          { label: "대출이자 계산기",       href: "/loan-interest-calculator",               icon: "🏦" },
+          { label: "중도상환 계산기",       href: "/prepayment-calculator",                  icon: "💸" },
+        ]}
+        relatedGuides={[
+          { label: "전세대출 보증기관(HUG·HF·SGI) 완벽 정리", href: "/blog/jeonse-loan-hug-hf-sgi" },
+          { label: "전세 vs 월세 어떤 게 유리한가",            href: "/blog/jeonse-vs-wolse" },
+        ]}
       />
     </Suspense>
   );
