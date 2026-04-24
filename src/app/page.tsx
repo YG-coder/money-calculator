@@ -10,6 +10,37 @@ export const metadata: Metadata = buildMetadata({
     "대출이자·원리금·전세대출·중도상환·취득세·월세 vs 전세 계산기를 무료로 이용하세요. 복잡한 금융·부동산 계산을 쉽고 빠르게.",
 });
 
+const QUICK_CALCS = [
+  {
+    title: "대출이자 계산기",
+    desc: "대출 원금·금리·기간으로 월 이자와 총 이자를 바로 계산",
+    href: "/loan-interest-calculator",
+    icon: "🏦",
+    badge: "인기",
+  },
+  {
+    title: "원리금상환 계산기",
+    desc: "월 상환액과 총 이자를 상환 방식별로 비교",
+    href: "/amortization-calculator",
+    icon: "📊",
+    badge: "추천",
+  },
+  {
+    title: "취득세 계산기",
+    desc: "주택 취득 시 예상 세금을 빠르게 계산",
+    href: "/real-estate/acquisition-tax-calculator",
+    icon: "🏠",
+    badge: "신규",
+  },
+  {
+    title: "월세 vs 전세 계산기",
+    desc: "전세와 월세의 실질 비용을 비교",
+    href: "/real-estate/jeonse-vs-wolse-calculator",
+    icon: "⚖️",
+    badge: "신규",
+  },
+];
+
 const POPULAR = [
   {
     title: "대출이자 계산기",
@@ -107,7 +138,11 @@ const HOME_FAQ = [
 ];
 
 function CalcCard({
-  title, desc, href, icon, badge,
+  title,
+  desc,
+  href,
+  icon,
+  badge,
 }: {
   title: string;
   desc: string;
@@ -172,16 +207,39 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 인기 계산기 */}
+      {/* 빠른 실행 */}
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="mb-6 text-xl font-black text-slate-800">인기 계산기</h2>
+        <div className="mb-6">
+          <h2 className="text-xl font-black text-slate-800">
+            지금 바로 계산하기
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            가장 많이 찾는 계산기를 빠르게 이용해보세요.
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {POPULAR.map((c) => <CalcCard key={c.href} {...c} />)}
+          {QUICK_CALCS.map((c) => (
+            <CalcCard key={c.href} {...c} />
+          ))}
+        </div>
+      </section>
+
+      {/* 인기 계산기 */}
+      <section className="border-t border-slate-100 bg-slate-50 py-14">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <h2 className="mb-6 text-xl font-black text-slate-800">
+            인기 계산기
+          </h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {POPULAR.map((c) => (
+              <CalcCard key={c.href} {...c} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 대출 계산기 섹션 */}
-      <section className="border-t border-slate-100 bg-slate-50 py-14">
+      <section className="py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6">
             <h2 className="text-xl font-black text-slate-800">대출 계산기</h2>
@@ -190,28 +248,15 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {LOAN_CALCS.map((c) => <CalcCard key={c.href} {...c} />)}
-          </div>
-          <div className="mt-8 rounded-2xl border border-yellow-200 bg-yellow-50 p-5 text-center">
-            <p className="mb-2 text-sm font-bold text-slate-800">
-              💡 어떤 계산기부터 써야 할지 모르겠다면
-            </p>
-            <p className="mb-3 text-sm text-slate-600">
-              대출 계획이 있다면 대출이자 계산기부터, 상환 부담이 궁금하다면
-              원리금상환 계산기부터 시작해보세요.
-            </p>
-            <Link
-              href="/loan-interest-calculator"
-              className="inline-block rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800"
-            >
-              가장 많이 쓰는 계산기 바로가기
-            </Link>
+            {LOAN_CALCS.map((c) => (
+              <CalcCard key={c.href} {...c} />
+            ))}
           </div>
         </div>
       </section>
 
       {/* 부동산 계산기 섹션 */}
-      <section className="py-14">
+      <section className="border-t border-slate-100 bg-slate-50 py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6">
             <h2 className="text-xl font-black text-slate-800">부동산 계산기</h2>
@@ -220,15 +265,21 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {REALESTATE_CALCS.map((c) => <CalcCard key={c.href} {...c} />)}
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+            {REALESTATE_CALCS.map((c) => (
+              <CalcCard key={c.href} {...c} />
+            ))}
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
               <span className="mb-3 text-3xl opacity-40">📐</span>
-              <p className="text-sm font-bold text-slate-400">양도소득세 계산기</p>
+              <p className="text-sm font-bold text-slate-400">
+                양도소득세 계산기
+              </p>
               <p className="mt-1 text-xs text-slate-300">준비 중</p>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
               <span className="mb-3 text-3xl opacity-40">🏗️</span>
-              <p className="text-sm font-bold text-slate-400">재건축 분담금 계산기</p>
+              <p className="text-sm font-bold text-slate-400">
+                재건축 분담금 계산기
+              </p>
               <p className="mt-1 text-xs text-slate-300">준비 중</p>
             </div>
           </div>
@@ -236,11 +287,16 @@ export default function HomePage() {
       </section>
 
       {/* 최신 금융 가이드 */}
-      <section className="border-t border-slate-100 bg-slate-50 py-14">
+      <section className="py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-black text-slate-800">최신 금융 가이드</h2>
-            <Link href="/blog" className="text-sm font-semibold text-brand-600 hover:underline">
+            <h2 className="text-xl font-black text-slate-800">
+              최신 금융 가이드
+            </h2>
+            <Link
+              href="/blog"
+              className="text-sm font-semibold text-brand-600 hover:underline"
+            >
               전체 보기 →
             </Link>
           </div>
@@ -269,7 +325,9 @@ export default function HomePage() {
 
       {/* 홈 FAQ */}
       <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="mb-6 text-xl font-black text-slate-800">자주 묻는 질문</h2>
+        <h2 className="mb-6 text-xl font-black text-slate-800">
+          자주 묻는 질문
+        </h2>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -294,9 +352,16 @@ export default function HomePage() {
                 <span>Q. {item.q}</span>
                 <svg
                   className="ml-3 h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </summary>
               <div className="border-t border-slate-50 px-5 pt-3 pb-4 text-sm leading-relaxed text-slate-600">
