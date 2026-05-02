@@ -114,6 +114,20 @@ const REALESTATE_CALCS = [
     icon: "⚖️",
     badge: "신규",
   },
+  {
+    title: "양도소득세 계산기",
+    desc: "취득가액·양도가액·필요경비 기준 예상 양도세 계산",
+    href: "/real-estate/capital-gains-tax-calculator",
+    icon: "📐",
+    badge: "신규",
+  },
+  {
+    title: "재건축 분담금 계산기",
+    desc: "권리가액·종후자산가액·비례율 기준 예상 분담금 계산",
+    href: "/real-estate/reconstruction-contribution-calculator",
+    icon: "🏗️",
+    badge: "신규",
+  },
 ];
 
 const latestPosts = blogPosts.slice(0, 3);
@@ -268,20 +282,6 @@ export default function HomePage() {
             {REALESTATE_CALCS.map((c) => (
               <CalcCard key={c.href} {...c} />
             ))}
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
-              <span className="mb-3 text-3xl opacity-40">📐</span>
-              <p className="text-sm font-bold text-slate-400">
-                양도소득세 계산기
-              </p>
-              <p className="mt-1 text-xs text-slate-300">준비 중</p>
-            </div>
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
-              <span className="mb-3 text-3xl opacity-40">🏗️</span>
-              <p className="text-sm font-bold text-slate-400">
-                재건축 분담금 계산기
-              </p>
-              <p className="mt-1 text-xs text-slate-300">준비 중</p>
-            </div>
           </div>
         </div>
       </section>
