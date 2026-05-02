@@ -94,48 +94,99 @@ export default function AcquisitionTaxCalculatorPage() {
         calculator={<AcquisitionTaxCalc />}
         guide={
           <>
-            <p>
-              <strong>취득세</strong>는 아파트, 빌라, 오피스텔 등 부동산을
-              취득할 때 납부하는 지방세입니다. 단순히 매매가에 일정 세율을
-              곱하는 방식처럼 보이지만, 실제로는 주택 가격, 보유 주택 수,
-              조정대상지역 여부에 따라 세율이 달라질 수 있습니다.
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">
+              취득세 계산기란?
+            </h2>
 
             <p>
-              특히 주택을 처음 구입하는 경우와 기존 주택을 보유한 상태에서
-              추가로 매수하는 경우의 세금 차이가 큽니다. 1주택자는 상대적으로
-              낮은 세율이 적용되지만, 2주택 이상부터는 취득세 부담이 크게 증가할
-              수 있습니다.
+              취득세 계산기는 아파트, 빌라, 오피스텔 등 부동산을 취득할 때 예상되는
+              취득세, 농어촌특별세, 지방교육세를 미리 계산하는 도구입니다.
             </p>
+
+            <h2 className="text-xl font-bold text-slate-900">
+              취득세 계산 공식
+            </h2>
+
+            <div className="rounded bg-slate-100 p-4">
+              <strong>취득세 = 취득가액 × 취득세율</strong>
+              <br />
+              <strong>총 납부세액 = 취득세 + 농어촌특별세 + 지방교육세</strong>
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">
+              취득세율 예시
+            </h2>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                <tr className="bg-slate-50">
+                  <th className="border border-slate-200 p-3">구분</th>
+                  <th className="border border-slate-200 p-3">기본 세율 예시</th>
+                  <th className="border border-slate-200 p-3">특징</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td className="border border-slate-200 p-3">1주택</td>
+                  <td className="border border-slate-200 p-3">1~3%</td>
+                  <td className="border border-slate-200 p-3">가격 구간에 따라 차등 적용</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3">2주택</td>
+                  <td className="border border-slate-200 p-3">일반 또는 중과 가능</td>
+                  <td className="border border-slate-200 p-3">조정대상지역 여부 중요</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3">3주택 이상</td>
+                  <td className="border border-slate-200 p-3">중과 가능</td>
+                  <td className="border border-slate-200 p-3">세금 부담이 크게 증가</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">
+              실제 계산 예시
+            </h2>
 
             <p>
-              취득세를 계산할 때는 취득세 본세뿐 아니라
-              <strong> 농어촌특별세</strong>와 <strong>지방교육세</strong>도
-              함께 확인해야 합니다. 실제 납부 금액은 이 세 가지 항목을 합산한
-              금액입니다.
+              예를 들어 5억 원 주택을 1주택 조건으로 취득하면 취득세 500만 원과
+              지방교육세 50만 원을 합쳐 약 550만 원 수준이 될 수 있습니다.
+              반면 9억 원 주택을 2주택 조정대상지역 조건으로 취득하면 취득세와
+              부가세 항목을 합쳐 수천만 원 이상 차이가 날 수 있습니다.
             </p>
 
-            <p>
-              예를 들어 같은 5억 원 주택이라도 무주택자가 처음 구입하는 경우와,
-              이미 주택을 보유한 사람이 추가로 구입하는 경우에는 예상 세금이
-              달라질 수 있습니다. 따라서 부동산 매매 전에는 취득세를 미리 계산해
-              총 필요 자금을 확인하는 것이 중요합니다.
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">
+              취득세 계산 시 확인할 항목
+            </h2>
 
-            <p>
-              이 계산기는 주택 취득가액과 보유 주택 수, 지역 조건을 입력하면
-              예상 취득세와 부가세 항목을 빠르게 확인할 수 있도록 만든 참고용
-              계산기입니다. 실제 신고·납부 금액은 감면 조건, 과세 기준, 지자체
-              판단 등에 따라 달라질 수 있습니다.
-            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>취득가액이 6억 이하, 6억 초과~9억 이하, 9억 초과 중 어디에 해당하는지</li>
+              <li>현재 보유 주택 수가 몇 채인지</li>
+              <li>취득 주택이 조정대상지역에 있는지</li>
+              <li>생애 최초 주택 구입 감면 대상인지</li>
+              <li>일시적 2주택, 상속, 증여 등 특수 조건이 있는지</li>
+            </ul>
 
-            <hr className="border-slate-100" />
+            <h2 className="text-xl font-bold text-slate-900">
+              주의사항
+            </h2>
 
-            <p className="text-slate-400">
-              본 계산 결과는 참고용입니다. 생애 최초 주택 구입, 법인 취득, 증여,
-              상속, 일시적 2주택 등 특수 조건은 관할 시·군·구청 또는 세무
-              전문가에게 확인하는 것이 안전합니다.
-            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>취득세율과 감면 제도는 정책 변경에 따라 달라질 수 있습니다.</li>
+              <li>실제 납부 금액은 관할 지자체 판단에 따라 달라질 수 있습니다.</li>
+              <li>법인 취득, 증여, 상속, 농지 등은 일반 주택 매매와 계산 방식이 다를 수 있습니다.</li>
+              <li>계산 결과는 참고용이며 신고 전 관할 시·군·구청 또는 세무 전문가 확인이 필요합니다.</li>
+            </ul>
+
+            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+              <p className="font-bold">취득세 계산 팁</p>
+              <p className="mt-2">
+                주택 매매 계약 전에는 매매가뿐 아니라 취득세와 부대비용까지 함께 계산해야 합니다.
+                위 계산기로 예상 세금을 먼저 확인하면 실제 필요한 현금 규모를 더 정확히 파악할 수 있습니다.
+              </p>
+            </div>
           </>
         }
         examples={EXAMPLES}
