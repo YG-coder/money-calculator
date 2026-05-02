@@ -14,10 +14,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages: StaticPage[] = [
     { path: "", priority: 1.0, freq: "daily" },
+
+    // 대출 계산기
     { path: "loan-interest-calculator", priority: 0.9, freq: "monthly" },
     { path: "amortization-calculator", priority: 0.9, freq: "monthly" },
     { path: "jeonse-loan-calculator", priority: 0.9, freq: "monthly" },
     { path: "prepayment-calculator", priority: 0.9, freq: "monthly" },
+
+    // 부동산 계산기
     {
       path: "real-estate/acquisition-tax-calculator",
       priority: 0.9,
@@ -28,6 +32,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
       freq: "monthly",
     },
+    {
+      path: "real-estate/capital-gains-tax-calculator",
+      priority: 0.9,
+      freq: "monthly",
+    },
+    {
+      path: "real-estate/reconstruction-contribution-calculator",
+      priority: 0.9,
+      freq: "monthly",
+    },
+
+    // 기타
     { path: "blog", priority: 0.8, freq: "daily" },
     { path: "about", priority: 0.6, freq: "monthly" },
     { path: "contact", priority: 0.5, freq: "monthly" },
