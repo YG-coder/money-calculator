@@ -1,78 +1,90 @@
 // src/app/jeonse-loan-calculator/page.tsx
 <section className="mt-10 space-y-6 text-sm leading-relaxed text-gray-700">
-
-  <h2 className="text-xl font-bold text-gray-900">대출이자란 무엇인가요?</h2>
+  <h2 className="text-xl font-bold text-gray-900">전세대출 계산기란?</h2>
   <p>
-    대출이자는 금융기관으로부터 돈을 빌린 대가로 지급하는 비용입니다. 단순히 금리만 보고 판단하기보다는 대출 기간, 상환 방식에 따라 실제 부담하는 총이자가 크게 달라질 수 있습니다.
-    특히 동일한 금리라도 상환 방식에 따라 총 이자 차이가 수백만 원에서 수천만 원까지 발생할 수 있기 때문에 정확한 계산이 중요합니다.
+    전세대출 계산기는 전세보증금, 대출 비율, 금리를 기준으로 예상 대출금과 월 이자 부담을 계산하는 도구입니다.
+    전세 계약을 준비할 때 필요한 자기자본 규모와 매월 부담해야 할 이자를 미리 확인하는 데 도움이 됩니다.
   </p>
 
-  <h2 className="text-xl font-bold text-gray-900">대출이자 계산 공식</h2>
-  <p>
-    기본적인 이자 계산 공식은 다음과 같습니다.
-  </p>
-  <div className="bg-gray-100 p-4 rounded">
-    <strong>이자 = 대출금액 × 금리 × 기간</strong>
+  <h2 className="text-xl font-bold text-gray-900">전세대출 계산 공식</h2>
+  <div className="rounded bg-gray-100 p-4">
+    <strong>대출금액 = 전세보증금 × 대출비율</strong>
+    <br />
+    <strong>월 이자 = 대출금액 × 연 금리 ÷ 12</strong>
   </div>
-  <p>
-    하지만 실제 대출에서는 단순 이자 계산이 아닌 상환 방식에 따라 매달 상환금과 이자가 달라집니다.
-  </p>
-
-  <h2 className="text-xl font-bold text-gray-900">상환 방식별 차이</h2>
-  <table className="w-full border text-center">
-    <thead className="bg-gray-100">
-    <tr>
-      <th className="border p-2">상환 방식</th>
-      <th className="border p-2">특징</th>
-      <th className="border p-2">총 이자</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-      <td className="border p-2">원리금균등</td>
-      <td className="border p-2">매달 동일한 금액 상환</td>
-      <td className="border p-2">높음</td>
-    </tr>
-    <tr>
-      <td className="border p-2">원금균등</td>
-      <td className="border p-2">초기 상환 부담 큼</td>
-      <td className="border p-2">낮음</td>
-    </tr>
-    </tbody>
-  </table>
 
   <h2 className="text-xl font-bold text-gray-900">실제 계산 예시</h2>
   <p>
-    예를 들어 1억 원을 연 4% 금리로 20년 동안 대출받는 경우를 살펴보겠습니다.
-  </p>
-  <ul className="list-disc pl-5 space-y-1">
-    <li>원리금균등: 총 이자 약 4,800만 원</li>
-    <li>원금균등: 총 이자 약 4,000만 원</li>
-  </ul>
-  <p>
-    같은 조건에서도 약 800만 원 이상의 차이가 발생합니다.
+    전세보증금 3억 원, 대출비율 80%, 연 금리 4% 조건이라면 예상 대출금은 2억 4천만 원입니다.
+    이 경우 월 이자는 약 80만 원입니다.
   </p>
 
-  <h2 className="text-xl font-bold text-gray-900">주의사항</h2>
-  <ul className="list-disc pl-5 space-y-1">
-    <li>금리는 변동될 수 있으며 실제 금융기관 조건과 다를 수 있습니다.</li>
-    <li>중도상환수수료, 각종 부대비용은 포함되지 않을 수 있습니다.</li>
-    <li>계산 결과는 참고용이며 실제 대출 조건은 금융기관을 통해 확인해야 합니다.</li>
+  <div className="overflow-x-auto">
+    <table className="w-full border text-center">
+      <thead className="bg-gray-100">
+      <tr>
+        <th className="border p-2">전세보증금</th>
+        <th className="border p-2">대출비율</th>
+        <th className="border p-2">예상 대출금</th>
+        <th className="border p-2">연 4% 월 이자</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td className="border p-2">2억 원</td>
+        <td className="border p-2">80%</td>
+        <td className="border p-2">1억 6천만 원</td>
+        <td className="border p-2">약 53만 원</td>
+      </tr>
+      <tr>
+        <td className="border p-2">3억 원</td>
+        <td className="border p-2">80%</td>
+        <td className="border p-2">2억 4천만 원</td>
+        <td className="border p-2">약 80만 원</td>
+      </tr>
+      <tr>
+        <td className="border p-2">4억 원</td>
+        <td className="border p-2">80%</td>
+        <td className="border p-2">3억 2천만 원</td>
+        <td className="border p-2">약 107만 원</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 className="text-xl font-bold text-gray-900">전세대출 이용 시 주의사항</h2>
+  <ul className="list-disc space-y-1 pl-5">
+    <li>실제 대출 한도는 소득, 신용점수, 보증기관 심사 결과에 따라 달라질 수 있습니다.</li>
+    <li>변동금리 상품은 금리 상승 시 월 이자 부담이 커질 수 있습니다.</li>
+    <li>보증료, 인지세, 중도상환수수료 등 부대비용은 별도로 확인해야 합니다.</li>
+    <li>전세보증보험 가입 가능 여부와 임대차 계약 조건도 함께 확인하는 것이 좋습니다.</li>
   </ul>
+
+  <h2 className="text-xl font-bold text-gray-900">전세대출과 월세 비교</h2>
+  <p>
+    전세대출을 이용할 때는 월 이자와 월세를 함께 비교해야 합니다.
+    예를 들어 전세대출 월 이자가 80만 원이고 비슷한 주택의 월세가 100만 원이라면 전세가 유리할 수 있습니다.
+    반대로 금리가 올라 전세대출 이자가 월세와 비슷해지면 월세 선택이 더 합리적일 수도 있습니다.
+  </p>
 
   <h2 className="text-xl font-bold text-gray-900">자주 묻는 질문 (FAQ)</h2>
 
-  <h3 className="font-semibold text-gray-900">Q. 금리가 낮으면 무조건 좋은가요?</h3>
-  <p>금리가 낮아도 상환 방식이나 기간에 따라 총 이자가 더 많을 수 있습니다.</p>
+  <h3 className="font-semibold text-gray-900">Q. 전세대출은 보증금의 몇 %까지 가능한가요?</h3>
+  <p>
+    일반적으로 보증금의 70~80% 수준까지 가능한 경우가 많지만, 상품과 개인 조건에 따라 달라집니다.
+  </p>
 
-  <h3 className="font-semibold text-gray-900">Q. 원리금균등과 원금균등 중 어떤 것이 유리한가요?</h3>
-  <p>장기적으로는 원금균등이 총 이자가 적지만 초기 부담이 큽니다.</p>
+  <h3 className="font-semibold text-gray-900">Q. 전세대출은 원금을 매달 갚나요?</h3>
+  <p>
+    전세대출은 만기일시상환 방식이 많아 대출 기간 중에는 이자만 내고 만기에 원금을 상환하는 경우가 많습니다.
+  </p>
 
-  <h3 className="font-semibold text-gray-900">Q. 대출 기간은 짧을수록 좋은가요?</h3>
-  <p>기간이 짧을수록 총 이자는 줄어들지만 월 상환금은 증가합니다.</p>
+  <h3 className="font-semibold text-gray-900">Q. 전세대출 이자와 월세는 어떻게 비교하나요?</h3>
+  <p>
+    전세대출 월 이자가 월세보다 낮다면 전세가 유리할 수 있습니다. 다만 보증금 마련 비용과 보증료도 함께 비교해야 합니다.
+  </p>
 
-  <div className="bg-blue-50 p-4 rounded text-blue-900">
-    👉 위 계산기를 통해 직접 대출 조건을 입력하고 나에게 가장 유리한 상환 방식을 확인해보세요.
+  <div className="rounded bg-blue-50 p-4 text-blue-900">
+    👉 위 계산기에 전세보증금과 금리를 입력해 월 이자 부담을 먼저 확인해보세요.
   </div>
-
 </section>
