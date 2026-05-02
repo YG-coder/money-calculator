@@ -24,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       freq: "monthly",
     },
     {
-      path: "real-estate/rent-vs-jeonse-calculator",
+      path: "real-estate/jeonse-vs-wolse-calculator",
       priority: 0.9,
       freq: "monthly",
     },
