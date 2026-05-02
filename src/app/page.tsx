@@ -130,7 +130,9 @@ const REALESTATE_CALCS = [
   },
 ];
 
-const latestPosts = blogPosts.slice(0, 3);
+const latestPosts = blogPosts
+  .filter((post) => post.published !== false)
+  .slice(0, 3);
 
 const HOME_FAQ = [
   {
@@ -185,7 +187,7 @@ function CalcCard({
   );
 }
 
-export default function HomePage() {
+export default function Page() {
   return (
     <>
       {/* Hero */}

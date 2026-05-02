@@ -1,8 +1,10 @@
+// src/app/blog/[slug]/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildMetadata } from "@/lib/metadata";
 import { blogPosts } from "@/data/blogPosts";
+import BlogContent from "@/components/blog/BlogContent";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,16 +30,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    slug: post.slug,
-  }));
+  return blogPosts
+    .filter((post) => post.published !== false)
+    .map((post) => ({
+      slug: post.slug,
+    }));
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = blogPosts.find((item) => item.slug === slug);
 
-  if (!post) {
+  if (!post || post.published === false) {
     notFound();
   }
 
@@ -66,10 +70,16 @@ export default async function BlogPostPage({ params }: Props) {
           {post.description}
         </p>
 
-        <div className="space-y-5 text-[17px] leading-8 text-slate-700">
-          {post.content.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+        <BlogContent content={post.content} />
+
+        {/* 마무리 면책 */}
+        <div className="mt-12 border-t border-slate-100 pt-6">
+          <p className="text-xs leading-relaxed text-slate-400">
+            ※ 본 글은 일반적인 금융·세무 정보 전달을 목적으로 작성된 참고 자료이며,
+            실제 금리·세율·대출 조건은 금융기관 정책과 개인 상황에 따라 달라질 수
+            있습니다. 중요한 의사결정 전에는 반드시 해당 기관 또는 전문가의 확인을
+            받으시기 바랍니다.
+          </p>
         </div>
       </article>
     </div>

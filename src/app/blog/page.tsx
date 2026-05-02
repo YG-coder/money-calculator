@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMetadata({
   description: "대출이자 절약법, 원리금 상환 방식 비교, 전세대출 완벽 가이드.",
 });
 
-export default function BlogPage() {
+export default function Page() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* 헤더 */}
@@ -22,7 +22,9 @@ export default function BlogPage() {
 
       {/* 포스트 목록 */}
       <div className="space-y-4">
-        {blogPosts.map((post) => (
+        {blogPosts
+          .filter((post) => post.published !== false)
+          .map((post) => (
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
