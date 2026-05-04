@@ -104,26 +104,16 @@ export default function CalcShell({
           <p className="text-slate-500 text-sm md:text-base max-w-2xl">{description}</p>
         </div>
 
-        {/* ── 계산기 + 가이드 ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-              {calculator}
-            </div>
+        {/* ── 계산기 (메인 컬럼, 풀폭) ── */}
+        <div className="mx-auto max-w-3xl">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+            {calculator}
           </div>
-          {guide && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sticky top-20">
-              <h2 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span>📌</span> 이용 안내
-              </h2>
-              <div className="text-sm text-slate-600 space-y-3 leading-relaxed">{guide}</div>
-            </div>
-          )}
         </div>
 
         {/* ── 계산 예시 ── */}
         {examples && examples.length > 0 && (
-          <section className="mt-12">
+          <section className="mt-12 mx-auto max-w-3xl">
             <h2 className="text-xl font-black text-slate-800 mb-5">계산 예시</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {examples.map((ex, i) => (
@@ -185,9 +175,21 @@ export default function CalcShell({
           </section>
         )}
 
+        {/* ── 이용 안내 / 가이드 (본문 풀폭) ── */}
+        {guide && (
+          <section className="mt-12 mx-auto max-w-3xl">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+              <h2 className="font-bold text-slate-800 mb-5 flex items-center gap-2 text-lg">
+                <span>📌</span> 이용 안내
+              </h2>
+              <div className="text-slate-600 space-y-3 leading-relaxed">{guide}</div>
+            </div>
+          </section>
+        )}
+
         {/* ── FAQ ── */}
         {faq && faq.length > 0 && (
-          <section className="mt-12">
+          <section className="mt-12 mx-auto max-w-3xl">
             <h2 className="text-xl font-black text-slate-800 mb-5">자주 묻는 질문</h2>
             <div className="space-y-3">
               {faq.map((item, i) => (
@@ -216,7 +218,9 @@ export default function CalcShell({
         )}
 
         {/* ── 내부 링크 (SEO) ── */}
-        <RelatedLinks calculators={relatedCalcs} guides={relatedGuides} />
+        <div className="mx-auto max-w-3xl">
+          <RelatedLinks calculators={relatedCalcs} guides={relatedGuides} />
+        </div>
 
       </div>
     </>
