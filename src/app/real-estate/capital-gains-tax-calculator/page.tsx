@@ -1,243 +1,197 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { buildMetadata, BASE_URL } from "@/lib/metadata";
-import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
-import CapitalGainsTaxCalc from "@/components/calculator/CapitalGainsTaxCalc";
+"use client";
 
-export const metadata: Metadata = buildMetadata({
-    slug: "real-estate/capital-gains-tax-calculator",
-    title: "양도소득세 계산기 — 부동산 매도 세금 계산",
-    description:
-        "취득가액, 양도가액, 필요경비를 입력하면 예상 양도소득세를 계산합니다.",
-});
+import { useMemo } from "react";
+import { useCalcState } from "@/hooks/useCalcState";
+import { formatKRW } from "@/lib/loan";
+import InputField from "@/components/calculator/InputField";
+import ResultCard from "@/components/calculator/ResultCard";
 
-const EXAMPLES: CalcExample[] = [
-    {
-        title: "다주택자, 5년 보유 매도",
-        desc: "취득 5억 → 양도 8억, 필요경비 1천만, 보유 5년",
-        inputs: [
-            { label: "양도가액", value: "8억원" },
-            { label: "취득가액", value: "5억원" },
-            { label: "필요경비", value: "1,000만원" },
-            { label: "보유기간", value: "5년" },
-        ],
-        results: [
-            { label: "양도차익", value: "2억 9,900만원" },
-            { label: "장특공 (10%)", value: "−2,990만원" },
-            { label: "과세표준", value: "2억 6,660만원" },
-            { label: "예상 세금", value: "약 8,950만원", highlight: true },
-        ],
-        note: "기본세율 38% 구간 적용. 1세대 1주택 비과세 요건을 충족하면 0원이 될 수 있습니다.",
-    },
-    {
-        title: "단기 매도 (1년 미만)",
-        desc: "같은 차익이지만 보유 1년 미만",
-        inputs: [
-            { label: "양도가액", value: "8억원" },
-            { label: "취득가액", value: "5억원" },
-            { label: "필요경비", value: "1,000만원" },
-            { label: "보유기간", value: "1년 미만" },
-        ],
-        results: [
-            { label: "양도차익", value: "2억 9,900만원" },
-            { label: "단기 세율", value: "70%" },
-            { label: "예상 세금", value: "약 2억 2,800만원", highlight: true },
-        ],
-        note: "1년 미만 단기 매도는 70%의 높은 세율이 적용되어 세금이 약 2.5배로 늘어납니다.",
-    },
+const FIELDS = [
+  {
+    key: "sellPrice",
+    kind: "money" as const,
+    defaultValue: "",
+    validate: (v: string) =>
+      !v || Number(v) <= 0 ? "양도가액을 입력해주세요" : undefined,
+  },
+  {
+    key: "buyPrice",
+    kind: "money" as const,
+    defaultValue: "",
+    validate: (v: string) =>
+      !v || Number(v) <= 0 ? "취득가액을 입력해주세요" : undefined,
+  },
+  {
+    key: "expense",
+    kind: "money" as const,
+    defaultValue: "",
+  },
+  {
+    key: "deduction",
+    kind: "money" as const,
+    defaultValue: "250",  // 250만원 = 기본공제 연간 한도
+  },
+  {
+    key: "taxRate",
+    kind: "decimal" as const,
+    defaultValue: "22",
+    validate: (v: string) =>
+      !v || Number(v) < 0 ? "세율을 입력해주세요" : undefined,
+  },
 ];
 
-const FAQ = [
-    {
-        q: "양도소득세는 언제 신고·납부하나요?",
-        a: "양도일이 속한 달의 말일부터 2개월 이내에 예정신고 및 납부해야 합니다. 기한을 넘기면 무신고 가산세(20%)와 납부지연 가산세가 부과됩니다.",
-    },
-    {
-        q: "1세대 1주택 비과세 요건은 무엇인가요?",
-        a: "기본 요건은 (1) 1세대가 양도일 현재 1주택만 보유, (2) 보유기간 2년 이상, (3) 양도가액 12억 원 이하입니다. 조정대상지역 취득분은 거주기간 요건이 추가될 수 있습니다.",
-    },
-    {
-        q: "장기보유특별공제는 어떻게 적용되나요?",
-        a: "1세대 1주택은 보유·거주를 합산해 최대 80%까지, 그 외 자산은 보유기간 기준 최대 30%까지 공제됩니다. 거주를 안 한 1주택자는 보유 공제만 받을 수 있어 절세 효과가 크게 줄어듭니다.",
-    },
-    {
-        q: "분양권은 주택 수에 포함되나요?",
-        a: "2021년 1월 1일 이후 취득한 분양권은 주택 수에 포함됩니다. 분양권 1개 + 주택 1채 = 2주택자로 간주되어 1세대 1주택 비과세를 받을 수 없습니다.",
-    },
-];
+export default function Page() {
+  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
 
-export default function CapitalGainsTaxPage() {
-    const crumbs = [
-        { name: "홈", url: BASE_URL },
-        { name: "부동산 계산기", url: `${BASE_URL}/real-estate` },
-        { name: "양도소득세 계산기", url: `${BASE_URL}/real-estate/capital-gains-tax-calculator` },
-    ];
+  const result = useMemo(() => {
+    // getWon: 만원 단위 입력 → 원 단위로 변환됨
+    const sell = getWon("sellPrice");
+    const buy = getWon("buyPrice");
+    const cost = getWon("expense");
+    const basicDeduction = getWon("deduction");
+    const rate = getNum("taxRate");
 
-    return (
-        <Suspense>
-            <CalcShell
-                title="양도소득세 계산기"
-                description="부동산 매도 시 발생하는 양도소득세를 간단히 계산합니다."
-                icon="📐"
-                slug="real-estate/capital-gains-tax-calculator"
-                breadcrumb={crumbs}
-                calculator={<CapitalGainsTaxCalc />}
-                guide={
-                    <>
-                        <h2 className="text-xl font-bold text-slate-900">
-                            양도소득세 계산기란?
-                        </h2>
+    if (!sell || !buy || rate < 0) return null;
 
-                        <p>
-                            양도소득세 계산기는 부동산을 매도할 때 발생할 수 있는 예상 세금을 계산하는 도구입니다.
-                            양도가액에서 취득가액과 필요경비를 뺀 양도차익을 기준으로 과세표준과 예상 세액을 확인할 수 있습니다.
-                            실제 양도세는 보유기간, 주택 수, 비과세 요건, 장기보유특별공제 등에 따라 크게 달라질 수 있습니다.
-                        </p>
+    const gain = sell - buy - cost;
+    const taxableIncome = Math.max(gain - basicDeduction, 0);
+    const capitalGainsTax = taxableIncome * (rate / 100);
+    const localTax = capitalGainsTax * 0.1;
+    const totalTax = capitalGainsTax + localTax;
 
-                        <h2 className="text-xl font-bold text-slate-900">
-                            기본 계산 구조
-                        </h2>
+    return {
+      gain,
+      taxableIncome,
+      capitalGainsTax,
+      localTax,
+      totalTax,
+    };
+  }, [state, getWon, getNum]);
 
-                        <div className="rounded bg-slate-100 p-4">
-                            <strong>양도차익 = 양도가액 - 취득가액 - 필요경비</strong>
-                            <br />
-                            <strong>과세표준 = 양도차익 - 기본공제 - 장기보유특별공제</strong>
-                            <br />
-                            <strong>예상 세금 = 과세표준 × 세율</strong>
-                        </div>
+  return (
+    <div className="space-y-5">
+      <InputField
+        label="양도가액 (실거래가)"
+        name="sellPrice"
+        suffix="만원"
+        placeholder="예: 80,000"
+        hint="단위: 만원 (8억 → 80,000)"
+        value={state.sellPrice?.value ?? ""}
+        error={state.sellPrice?.error}
+        onChange={(v) => setValue("sellPrice", v)}
+      />
 
-                        <h2 className="text-xl font-bold text-slate-900">
-                            양도소득세 계산 시 확인할 항목
-                        </h2>
+      <InputField
+        label="취득가액"
+        name="buyPrice"
+        suffix="만원"
+        placeholder="예: 50,000"
+        hint="단위: 만원 (5억 → 50,000)"
+        value={state.buyPrice?.value ?? ""}
+        error={state.buyPrice?.error}
+        onChange={(v) => setValue("buyPrice", v)}
+      />
 
-                        <ul className="list-disc space-y-2 pl-5">
-                            <li>부동산을 얼마에 취득했고 얼마에 양도했는지</li>
-                            <li>취득세, 중개수수료, 법무사 비용 등 필요경비가 얼마인지</li>
-                            <li>보유기간이 1년 미만, 2년 미만, 2년 이상인지</li>
-                            <li>1세대 1주택 비과세 요건을 충족하는지</li>
-                            <li>조정대상지역, 다주택, 일시적 2주택 등 특수 조건이 있는지</li>
-                        </ul>
+      <InputField
+        label="필요경비"
+        name="expense"
+        suffix="만원"
+        placeholder="예: 1,000"
+        hint="중개수수료, 법무사비, 자본적 지출 등"
+        value={state.expense?.value ?? ""}
+        error={state.expense?.error}
+        onChange={(v) => setValue("expense", v)}
+      />
 
-                        <h2 className="text-xl font-bold text-slate-900">
-                            보유기간별 세율 예시
-                        </h2>
+      <InputField
+        label="기본공제"
+        name="deduction"
+        suffix="만원"
+        placeholder="250"
+        hint="연간 1회 250만원 자동 적용"
+        value={state.deduction?.value ?? ""}
+        error={state.deduction?.error}
+        onChange={(v) => setValue("deduction", v)}
+      />
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-sm">
-                                <thead>
-                                <tr className="bg-slate-50">
-                                    <th className="border border-slate-200 p-3">구분</th>
-                                    <th className="border border-slate-200 p-3">과세 특징</th>
-                                    <th className="border border-slate-200 p-3">주의사항</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">단기 보유</td>
-                                    <td className="border border-slate-200 p-3">높은 세율이 적용될 수 있음</td>
-                                    <td className="border border-slate-200 p-3">매도 시점 확인 필요</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">2년 이상 보유</td>
-                                    <td className="border border-slate-200 p-3">일반 누진세율 적용 가능</td>
-                                    <td className="border border-slate-200 p-3">비과세 요건 검토 필요</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">1세대 1주택</td>
-                                    <td className="border border-slate-200 p-3">요건 충족 시 비과세 가능</td>
-                                    <td className="border border-slate-200 p-3">고가주택은 일부 과세 가능</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+      <InputField
+        label="예상 세율"
+        name="taxRate"
+        suffix="%"
+        step={0.1}
+        placeholder="예: 22"
+        hint="과세표준 구간에 따른 기본세율 (6% ~ 45%)"
+        value={state.taxRate?.value ?? ""}
+        error={state.taxRate?.error}
+        onChange={(v) => setValue("taxRate", v)}
+      />
 
-                        <h2 className="text-xl font-bold text-slate-900">
-                            실제 계산 예시
-                        </h2>
-
-                        <p>
-                            예를 들어 5억 원에 취득한 주택을 8억 원에 매도하고 필요경비가 1천만 원이라면
-                            단순 양도차익은 2억 9천만 원입니다. 여기에 기본공제와 장기보유특별공제,
-                            보유기간별 세율을 반영하면 실제 납부할 양도소득세가 결정됩니다.
-                        </p>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-sm">
-                                <thead>
-                                <tr className="bg-slate-50">
-                                    <th className="border border-slate-200 p-3">항목</th>
-                                    <th className="border border-slate-200 p-3">예시 금액</th>
-                                    <th className="border border-slate-200 p-3">설명</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">양도가액</td>
-                                    <td className="border border-slate-200 p-3">8억 원</td>
-                                    <td className="border border-slate-200 p-3">매도 금액</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">취득가액</td>
-                                    <td className="border border-slate-200 p-3">5억 원</td>
-                                    <td className="border border-slate-200 p-3">매수 금액</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">필요경비</td>
-                                    <td className="border border-slate-200 p-3">1천만 원</td>
-                                    <td className="border border-slate-200 p-3">취득세, 중개수수료 등</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-slate-200 p-3">양도차익</td>
-                                    <td className="border border-slate-200 p-3">2억 9천만 원</td>
-                                    <td className="border border-slate-200 p-3">세금 계산의 기초</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h2 className="text-xl font-bold text-slate-900">
-                            1세대 1주택 비과세 확인
-                        </h2>
-
-                        <p>
-                            주택 양도소득세에서 가장 중요한 부분은 1세대 1주택 비과세 여부입니다.
-                            일반적으로 일정 기간 이상 보유하고 거주 요건을 충족하면 비과세가 가능할 수 있지만,
-                            조정대상지역 여부, 취득 시점, 고가주택 여부에 따라 결과가 달라질 수 있습니다.
-                        </p>
-
-                        <h2 className="text-xl font-bold text-slate-900">
-                            주의사항
-                        </h2>
-
-                        <ul className="list-disc space-y-2 pl-5">
-                            <li>실제 세율과 공제는 세법 개정에 따라 달라질 수 있습니다.</li>
-                            <li>고가주택, 다주택자, 조정대상지역 여부에 따라 계산 방식이 달라질 수 있습니다.</li>
-                            <li>장기보유특별공제는 보유기간과 거주기간에 따라 적용률이 달라질 수 있습니다.</li>
-                            <li>계산 결과는 참고용이며 실제 신고 전 세무 전문가 또는 국세청 자료 확인이 필요합니다.</li>
-                        </ul>
-
-                        <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-                            <p className="font-bold">양도세 계산 팁</p>
-                            <p className="mt-2">
-                                부동산을 매도하기 전에는 예상 양도차익뿐 아니라 보유기간, 비과세 요건,
-                                필요경비 인정 여부를 함께 확인해야 합니다. 위 계산기로 1차 금액을 확인한 뒤,
-                                실제 신고 전에는 세무 전문가에게 최종 검토를 받는 것이 안전합니다.
-                            </p>
-                        </div>
-                    </>
-                }
-                examples={EXAMPLES}
-                faq={FAQ}
-                relatedCalcs={[
-                    { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏠" },
-                    { label: "전세 vs 월세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator", icon: "⚖️" },
-                    { label: "재건축 분담금 계산기", href: "/real-estate/reconstruction-contribution-calculator", icon: "🏗️" },
-                ]}
-                relatedGuides={[
-                    { label: "양도소득세 완벽 정리 — 세율·비과세·장기보유공제", href: "/blog/capital-gains-tax" },
-                    { label: "취득세 완벽 가이드 — 매수 단계 세금까지 함께",     href: "/blog/acquisition-tax-guide" },
-                ]}
+      {result && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 space-y-4 pt-2 duration-300">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ResultCard
+              label="예상 총 세금"
+              value={formatKRW(result.totalTax)}
+              sub="양도소득세 + 지방소득세 합계"
+              highlight
             />
-        </Suspense>
-    );
+            <ResultCard
+              label="양도차익"
+              value={formatKRW(result.gain)}
+              sub="양도가 − 취득가 − 필요경비"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <ResultCard
+              label="양도소득세"
+              value={formatKRW(result.capitalGainsTax)}
+              sub="과세표준 × 세율"
+            />
+            <ResultCard
+              label="지방소득세"
+              value={formatKRW(result.localTax)}
+              sub="양도소득세의 10%"
+            />
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 border border-slate-100 px-5 py-4 text-sm text-slate-600">
+            <p className="font-bold text-slate-800 mb-3">📋 세금 구성 요약</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span>양도차익</span>
+                <span className="font-semibold tabular-nums text-slate-800">
+                  {formatKRW(result.gain)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>− 기본공제</span>
+                <span className="font-semibold tabular-nums text-slate-800">
+                  {formatKRW(getWon("deduction"))}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>= 과세표준</span>
+                <span className="font-semibold tabular-nums text-slate-800">
+                  {formatKRW(result.taxableIncome)}
+                </span>
+              </div>
+              <div className="border-t border-slate-200 pt-2 flex items-center justify-between font-bold text-slate-900">
+                <span>총 세금</span>
+                <span className="text-brand-600 tabular-nums">
+                  {formatKRW(result.totalTax)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-400 leading-relaxed">
+            ※ 단순 시뮬레이션이며 실제 세액은 보유기간, 1세대 1주택 비과세,
+            장기보유특별공제, 다주택 중과 여부 등에 따라 크게 달라질 수
+            있습니다. 정확한 세금은 국세청 또는 세무 전문가에게 확인하세요.
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
