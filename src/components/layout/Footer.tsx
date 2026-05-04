@@ -9,13 +9,16 @@ const LOAN_LINKS = [
 ];
 
 const REALESTATE_LINKS = [
-  { label: "취득세 계산기",       href: "/real-estate/acquisition-tax-calculator" },
+  { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator" },
   { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator" },
+  { label: "양도소득세 계산기", href: "/real-estate/capital-gains-tax-calculator" },
+  { label: "재건축 분담금 계산기", href: "/real-estate/reconstruction-contribution-calculator" },
 ];
 
 const INFO_LINKS = [
   { label: "소개",             href: "/about" },
   { label: "금융 가이드",      href: "/blog" },
+  { label: "면책 고지",        href: "/disclaimer" },
   { label: "개인정보처리방침", href: "/privacy-policy" },
   { label: "이용약관",         href: "/terms" },
   { label: "문의하기",         href: "/contact" },

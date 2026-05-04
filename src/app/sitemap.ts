@@ -49,6 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "contact", priority: 0.5, freq: "monthly" },
     { path: "terms", priority: 0.4, freq: "yearly" },
     { path: "privacy-policy", priority: 0.4, freq: "yearly" },
+    { path: "disclaimer", priority: 0.4, freq: "yearly" },
   ];
 
   const staticEntries: MetadataRoute.Sitemap = staticPages.map((p) => ({
