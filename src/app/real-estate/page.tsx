@@ -1,14 +1,21 @@
 // src/app/real-estate/page.tsx
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = buildMetadata({
   slug: "real-estate",
-  title: "부동산 계산기 — 취득세·월세 vs 전세·양도세",
+  title: "부동산 계산기 — 취득세·월세 vs 전세·수익률",
   description:
-      "부동산 매매·임대 의사결정에 필요한 계산기를 모아뒀습니다. 취득세 계산기, 월세 vs 전세 비교 계산기 등을 무료로 이용하세요.",
-  keywords: ["부동산계산기", "취득세계산기", "전세월세비교", "부동산세금"],
+      "부동산 매매·임대 의사결정에 필요한 계산기를 모아뒀습니다. 취득세 계산기, 월세 vs 전세 비교 계산기, 부동산 수익률 계산기를 무료로 이용하세요.",
+  keywords: [
+    "부동산계산기",
+    "취득세계산기",
+    "전세월세비교",
+    "부동산수익률계산기",
+    "월세수익률",
+  ],
 });
 
 const CALCS = [
@@ -25,10 +32,10 @@ const CALCS = [
     icon: "⚖️",
   },
   {
-    title: "양도소득세 계산기",
-    desc: "취득가액, 양도가액, 필요경비, 보유기간을 기준으로 예상 양도소득세를 계산합니다.",
+    title: "부동산 수익률 계산기",
+    desc: "매입가, 보증금, 월세, 대출 이자, 월 비용을 기준으로 예상 임대수익률을 계산합니다.",
     href: "/real-estate/property-yield-calculator",
-    icon: "📐",
+    icon: "📈",
   },
   {
     title: "재건축 분담금 계산기",
@@ -41,11 +48,10 @@ const CALCS = [
 export default function RealEstatePage() {
   return (
       <>
-        {/* Hero */}
         <section className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 px-4 py-14 text-white">
           <div className="mx-auto max-w-4xl">
             <nav className="mb-4 flex items-center gap-1.5 text-xs text-brand-300">
-              <Link href="/" className="hover:text-white transition-colors">
+              <Link href="/" className="transition-colors hover:text-white">
                 홈
               </Link>
               <span>›</span>
@@ -61,12 +67,11 @@ export default function RealEstatePage() {
             </h1>
 
             <p className="max-w-xl text-base text-brand-100">
-              매매·임대·세금 관련 부동산 계산기를 한 곳에서 이용하세요.
+              매매·임대·수익률 관련 부동산 계산기를 한 곳에서 이용하세요.
             </p>
           </div>
         </section>
 
-        {/* 계산기 목록 */}
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
           <h2 className="mb-6 text-xl font-black text-slate-800">
             전체 부동산 계산기
@@ -81,9 +86,9 @@ export default function RealEstatePage() {
                 >
                   <span className="mb-3 block text-3xl">{c.icon}</span>
 
-                  <h3 className="mb-1.5 font-black text-slate-900 transition-colors group-hover:text-brand-600">
+                  <h2 className="mb-1.5 font-black text-slate-900 transition-colors group-hover:text-brand-600">
                     {c.title}
-                  </h3>
+                  </h2>
 
                   <p className="text-sm leading-relaxed text-slate-500">
                     {c.desc}
@@ -93,7 +98,6 @@ export default function RealEstatePage() {
           </div>
         </section>
 
-        {/* 대출 CTA */}
         <section className="border-t border-slate-100 bg-slate-50 py-12">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">

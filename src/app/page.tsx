@@ -115,10 +115,10 @@ const REALESTATE_CALCS = [
     badge: "신규",
   },
   {
-    title: "양도소득세 계산기",
-    desc: "취득가액·양도가액·필요경비 기준 예상 양도세 계산",
+    title: "부동산 수익률 계산기",
+    desc: "매입가·보증금·월세·대출 이자를 반영해 월 순수익과 수익률 계산",
     href: "/real-estate/property-yield-calculator",
-    icon: "📐",
+    icon: "📈",
     badge: "신규",
   },
   {
