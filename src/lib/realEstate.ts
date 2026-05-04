@@ -143,3 +143,55 @@ export function calcJeonseVsWolse(
     breakEvenRate,
   };
 }
+
+/* ─────────────────────────────────────────────
+   부동산 수익률 계산 (월세 임대 기준)
+───────────────────────────────────────────── */
+
+export interface PropertyYieldResult {
+  monthlyInterest:    number;  // 월 대출 이자 (원)
+  monthlyNetIncome:   number;  // 월 순수익 (원)
+  annualNetIncome:    number;  // 연 순수익 (원)
+  investedCapital:    number;  // 실투자금 = 매입가 - 보증금 - 대출금 (원)
+  purchaseYield:      number;  // 매입가 기준 수익률 (%)
+  equityYield:        number;  // 자기자본 수익률 (%)
+  isInvestedNegative: boolean; // 실투자금이 0 이하인 경우
+}
+
+export function calcPropertyYield(
+  purchasePriceMan:   number,  // 매입가 (만원)
+  depositMan:         number,  // 임대 보증금 (만원)
+  monthlyRentMan:     number,  // 월세 (만원)
+  loanAmountMan:      number,  // 대출금 (만원)
+  loanRatePct:        number,  // 대출 연 금리 (%)
+  monthlyCostMan:     number,  // 월 관리·기타비용 (만원)
+): PropertyYieldResult {
+  const priceWon  = purchasePriceMan * 10_000;
+  const depWon    = depositMan        * 10_000;
+  const rentWon   = monthlyRentMan    * 10_000;
+  const loanWon   = loanAmountMan     * 10_000;
+  const costWon   = monthlyCostMan    * 10_000;
+
+  const monthlyInterest =
+    loanWon > 0 && loanRatePct > 0 ? (loanWon * loanRatePct) / 100 / 12 : 0;
+
+  const monthlyNetIncome = rentWon - monthlyInterest - costWon;
+  const annualNetIncome  = monthlyNetIncome * 12;
+  const investedCapital  = priceWon - depWon - loanWon;
+
+  const purchaseYield =
+    priceWon > 0 ? (annualNetIncome / priceWon) * 100 : 0;
+
+  const equityYield =
+    investedCapital > 0 ? (annualNetIncome / investedCapital) * 100 : 0;
+
+  return {
+    monthlyInterest:    Math.floor(monthlyInterest),
+    monthlyNetIncome:   Math.floor(monthlyNetIncome),
+    annualNetIncome:    Math.floor(annualNetIncome),
+    investedCapital:    Math.floor(investedCapital),
+    purchaseYield,
+    equityYield,
+    isInvestedNegative: investedCapital <= 0,
+  };
+}

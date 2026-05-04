@@ -1,203 +1,250 @@
-// src/components/calculator/PropertyYieldCalc.tsx
-
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useCalcState } from "@/hooks/useCalcState";
+import { formatKRW, formatUnit } from "@/lib/loan";
+import { calcPropertyYield } from "@/lib/realEstate";
+import InputField from "@/components/calculator/InputField";
+import ResultCard from "@/components/calculator/ResultCard";
 
-function formatWon(value: number) {
-    if (!Number.isFinite(value)) return "-";
-    return `${Math.round(value).toLocaleString("ko-KR")}원`;
-}
+const FIELDS = [
+  {
+    key: "purchasePrice",
+    kind: "money" as const,
+    defaultValue: "",
+    validate: (v: string) =>
+      !v || Number(v) <= 0 ? "매입가를 입력해주세요" : undefined,
+  },
+  {
+    key: "deposit",
+    kind: "money" as const,
+    defaultValue: "0",
+  },
+  {
+    key: "monthlyRent",
+    kind: "money" as const,
+    defaultValue: "",
+    validate: (v: string) =>
+      !v || Number(v) <= 0 ? "월세를 입력해주세요" : undefined,
+  },
+  {
+    key: "loanAmount",
+    kind: "money" as const,
+    defaultValue: "0",
+  },
+  {
+    key: "loanRate",
+    kind: "decimal" as const,
+    defaultValue: "0",
+    validate: (v: string) =>
+      v && Number(v) > 30 ? "금리가 너무 높습니다" : undefined,
+  },
+  {
+    key: "monthlyCost",
+    kind: "money" as const,
+    defaultValue: "0",
+  },
+];
 
 function formatPercent(value: number) {
-    if (!Number.isFinite(value)) return "-";
-    return `${value.toFixed(2)}%`;
-}
-
-function toNumber(value: string) {
-    const num = Number(value);
-    return Number.isFinite(num) ? num : 0;
+  if (!Number.isFinite(value)) return "-";
+  return `${value.toFixed(2)}%`;
 }
 
 export default function PropertyYieldCalc() {
-    const [purchasePrice, setPurchasePrice] = useState("");
-    const [deposit, setDeposit] = useState("");
-    const [monthlyRent, setMonthlyRent] = useState("");
-    const [loanAmount, setLoanAmount] = useState("");
-    const [interestRate, setInterestRate] = useState("");
-    const [monthlyCost, setMonthlyCost] = useState("");
+  const { state, setValue, getNum } = useCalcState(FIELDS);
 
-    const result = useMemo(() => {
-        const price = toNumber(purchasePrice);
-        const dep = toNumber(deposit);
-        const rent = toNumber(monthlyRent);
-        const loan = toNumber(loanAmount);
-        const rate = toNumber(interestRate);
-        const cost = toNumber(monthlyCost);
+  const result = useMemo(() => {
+    const price = getNum("purchasePrice");
+    const dep   = getNum("deposit");
+    const rent  = getNum("monthlyRent");
+    const loan  = getNum("loanAmount");
+    const rate  = getNum("loanRate");
+    const cost  = getNum("monthlyCost");
 
-        if (price <= 0 || dep < 0 || rent <= 0) return null;
+    if (!price || !rent) return null;
+    return calcPropertyYield(price, dep, rent, loan, rate, cost);
+  }, [state, getNum]);
 
-        const monthlyInterest = loan > 0 && rate > 0 ? (loan * rate) / 100 / 12 : 0;
-        const monthlyNetIncome = rent - monthlyInterest - cost;
-        const annualNetIncome = monthlyNetIncome * 12;
-        const investedCapital = price - dep - loan;
-        const purchaseYield = price > 0 ? (annualNetIncome / price) * 100 : 0;
-        const equityYield =
-            investedCapital > 0 ? (annualNetIncome / investedCapital) * 100 : 0;
+  const isProfit = result ? result.monthlyNetIncome > 0 : false;
 
-        return {
-            monthlyInterest,
-            monthlyNetIncome,
-            annualNetIncome,
-            investedCapital,
-            purchaseYield,
-            equityYield,
-        };
-    }, [purchasePrice, deposit, monthlyRent, loanAmount, interestRate, monthlyCost]);
-
-    return (
-        <div className="space-y-6">
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium leading-relaxed text-red-600">
-                * 매입가, 보증금, 월세는 필수 입력값입니다. 대출금, 금리, 월 비용은 없으면 0으로 계산됩니다.
-            </p>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Input
-                    label="매입가"
-                    value={purchasePrice}
-                    onChange={setPurchasePrice}
-                    placeholder="예: 300000000"
-                    required
-                />
-                <Input
-                    label="보증금"
-                    value={deposit}
-                    onChange={setDeposit}
-                    placeholder="예: 50000000"
-                    required
-                />
-                <Input
-                    label="월세"
-                    value={monthlyRent}
-                    onChange={setMonthlyRent}
-                    placeholder="예: 1000000"
-                    required
-                />
-                <Input
-                    label="대출금"
-                    value={loanAmount}
-                    onChange={setLoanAmount}
-                    placeholder="예: 150000000"
-                />
-                <Input
-                    label="대출 금리(연 %)"
-                    value={interestRate}
-                    onChange={setInterestRate}
-                    placeholder="예: 4.5"
-                />
-                <Input
-                    label="월 관리비·기타비용"
-                    value={monthlyCost}
-                    onChange={setMonthlyCost}
-                    placeholder="예: 100000"
-                />
-            </div>
-
-            {result ? (
-                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
-                    <h2 className="mb-4 text-lg font-black text-slate-900">계산 결과</h2>
-
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <Result label="월 대출 이자" value={formatWon(result.monthlyInterest)} />
-                        <Result
-                            label="월 순수익"
-                            value={formatWon(result.monthlyNetIncome)}
-                            highlight
-                        />
-                        <Result label="연 순수익" value={formatWon(result.annualNetIncome)} />
-                        <Result label="실투자금" value={formatWon(result.investedCapital)} />
-                        <Result
-                            label="매입가 기준 수익률"
-                            value={formatPercent(result.purchaseYield)}
-                        />
-                        <Result
-                            label="자기자본 수익률"
-                            value={formatPercent(result.equityYield)}
-                            highlight
-                        />
-                    </div>
-
-                    {result.investedCapital <= 0 && (
-                        <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                            보증금과 대출금이 매입가 이상이면 자기자본 수익률 계산이 왜곡될 수 있습니다.
-                        </p>
-                    )}
-                </div>
-            ) : (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm text-slate-500">
-                    필수 입력값을 입력하면 계산 결과가 표시됩니다.
-                </div>
-            )}
+  return (
+    <div className="space-y-5">
+      {/* 부동산 조건 */}
+      <div>
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+          부동산 조건
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <InputField
+            label="매입가"
+            name="purchasePrice"
+            suffix="만원"
+            placeholder="예: 30,000"
+            hint="단위: 만원 (3억 → 30,000)"
+            value={state.purchasePrice?.value ?? ""}
+            error={state.purchasePrice?.error}
+            onChange={(v) => setValue("purchasePrice", v)}
+          />
+          <InputField
+            label="임대 보증금"
+            name="deposit"
+            suffix="만원"
+            placeholder="예: 5,000"
+            hint="없으면 0 입력"
+            value={state.deposit?.value ?? ""}
+            onChange={(v) => setValue("deposit", v)}
+          />
         </div>
-    );
-}
+      </div>
 
-function Input({
-                   label,
-                   value,
-                   onChange,
-                   placeholder,
-                   required,
-               }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    placeholder: string;
-    required?: boolean;
-}) {
-    return (
-        <label className="block">
-            <div className="mb-1.5 flex items-center gap-1 text-sm font-bold text-slate-700">
-                {label}
-                {required && <span className="text-red-500">*</span>}
-            </div>
-            <input
-                type="number"
-                inputMode="decimal"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-brand-400 focus:ring-4 focus:ring-brand-50"
-            />
-        </label>
-    );
-}
+      {/* 임대 수입 */}
+      <div>
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+          임대 수입·비용
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <InputField
+            label="월세"
+            name="monthlyRent"
+            suffix="만원"
+            placeholder="예: 100"
+            value={state.monthlyRent?.value ?? ""}
+            error={state.monthlyRent?.error}
+            onChange={(v) => setValue("monthlyRent", v)}
+          />
+          <InputField
+            label="월 관리·기타비용"
+            name="monthlyCost"
+            suffix="만원"
+            placeholder="예: 10"
+            hint="임대인 부담분 (없으면 0)"
+            value={state.monthlyCost?.value ?? ""}
+            onChange={(v) => setValue("monthlyCost", v)}
+          />
+        </div>
+      </div>
 
-function Result({
-                    label,
-                    value,
-                    highlight,
-                }: {
-    label: string;
-    value: string;
-    highlight?: boolean;
-}) {
-    return (
-        <div
-            className={`rounded-xl border p-4 ${
-                highlight
-                    ? "border-brand-100 bg-brand-50"
-                    : "border-slate-100 bg-white"
+      {/* 대출 조건 */}
+      <div>
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+          대출 조건 (선택)
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <InputField
+            label="대출금"
+            name="loanAmount"
+            suffix="만원"
+            placeholder="예: 15,000"
+            hint="없으면 0 입력"
+            value={state.loanAmount?.value ?? ""}
+            onChange={(v) => setValue("loanAmount", v)}
+          />
+          <InputField
+            label="대출 연 금리"
+            name="loanRate"
+            suffix="%"
+            step={0.1}
+            placeholder="예: 4.5"
+            hint="대출 없으면 0"
+            value={state.loanRate?.value ?? ""}
+            error={state.loanRate?.error}
+            onChange={(v) => setValue("loanRate", v)}
+          />
+        </div>
+      </div>
+
+      {/* 결과 */}
+      {result && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 space-y-4 pt-2 duration-300">
+          {/* 핵심 결론 배너 */}
+          <div
+            className={`rounded-2xl p-5 border-2 ${
+              isProfit
+                ? "bg-brand-50 border-brand-300"
+                : "bg-orange-50 border-orange-300"
             }`}
-        >
-            <div className="text-xs font-semibold text-slate-500">{label}</div>
-            <div
-                className={`mt-1 text-lg font-black ${
-                    highlight ? "text-brand-700" : "text-slate-900"
-                }`}
-            >
-                {value}
+          >
+            <p className="text-xs font-bold uppercase tracking-widest mb-1 text-slate-500">
+              분석 결과
+            </p>
+            <p className="text-xl font-black text-slate-900">
+              {isProfit
+                ? `✅ 월 ${formatKRW(result.monthlyNetIncome)} 순수익 발생`
+                : `⚠️ 월 ${formatKRW(Math.abs(result.monthlyNetIncome))} 손실 예상`}
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              연간 환산 약 {formatUnit(Math.abs(result.annualNetIncome))}
+              {!isProfit && " 손실"}
+            </p>
+          </div>
+
+          {/* 핵심 수치 */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ResultCard
+              label="월 순수익"
+              value={formatKRW(result.monthlyNetIncome)}
+              sub="월세 − 대출 이자 − 비용"
+              highlight={isProfit}
+              danger={!isProfit}
+            />
+            <ResultCard
+              label="자기자본 수익률"
+              value={formatPercent(result.equityYield)}
+              sub={
+                result.isInvestedNegative
+                  ? "실투자금 ≤ 0 (계산 불가)"
+                  : "실투자금 대비 연 수익률"
+              }
+              highlight={isProfit && !result.isInvestedNegative}
+            />
+          </div>
+
+          {/* 상세 수치 */}
+          <div className="grid grid-cols-2 gap-3">
+            <ResultCard
+              label="월 대출 이자"
+              value={formatKRW(result.monthlyInterest)}
+            />
+            <ResultCard
+              label="연 순수익"
+              value={formatKRW(result.annualNetIncome)}
+            />
+            <ResultCard
+              label="실투자금"
+              value={formatKRW(result.investedCapital)}
+              sub="매입가 − 보증금 − 대출금"
+            />
+            <ResultCard
+              label="매입가 기준 수익률"
+              value={formatPercent(result.purchaseYield)}
+              sub="매입가 대비 연 수익률"
+            />
+          </div>
+
+          {/* 실투자금 0 이하 경고 */}
+          {result.isInvestedNegative && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              ⚠️ 보증금과 대출금의 합이 매입가 이상입니다. 실투자금이 0 이하이므로
+              자기자본 수익률은 의미가 왜곡됩니다. 매입가 기준 수익률을 확인하세요.
             </div>
+          )}
+
+          {/* 판단 가이드 */}
+          <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            ⚖️ 일반적으로 자기자본 수익률{" "}
+            <strong className="text-slate-900">연 4~5% 이상</strong>이면
+            은행 예금보다 유리한 투자로 봅니다. 단, 공실 위험·세금·수선비를
+            반영하지 않은 단순 비교임에 유의하세요.
+          </div>
+
+          <p className="text-xs text-slate-400 leading-relaxed">
+            ※ 이 계산은 공실, 취득세, 재산세, 종합부동산세, 양도소득세, 중개수수료,
+            수선비를 포함하지 않습니다. 실제 투자 판단 시에는 전체 보유 사이클의
+            세금과 비용을 함께 검토해야 합니다.
+          </p>
         </div>
-    );
+      )}
+    </div>
+  );
 }
