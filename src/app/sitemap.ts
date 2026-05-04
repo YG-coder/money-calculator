@@ -33,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       freq: "monthly",
     },
     {
-      path: "/real-estate/property-yield-calculator",
+      path: "real-estate/property-yield-calculator",
       priority: 0.9,
       freq: "monthly",
     },
