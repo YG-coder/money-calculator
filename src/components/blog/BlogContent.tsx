@@ -3,11 +3,12 @@
 // 블로그 본문 렌더러.
 // Block[] 또는 string[] 형식의 content를 받아서 풍부한 마크업으로 렌더링합니다.
 
+import Link from "next/link";
 import type { Block } from "@/data/blogPosts";
 import { normalizeContent } from "@/data/blogPosts";
 
 // ─────────────────────────────────────────────────────────────
-// 인라인 마크업 처리: **굵게**, _기울임_
+// 인라인 마크업 처리
 // ─────────────────────────────────────────────────────────────
 
 /**
@@ -15,15 +16,21 @@ import { normalizeContent } from "@/data/blogPosts";
  * HTML 인젝션 방지를 위해 평문은 그대로 둔 채 마크업만 변환합니다.
  *
  * 지원 문법:
- *   **text**  →  <strong>text</strong>
- *   _text_    →  <em>text</em>
+ *   **text**           →  <strong>text</strong>
+ *   _text_             →  <em>text</em>
+ *   [text](/내부경로)  →  Next.js <Link>
+ *   [text](https://…)  →  외부 <a target="_blank" rel="noopener noreferrer">
+ *
+ * 우선순위: 링크 > 굵게 > 기울임 (링크 텍스트가 우선 매칭됨)
  */
 function renderInline(input: string): React.ReactNode {
   if (!input) return null;
 
-  // **굵게** 와 _기울임_ 을 모두 매칭하는 단일 정규식.
-  // 캡처 그룹 1: 굵게 내용, 캡처 그룹 2: 기울임 내용.
-  const pattern = /\*\*([^*]+)\*\*|_([^_]+)_/g;
+  // 세 가지 패턴을 한 정규식으로 처리 (왼쪽 → 오른쪽 우선순위로 매칭)
+  // 그룹 1,2: 링크 텍스트, URL
+  // 그룹 3: 굵게 내용
+  // 그룹 4: 기울임 내용
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|_([^_]+)_/g;
 
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
@@ -34,11 +41,42 @@ function renderInline(input: string): React.ReactNode {
     if (match.index > lastIndex) {
       nodes.push(input.slice(lastIndex, match.index));
     }
-    if (match[1] !== undefined) {
-      nodes.push(<strong key={key++}>{match[1]}</strong>);
-    } else if (match[2] !== undefined) {
-      nodes.push(<em key={key++}>{match[2]}</em>);
+
+    if (match[1] !== undefined && match[2] !== undefined) {
+      // 링크
+      const text = match[1];
+      const url = match[2];
+      const isExternal = /^https?:\/\//.test(url);
+
+      if (isExternal) {
+        nodes.push(
+          <a
+            key={key++}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 underline underline-offset-2 hover:text-brand-700"
+          >
+            {text}
+          </a>
+        );
+      } else {
+        nodes.push(
+          <Link
+            key={key++}
+            href={url}
+            className="text-brand-600 underline underline-offset-2 hover:text-brand-700"
+          >
+            {text}
+          </Link>
+        );
+      }
+    } else if (match[3] !== undefined) {
+      nodes.push(<strong key={key++}>{match[3]}</strong>);
+    } else if (match[4] !== undefined) {
+      nodes.push(<em key={key++}>{match[4]}</em>);
     }
+
     lastIndex = match.index + match[0].length;
   }
 
