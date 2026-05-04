@@ -1208,7 +1208,7 @@ export const blogPosts: BlogPost[] = [
         type: "callout",
         variant: "tip",
         title: "직접 계산해보세요",
-        text: "본인 보유 주택 조건으로 예상 세액을 계산하려면 사이트의 [양도소득세 계산기](/real-estate/capital-gains-tax-calculator)를 이용해 보세요. 매수 단계 세금까지 함께 보려면 [취득세 계산기](/real-estate/acquisition-tax-calculator)도 참고하실 수 있습니다.",
+        text: "본인 보유 주택 조건으로 예상 세액을 계산하려면 사이트의 [양도소득세 계산기](/real-estate/property-yield-calculator)를 이용해 보세요. 매수 단계 세금까지 함께 보려면 [취득세 계산기](/real-estate/acquisition-tax-calculator)도 참고하실 수 있습니다.",
       },
       {
         type: "callout",

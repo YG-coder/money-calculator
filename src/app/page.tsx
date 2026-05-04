@@ -117,7 +117,7 @@ const REALESTATE_CALCS = [
   {
     title: "양도소득세 계산기",
     desc: "취득가액·양도가액·필요경비 기준 예상 양도세 계산",
-    href: "/real-estate/capital-gains-tax-calculator",
+    href: "/real-estate/property-yield-calculator",
     icon: "📐",
     badge: "신규",
   },

@@ -21,7 +21,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/real-estate/acquisition-tax-calculator", label: "취득세 계산기" },
       { href: "/real-estate/jeonse-vs-wolse-calculator", label: "월세 vs 전세 계산기" },
-      { href: "/real-estate/capital-gains-tax-calculator", label: "양도소득세 계산기" },
+      { href: "/real-estate/property-yield-calculator", label: "양도소득세 계산기" },
       { href: "/real-estate/reconstruction-contribution-calculator", label: "재건축 분담금 계산기" },
     ],
   },

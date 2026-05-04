@@ -209,7 +209,7 @@ export default function Page() {
           },
           {
             label: "양도소득세 계산기",
-            href: "/real-estate/capital-gains-tax-calculator",
+            href: "/real-estate/property-yield-calculator",
             icon: "📐",
           },
           {

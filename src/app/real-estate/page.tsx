@@ -27,7 +27,7 @@ const CALCS = [
   {
     title: "양도소득세 계산기",
     desc: "취득가액, 양도가액, 필요경비, 보유기간을 기준으로 예상 양도소득세를 계산합니다.",
-    href: "/real-estate/capital-gains-tax-calculator",
+    href: "/real-estate/property-yield-calculator",
     icon: "📐",
   },
   {
