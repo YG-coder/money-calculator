@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   slug: "loan",
   title: "대출 계산기 — 이자·원리금·전세대출·중도상환",
   description:
-    "대출이자 계산기, 원리금균등·원금균등 상환 계산기, 전세대출 계산기, 중도상환 계산기를 무료로 이용하세요.",
+    "대출이자 계산기, 원리금균등·원금균등 상환 계산기, 전세대출 계산기, 중도상환 계산기를 무료로 이용하세요. 상환 방식과 금리 유형까지 한 번에 비교합니다.",
   keywords: ["대출계산기", "대출이자계산기", "원리금균등상환", "전세대출계산기"],
 });
 
@@ -42,7 +42,22 @@ const LOAN_CALCS = [
   },
 ];
 
-export default function LoanPage() {
+const FAQ = [
+  {
+    q: "대출 계산기 결과와 실제 은행 대출액이 왜 다른가요?",
+    a: "이 계산기는 표준 공식에 따른 참고용 시뮬레이션입니다. 실제 대출은 신용점수, 소득, DSR·LTV 한도, 우대금리, 부대비용(인지세·근저당 설정비 등)에 따라 달라집니다. 정확한 조건은 금융기관 상담을 통해 확인하세요.",
+  },
+  {
+    q: "어떤 계산기부터 써야 하나요?",
+    a: "대출 총비용이 궁금하면 대출이자 계산기, 매달 갚을 금액과 상환 방식이 궁금하면 원리금상환 계산기를 먼저 이용하세요. 전세 자금이 필요하면 전세대출 계산기, 이미 받은 대출을 미리 갚을지 고민이라면 중도상환 계산기가 적합합니다.",
+  },
+  {
+    q: "고정금리와 변동금리 중 무엇이 유리한가요?",
+    a: "정답은 없습니다. 변동금리는 보통 초기 금리가 낮지만 기준금리 변동에 따라 부담이 커질 수 있고, 고정금리는 초기 금리가 다소 높아도 상환액을 예측하기 쉽습니다. 금리 전망과 상환 기간, 본인의 위험 감내 수준을 함께 고려해야 합니다.",
+  },
+];
+
+export default function Page() {
   return (
     <>
       <section className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 px-4 py-14 text-white">
@@ -103,6 +118,138 @@ export default function LoanPage() {
           >
             대출이자 계산기 바로가기 →
           </Link>
+        </div>
+      </section>
+
+      {/* ── 대출 가이드 본문 ── */}
+      <section className="border-t border-slate-100 bg-white">
+        <div className="mx-auto max-w-3xl px-4 py-14 text-[15px] leading-relaxed text-slate-600 sm:px-6">
+          <h2 className="mb-4 text-2xl font-black text-slate-900">
+            대출, 계산부터 시작해야 하는 이유
+          </h2>
+          <p className="mb-4">
+            같은 금액을 빌리더라도 <strong className="text-slate-900">금리·상환 방식·기간</strong>에 따라
+            매달 갚는 돈과 전체 이자 부담은 크게 달라집니다. 예를 들어 1억 원을 30년간 빌릴 때,
+            금리가 0.5%p만 차이 나도 총 이자는 수백만 원 단위로 벌어집니다. 대출은 한번 실행하면
+            수년에서 수십 년을 함께 가는 결정이기 때문에, 계약 전에 숫자를 직접 확인해 보는 것이
+            가장 확실한 절약 방법입니다.
+          </p>
+          <p className="mb-8">
+            아래에서는 대출을 받기 전에 알아두면 좋은 핵심 개념을 정리했습니다. 각 항목은 위
+            계산기와 직접 연결되므로, 개념을 읽은 뒤 본인 조건을 넣어 바로 계산해 볼 수 있습니다.
+          </p>
+
+          <h2 className="mb-4 text-xl font-black text-slate-900">
+            상환 방식 3가지, 무엇이 다를까
+          </h2>
+          <p className="mb-4">
+            대출 상환 방식은 크게 세 가지로 나뉩니다. 같은 금액·금리·기간이라도 방식에 따라 매달
+            내는 돈과 총이자가 달라지므로, 본인의 현금 흐름에 맞는 방식을 고르는 것이 중요합니다.
+          </p>
+
+          <div className="mb-6 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="border border-slate-200 p-3 text-left">상환 방식</th>
+                  <th className="border border-slate-200 p-3 text-left">월 납입액</th>
+                  <th className="border border-slate-200 p-3 text-left">총 이자</th>
+                  <th className="border border-slate-200 p-3 text-left">특징</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-slate-200 p-3 font-semibold text-slate-800">만기일시상환</td>
+                  <td className="border border-slate-200 p-3">매달 이자만</td>
+                  <td className="border border-slate-200 p-3">가장 많음</td>
+                  <td className="border border-slate-200 p-3">원금은 만기에 한 번에 상환. 단기 자금에 적합</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 font-semibold text-slate-800">원리금균등상환</td>
+                  <td className="border border-slate-200 p-3">매달 동일</td>
+                  <td className="border border-slate-200 p-3">중간</td>
+                  <td className="border border-slate-200 p-3">매달 같은 금액이라 예산 관리가 쉬움. 가장 보편적</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 font-semibold text-slate-800">원금균등상환</td>
+                  <td className="border border-slate-200 p-3">초기 많고 점차 감소</td>
+                  <td className="border border-slate-200 p-3">가장 적음</td>
+                  <td className="border border-slate-200 p-3">초기 부담이 크지만 총이자를 가장 아낄 수 있음</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mb-8 rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">어떤 방식을 골라야 할까</p>
+            <p className="mt-2 text-sm leading-relaxed">
+              매달 부담을 일정하게 가져가고 싶다면 <strong>원리금균등</strong>, 총이자를 최대한 아끼고
+              초기 부담을 감당할 수 있다면 <strong>원금균등</strong>이 유리합니다. 두 방식의 실제 차이는{" "}
+              <Link href="/amortization-calculator" className="font-bold underline underline-offset-2">
+                원리금상환 계산기
+              </Link>
+              에서 직접 비교할 수 있습니다.
+            </p>
+          </div>
+
+          <h2 className="mb-4 text-xl font-black text-slate-900">
+            고정금리 vs 변동금리
+          </h2>
+          <p className="mb-6">
+            <strong className="text-slate-900">고정금리</strong>는 대출 기간 동안 금리가 변하지 않아
+            상환액을 예측하기 쉽지만, 초기 금리가 변동금리보다 다소 높은 경우가 많습니다.
+            <strong className="text-slate-900"> 변동금리</strong>는 기준금리(코픽스 등)에 연동되어
+            초기 금리가 낮을 수 있지만, 금리가 오르면 상환 부담이 커집니다. 상환 기간이 길수록
+            금리 변동 위험에 더 오래 노출되므로, 금리 전망과 본인의 위험 감내 수준을 함께
+            고려해야 합니다.
+          </p>
+
+          <h2 className="mb-4 text-xl font-black text-slate-900">
+            대출 받기 전 체크리스트
+          </h2>
+          <ul className="mb-8 list-disc space-y-2 pl-5">
+            <li><strong className="text-slate-800">총이자부터 확인</strong> — 월 납입액만 보지 말고 만기까지의 전체 이자를 계산해 비교하세요.</li>
+            <li><strong className="text-slate-800">DSR·LTV 한도 확인</strong> — 소득과 담보 가치에 따라 받을 수 있는 한도가 제한됩니다.</li>
+            <li><strong className="text-slate-800">중도상환 수수료</strong> — 미리 갚을 계획이 있다면 수수료 면제 시점과 조건을 확인하세요.</li>
+            <li><strong className="text-slate-800">부대비용</strong> — 인지세, 근저당 설정비, 보증료 등 금리 외 비용도 총비용에 포함됩니다.</li>
+            <li><strong className="text-slate-800">우대금리 조건</strong> — 급여이체·카드실적 등으로 받는 우대금리는 조건 유지 여부에 따라 달라질 수 있습니다.</li>
+          </ul>
+
+          <h2 className="mb-4 text-xl font-black text-slate-900">자주 묻는 질문</h2>
+          <div className="mb-8 space-y-4">
+            {FAQ.map((f) => (
+              <div key={f.q} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p className="mb-2 font-bold text-slate-800">Q. {f.q}</p>
+                <p className="text-sm leading-relaxed text-slate-600">{f.a}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+            <p className="mb-2 text-sm font-bold text-slate-800">📌 참고 안내</p>
+            <p className="text-xs leading-relaxed text-slate-500">
+              본 페이지의 계산 결과와 설명은 일반적인 정보 제공을 목적으로 한 참고용이며, 개인 맞춤
+              금융 자문이 아닙니다. 대출 한도·금리·규제는 정책에 따라 수시로 바뀌므로, 실제 대출
+              조건은 한국은행, 금융감독원 등 공식 기관 자료와 금융기관 상담을 통해 확인하시기
+              바랍니다. 자세한 사항은{" "}
+              <Link href="/disclaimer" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+                면책 고지
+              </Link>
+              를 참고해주세요.
+            </p>
+          </div>
+
+          <p className="mt-6 text-sm">
+            더 자세한 가이드는{" "}
+            <Link href="/blog/loan-interest-calculation" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+              대출 이자 계산 방법 완벽 정리
+            </Link>
+            ,{" "}
+            <Link href="/blog/equal-payment-vs-equal-principal" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+              원리금균등 vs 원금균등
+            </Link>
+            에서 확인할 수 있습니다.
+          </p>
         </div>
       </section>
 

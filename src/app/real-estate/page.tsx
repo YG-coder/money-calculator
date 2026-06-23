@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMetadata({
   slug: "real-estate",
   title: "부동산 계산기 — 취득세·월세 vs 전세·수익률",
   description:
-      "부동산 매매·임대 의사결정에 필요한 계산기를 모아뒀습니다. 취득세 계산기, 월세 vs 전세 비교 계산기, 부동산 수익률 계산기를 무료로 이용하세요.",
+      "부동산 매매·임대 의사결정에 필요한 계산기를 모아뒀습니다. 취득세 계산기, 월세 vs 전세 비교 계산기, 부동산 수익률 계산기를 무료로 이용하세요. 거래 단계별 세금과 비용도 함께 정리했습니다.",
   keywords: [
     "부동산계산기",
     "취득세계산기",
@@ -45,7 +45,22 @@ const CALCS = [
   },
 ];
 
-export default function RealEstatePage() {
+const FAQ = [
+  {
+    q: "부동산을 살 때 매매가 외에 어떤 비용이 더 드나요?",
+    a: "취득세(농특세·지방교육세 포함), 중개보수, 등기 비용(법무사 수수료·등록면허세), 인지세, 대출 시 근저당 설정비 등이 추가됩니다. 일반적으로 매매가의 수 %가 부대비용으로 발생하므로, 매수 전 취득세 계산기로 세금부터 확인하는 것이 좋습니다.",
+  },
+  {
+    q: "전세와 월세 중 무엇이 유리한가요?",
+    a: "전세는 목돈이 묶이는 대신 매달 나가는 비용이 적고, 월세는 보증금 부담이 작은 대신 매달 임대료가 나갑니다. 핵심은 전세 보증금을 다른 곳에 굴렸을 때의 기회비용(또는 전세대출 이자)과 월세를 비교하는 것입니다. 월세 vs 전세 계산기로 실질 비용을 직접 비교할 수 있습니다.",
+  },
+  {
+    q: "임대 수익률은 어떻게 계산하나요?",
+    a: "단순 수익률은 (연 임대수입 ÷ 매입가)로 구하지만, 실제로는 대출 이자, 관리비, 재산세 등 비용과 보증금을 반영한 순수익률·자기자본 수익률을 함께 봐야 합니다. 부동산 수익률 계산기는 이 변수들을 반영해 예상 수익률을 계산합니다.",
+  },
+];
+
+export default function Page() {
   return (
       <>
         <section className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 px-4 py-14 text-white">
@@ -95,6 +110,131 @@ export default function RealEstatePage() {
                   </p>
                 </Link>
             ))}
+          </div>
+        </section>
+
+        {/* ── 부동산 가이드 본문 ── */}
+        <section className="border-t border-slate-100 bg-white">
+          <div className="mx-auto max-w-3xl px-4 py-14 text-[15px] leading-relaxed text-slate-600 sm:px-6">
+            <h2 className="mb-4 text-2xl font-black text-slate-900">
+              부동산은 ‘사는 순간’부터 비용이 시작됩니다
+            </h2>
+            <p className="mb-4">
+              부동산 거래에서 매매가만큼 중요한 것이 <strong className="text-slate-900">세금과 부대비용</strong>입니다.
+              집을 살 때(취득), 보유하는 동안, 팔 때(처분) 단계마다 서로 다른 세금이 붙고,
+              임대를 놓는다면 수익률 계산까지 필요합니다. 단계별로 어떤 비용이 발생하는지
+              미리 알아두면 예상치 못한 지출을 피할 수 있습니다.
+            </p>
+            <p className="mb-8">
+              아래 표와 설명은 부동산 거래에서 자주 마주치는 비용 구조를 정리한 것입니다.
+              각 항목은 위 계산기와 연결되므로, 개념을 확인한 뒤 본인 조건으로 바로 계산해
+              볼 수 있습니다.
+            </p>
+
+            <h2 className="mb-4 text-xl font-black text-slate-900">
+              거래 단계별 주요 세금
+            </h2>
+            <div className="mb-8 overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="border border-slate-200 p-3 text-left">단계</th>
+                    <th className="border border-slate-200 p-3 text-left">주요 세금</th>
+                    <th className="border border-slate-200 p-3 text-left">설명</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-slate-200 p-3 font-semibold text-slate-800">취득 시</td>
+                    <td className="border border-slate-200 p-3">취득세, 농특세, 지방교육세</td>
+                    <td className="border border-slate-200 p-3">주택 수·가격대·조정대상지역 여부에 따라 세율이 달라짐</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-200 p-3 font-semibold text-slate-800">보유 시</td>
+                    <td className="border border-slate-200 p-3">재산세, 종합부동산세</td>
+                    <td className="border border-slate-200 p-3">매년 부과. 공시가격과 보유 주택 수가 기준</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-200 p-3 font-semibold text-slate-800">처분 시</td>
+                    <td className="border border-slate-200 p-3">양도소득세</td>
+                    <td className="border border-slate-200 p-3">보유 기간·1주택 비과세·장기보유공제에 따라 크게 달라짐</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mb-8 rounded-2xl bg-blue-50 p-5 text-blue-900">
+              <p className="font-bold">매수 전 가장 먼저 확인할 것</p>
+              <p className="mt-2 text-sm leading-relaxed">
+                취득세는 보유 주택 수와 가격대에 따라 세율이 크게 달라집니다. 매수 결정 전에{" "}
+                <Link href="/real-estate/acquisition-tax-calculator" className="font-bold underline underline-offset-2">
+                  취득세 계산기
+                </Link>
+                로 1·2·3주택 기준 세금을 비교해 보세요.
+              </p>
+            </div>
+
+            <h2 className="mb-4 text-xl font-black text-slate-900">
+              전세 vs 월세, 기회비용으로 판단하기
+            </h2>
+            <p className="mb-8">
+              전세와 월세를 단순히 “목돈이 드느냐, 매달 내느냐”로만 비교하면 정확하지 않습니다.
+              전세 보증금을 예금·투자에 넣었을 때 얻을 수 있는 <strong className="text-slate-900">기회비용</strong>,
+              또는 전세대출을 받았을 때의 <strong className="text-slate-900">이자 부담</strong>을 월세와
+              나란히 놓고 비교해야 실질적인 우위를 알 수 있습니다. 같은 집이라도 금리 수준에 따라
+              유리한 선택이 바뀌므로, 계산기로 직접 비교하는 것이 가장 확실합니다.
+            </p>
+
+            <h2 className="mb-4 text-xl font-black text-slate-900">
+              임대 수익률, 표면 수익률에 속지 않기
+            </h2>
+            <p className="mb-8">
+              “연 수익률 ○%”라는 표면 숫자만 보면 실제 수익을 과대평가하기 쉽습니다. 대출 이자,
+              재산세, 관리비, 공실 위험 등 비용을 빼고 보증금을 반영한 <strong className="text-slate-900">순수익률</strong>과,
+              실제 투입한 자기자본 대비 수익을 보는 <strong className="text-slate-900">자기자본 수익률(레버리지 효과)</strong>을
+              함께 확인해야 합니다. 부동산 수익률 계산기는 이 변수들을 반영해 보다 현실적인
+              수익률을 보여줍니다.
+            </p>
+
+            <h2 className="mb-4 text-xl font-black text-slate-900">자주 묻는 질문</h2>
+            <div className="mb-8 space-y-4">
+              {FAQ.map((f) => (
+                <div key={f.q} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                  <p className="mb-2 font-bold text-slate-800">Q. {f.q}</p>
+                  <p className="text-sm leading-relaxed text-slate-600">{f.a}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <p className="mb-2 text-sm font-bold text-slate-800">📌 참고 안내</p>
+              <p className="text-xs leading-relaxed text-slate-500">
+                부동산 세제와 규제는 정책에 따라 자주 바뀌며, 조정대상지역 지정·세율·공제 요건은
+                시점에 따라 달라질 수 있습니다. 본 페이지의 설명과 계산 결과는 일반 정보 제공을
+                목적으로 한 참고용이며, 실제 세액은 국세청, 한국부동산원 등 공식 기관 자료와
+                세무 전문가 상담을 통해 확인하시기 바랍니다. 자세한 사항은{" "}
+                <Link href="/disclaimer" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+                  면책 고지
+                </Link>
+                를 참고해주세요.
+              </p>
+            </div>
+
+            <p className="mt-6 text-sm">
+              관련 가이드는{" "}
+              <Link href="/blog/acquisition-tax-guide" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+                취득세 완벽 가이드
+              </Link>
+              ,{" "}
+              <Link href="/blog/jeonse-vs-wolse" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+                전세 vs 월세 완벽 분석
+              </Link>
+              ,{" "}
+              <Link href="/blog/property-yield-guide" className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+                부동산 수익률 계산 방법
+              </Link>
+              에서 확인할 수 있습니다.
+            </p>
           </div>
         </section>
 
