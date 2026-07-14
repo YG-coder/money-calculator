@@ -59,7 +59,8 @@ export default function PrepaymentCalc() {
     const pre = getWon("prepay");
     const r = getNum("rate");
     const m = getNum("remMonths");
-    const fee = getNum("feeRate") || 1.2;
+    const feeRaw = state.feeRate?.raw ?? "";
+    const fee = feeRaw === "" ? 1.2 : getNum("feeRate");
 
     if (!rem || !pre || !r || !m) return null;
     if (pre > rem) return null;

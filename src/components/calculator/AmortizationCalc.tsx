@@ -183,6 +183,12 @@ export default function AmortizationCalc() {
               </table>
             </div>
           )}
+
+          <p className="text-xs text-slate-400">
+            ※ 표준 월 단위 계산 기준입니다. 실제 은행은 대출 실행일에 따라 첫
+            달·마지막 달을 일할계산(실제 경과일수 기준)하는 경우가 있어, 실제
+            상환 스케줄과 다를 수 있습니다.
+          </p>
         </div>
       )}
     </div>
