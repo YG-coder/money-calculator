@@ -16,6 +16,12 @@ const REALESTATE_LINKS = [
   { label: "재건축 분담금 계산기", href: "/real-estate/reconstruction-contribution-calculator" },
 ];
 
+const FINANCE_LINKS = [
+  { label: "예금 이자 계산기", href: "/finance/deposit" },
+  { label: "적금 이자 계산기", href: "/finance/installment-savings" },
+  { label: "복리 계산기", href: "/finance/compound" },
+];
+
 const INFO_LINKS = [
   { label: "소개", href: "/about" },
   { label: "금융 가이드", href: "/blog" },
@@ -29,7 +35,7 @@ export function Footer() {
   return (
       <footer className="bg-slate-900 text-slate-400">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-4">
+          <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-5">
             <div>
               <Link
                   href="/"
@@ -78,6 +84,24 @@ export function Footer() {
               </h3>
               <ul className="space-y-2">
                 {REALESTATE_LINKS.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                          href={item.href}
+                          className="text-sm transition-colors hover:text-white"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-200">
+                금융 계산기
+              </h3>
+              <ul className="space-y-2">
+                {FINANCE_LINKS.map((item) => (
                     <li key={item.href}>
                       <Link
                           href={item.href}
