@@ -20,6 +20,7 @@ const FINANCE_LINKS = [
   { label: "예금 이자 계산기", href: "/finance/deposit" },
   { label: "적금 이자 계산기", href: "/finance/installment-savings" },
   { label: "복리 계산기", href: "/finance/compound" },
+  { label: "목표 저축 계산기", href: "/finance/goal-savings" },
 ];
 
 const INFO_LINKS = [

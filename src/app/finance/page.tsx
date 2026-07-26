@@ -33,6 +33,13 @@ const FINANCE_CALCS = [
     icon: "📈",
     badge: null,
   },
+  {
+    title: "목표 저축 계산기",
+    desc: "목표 금액·월 납입액·기간 중 둘을 정하면 나머지를 계산해 저축 계획을 세웁니다.",
+    href: "/finance/goal-savings",
+    icon: "🎯",
+    badge: "신규",
+  },
 ];
 
 const FAQ = [

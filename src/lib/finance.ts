@@ -244,3 +244,119 @@ export function calcCompoundInterest(input: CompoundInput): CompoundResult {
     yearly,
   };
 }
+
+// ─────────────────────────────────────────────
+// 4. 목표 저축 계산기 (월복리 · 기말 납입 · 세전)
+// ─────────────────────────────────────────────
+// 특정 상품의 세후 수령액을 맞추는 도구가 아니라 목표 달성을 위한
+// 저축 계획을 세우는 계산기. 세금·수수료·중도인출 미반영(세전 기준).
+// 결과 UI에 "실제 금융상품의 세후 수령액과 다를 수 있습니다" 안내 필수.
+
+export type GoalMode = "targetToMonthly" | "monthlyToMonths" | "monthlyAndMonthsToAmount";
+// targetToMonthly → 목표금액에서 월 납입액 역산 (모드 A)
+// monthlyToMonths → 월 납입액에서 목표까지 기간 역산 (모드 B)
+// monthlyAndMonthsToAmount → 월 납입액+기간에서 도달액 (모드 C)
+
+/** 정액 적립(기말 납입) 월복리 미래가치. i = 월이율(소수) */
+function monthlyAnnuityFV(monthly: number, i: number, n: number): number {
+  if (n <= 0) return 0;
+  if (i === 0) return monthly * n;
+  return monthly * ((Math.pow(1 + i, n) - 1) / i);
+}
+
+// ── 모드 A: 목표금액 → 필요한 월 납입액 ──
+export interface GoalMonthlyInput {
+  targetAmount: number; // 목표 금액(원)
+  months: number; // 목표 기간(개월)
+  annualRate: number; // 연이율(%)
+}
+export interface GoalMonthlyResult {
+  requiredMonthly: number; // 필요한 월 납입액(원)
+  months: number;
+  targetAmount: number;
+  totalDeposit: number; // 총 납입 원금(= 월납입 × 개월)
+  totalInterest: number; // 세전 이자(= 목표금액 − 총 납입)
+}
+export function goalRequiredMonthly(input: GoalMonthlyInput): GoalMonthlyResult {
+  const { targetAmount, months, annualRate } = input;
+  const i = toMonthlyRate(annualRate);
+  const requiredMonthly =
+    i === 0 ? targetAmount / months : (targetAmount * i) / (Math.pow(1 + i, months) - 1);
+  const totalDeposit = requiredMonthly * months;
+  return {
+    requiredMonthly,
+    months,
+    targetAmount,
+    totalDeposit,
+    totalInterest: targetAmount - totalDeposit,
+  };
+}
+
+// ── 모드 B: 월 납입액 → 목표까지 걸리는 기간 ──
+export interface GoalMonthsInput {
+  monthlyDeposit: number; // 월 납입액(원)
+  targetAmount: number; // 목표 금액(원)
+  annualRate: number; // 연이율(%)
+  maxMonths?: number; // 기간 상한(기본 1200개월=100년)
+}
+export interface GoalMonthsResult {
+  months: number; // 목표 도달에 필요한 개월(올림)
+  monthlyDeposit: number;
+  targetAmount: number;
+  reachedAmount: number; // 해당 개월의 실제 도달액(목표 이상)
+  totalDeposit: number;
+  totalInterest: number;
+  capped: boolean; // 상한(maxMonths) 도달 여부
+}
+export function goalRequiredMonths(input: GoalMonthsInput): GoalMonthsResult {
+  const { monthlyDeposit, targetAmount, annualRate, maxMonths = 1200 } = input;
+  const i = toMonthlyRate(annualRate);
+  const nExact =
+    i === 0
+      ? targetAmount / monthlyDeposit
+      : Math.log(1 + (targetAmount * i) / monthlyDeposit) / Math.log(1 + i);
+  let months = Math.max(1, Math.ceil(nExact));
+  let capped = false;
+  if (months > maxMonths) {
+    months = maxMonths;
+    capped = true;
+  }
+  const reachedAmount = monthlyAnnuityFV(monthlyDeposit, i, months);
+  const totalDeposit = monthlyDeposit * months;
+  return {
+    months,
+    monthlyDeposit,
+    targetAmount,
+    reachedAmount,
+    totalDeposit,
+    totalInterest: reachedAmount - totalDeposit,
+    capped,
+  };
+}
+
+// ── 모드 C: 월 납입액 + 기간 → 예상 도달 금액 ──
+export interface GoalAmountInput {
+  monthlyDeposit: number; // 월 납입액(원)
+  months: number; // 기간(개월)
+  annualRate: number; // 연이율(%)
+}
+export interface GoalAmountResult {
+  finalAmount: number; // 예상 도달 금액(세전)
+  monthlyDeposit: number;
+  months: number;
+  totalDeposit: number;
+  totalInterest: number;
+}
+export function goalFinalAmount(input: GoalAmountInput): GoalAmountResult {
+  const { monthlyDeposit, months, annualRate } = input;
+  const i = toMonthlyRate(annualRate);
+  const finalAmount = monthlyAnnuityFV(monthlyDeposit, i, months);
+  const totalDeposit = monthlyDeposit * months;
+  return {
+    finalAmount,
+    monthlyDeposit,
+    months,
+    totalDeposit,
+    totalInterest: finalAmount - totalDeposit,
+  };
+}

@@ -152,6 +152,13 @@ const FINANCE_CALCS = [
     icon: "📈",
     badge: "신규",
   },
+  {
+    title: "목표 저축 계산기",
+    desc: "목표금액·월납입·기간 중 둘을 정하면 나머지를 역산",
+    href: "/finance/goal-savings",
+    icon: "🎯",
+    badge: "신규",
+  },
 ];
 
 const latestPosts = blogPosts
