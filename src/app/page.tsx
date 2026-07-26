@@ -5,9 +5,9 @@ import { buildMetadata } from "@/lib/metadata";
 import { blogPosts } from "@/data/blogPosts";
 
 export const metadata: Metadata = buildMetadata({
-  title: "머니계산기 | 대출·부동산 무료 금융 계산기",
+  title: "머니계산기 | 대출·부동산·예금·적금 무료 금융 계산기",
   description:
-    "대출이자·원리금·전세대출·중도상환·취득세·월세 vs 전세 계산기를 무료로 이용하세요. 복잡한 금융·부동산 계산을 쉽고 빠르게.",
+    "대출이자·원리금·전세대출·중도상환·취득세·월세 vs 전세·예금·적금·복리 계산기를 무료로 이용하세요. 복잡한 금융·부동산 계산을 쉽고 빠르게.",
 });
 
 const QUICK_CALCS = [
@@ -126,6 +126,30 @@ const REALESTATE_CALCS = [
     desc: "권리가액·종후자산가액·비례율 기준 예상 분담금 계산",
     href: "/real-estate/reconstruction-contribution-calculator",
     icon: "🏗️",
+    badge: "신규",
+  },
+];
+
+const FINANCE_CALCS = [
+  {
+    title: "예금 이자 계산기",
+    desc: "예치금·금리·기간으로 세전·세후 이자와 만기 수령액 계산",
+    href: "/finance/deposit",
+    icon: "🏦",
+    badge: "신규",
+  },
+  {
+    title: "적금 이자 계산기",
+    desc: "월 납입액 기준 총 납입액·예상 이자·만기 수령액 계산",
+    href: "/finance/installment-savings",
+    icon: "🪙",
+    badge: "신규",
+  },
+  {
+    title: "복리 계산기",
+    desc: "원금·월 추가 납입·기간별 복리 증가액과 최종 금액 계산",
+    href: "/finance/compound",
+    icon: "📈",
     badge: "신규",
   },
 ];
@@ -282,6 +306,23 @@ export default function Page() {
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {REALESTATE_CALCS.map((c) => (
+              <CalcCard key={c.href} {...c} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 금융 계산기 섹션 */}
+      <section className="py-14">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-black text-slate-800">금융 계산기</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              예금·적금 이자와 장기 복리 효과를 세전·세후 기준으로 확인하세요
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FINANCE_CALCS.map((c) => (
               <CalcCard key={c.href} {...c} />
             ))}
           </div>

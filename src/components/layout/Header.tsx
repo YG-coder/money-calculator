@@ -28,6 +28,15 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: "금융 계산기",
+    baseHref: "/finance",
+    items: [
+      { href: "/finance/deposit", label: "예금 이자 계산기" },
+      { href: "/finance/installment-savings", label: "적금 이자 계산기" },
+      { href: "/finance/compound", label: "복리 계산기" },
+    ],
+  },
+  {
     label: "금융 가이드",
     baseHref: "/blog",
     items: [],

@@ -43,6 +43,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       freq: "monthly",
     },
 
+    // ── 허브 랜딩 (기존 누락 보완 · 별도 커밋 권장: fix(sitemap)) ──
+    { path: "loan", priority: 0.8, freq: "weekly" },
+    { path: "real-estate", priority: 0.8, freq: "weekly" },
+
+    // ── 금융 계산기 (금융 확장 · 별도 커밋) ──
+    { path: "finance", priority: 0.8, freq: "weekly" },
+    { path: "finance/deposit", priority: 0.9, freq: "monthly" },
+    { path: "finance/installment-savings", priority: 0.9, freq: "monthly" },
+    { path: "finance/compound", priority: 0.9, freq: "monthly" },
+
     // 기타
     { path: "blog", priority: 0.8, freq: "daily" },
     { path: "about", priority: 0.6, freq: "monthly" },
