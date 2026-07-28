@@ -354,7 +354,7 @@ export const blogPosts: BlogPost[] = [
         type: "callout",
         variant: "info",
         title: "다음에 읽으면 좋은 글",
-        text: "[원리금균등 vs 원금균등 차이 완벽 비교](/blog/equal-payment-vs-equal-principal) · [DSR과 DTI 차이](/blog/dsr-dti-difference) · [대출 갈아타기 전략](/blog/loan-refinancing-strategy)",
+        text: "[원리금균등 vs 원금균등 차이 완벽 비교](/blog/equal-payment-vs-equal-principal) · [전세 vs 월세 비교](/blog/jeonse-vs-wolse) · [취득세 완벽 가이드](/blog/acquisition-tax-guide)",
       },
     ],
   },
