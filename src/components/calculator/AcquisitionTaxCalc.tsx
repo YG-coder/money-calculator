@@ -22,18 +22,23 @@ export default function AcquisitionTaxCalc() {
 
   const [ownership, setOwnership] = useState<OwnershipType>("first");
   const [isAdjusted, setIsAdjusted] = useState(false);
+  const [isOver85, setIsOver85] = useState(false);
 
   const result = useMemo(() => {
     const priceMan = getNum("price");
     if (!priceMan || priceMan <= 0) return null;
-    return calcAcquisitionTax(priceMan, ownership, isAdjusted);
-  }, [state, getNum, ownership, isAdjusted]);
+    return calcAcquisitionTax(priceMan, ownership, isAdjusted, isOver85);
+  }, [state, getNum, ownership, isAdjusted, isOver85]);
 
   const ownershipOptions: { value: OwnershipType; label: string }[] = [
-    { value: "first",      label: "1주택 (무주택 → 첫 취득)" },
-    { value: "second",     label: "2주택 (1주택 보유 중)" },
-    { value: "third_plus", label: "3주택 이상" },
+    { value: "first",       label: "1주택 (무주택 → 첫 취득)" },
+    { value: "second",      label: "2주택 (1주택 보유 중)" },
+    { value: "third",       label: "3주택" },
+    { value: "fourth_plus", label: "4주택 이상" },
   ];
+
+  // 조정대상지역 구분은 2·3주택에서만 세율에 영향 (4주택 이상은 조정·비조정 모두 12%)
+  const showAdjusted = ownership === "second" || ownership === "third";
 
   return (
     <div className="space-y-5">
@@ -47,6 +52,36 @@ export default function AcquisitionTaxCalc() {
         error={state.price?.error}
         onChange={(v) => setValue("price", v)}
       />
+
+      {/* 전용면적 — 농어촌특별세 과세 기준 */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-slate-600">
+          전용면적 (농어촌특별세 기준)
+        </label>
+        <div className="flex gap-3">
+          {[
+            { value: false, label: "85㎡ 이하" },
+            { value: true, label: "85㎡ 초과" },
+          ].map((opt) => (
+            <label
+              key={String(opt.value)}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-xl border px-4 py-3 cursor-pointer transition-colors
+                ${isOver85 === opt.value
+                  ? "border-brand-400 bg-brand-50"
+                  : "border-slate-200 bg-white hover:border-slate-300"}`}
+            >
+              <input
+                type="radio"
+                name="over85"
+                checked={isOver85 === opt.value}
+                onChange={() => setIsOver85(opt.value)}
+                className="accent-brand-600"
+              />
+              <span className="text-sm font-semibold text-slate-700">{opt.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
 
       {/* 주택 보유 수 */}
       <div className="flex flex-col gap-1.5">
@@ -76,8 +111,8 @@ export default function AcquisitionTaxCalc() {
         </div>
       </div>
 
-      {/* 조정대상지역 — 2주택 이상에서만 표시 */}
-      {ownership !== "first" && (
+      {/* 조정대상지역 — 2·3주택에서만 세율에 영향 */}
+      {showAdjusted && (
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-600">
             조정대상지역 여부
@@ -170,9 +205,10 @@ export default function AcquisitionTaxCalc() {
           </div>
 
           <p className="text-xs text-slate-400 leading-relaxed">
-            ※ 2024년 기준 일반 주택 취득 시 세율입니다. 생애최초 주택 감면,
-            임시특례, 법인 취득 등 특수 조건에 따라 달라질 수 있습니다.
-            정확한 세금은 관할 시·군·구청 또는 세무사에게 확인하세요.
+            ※ 2026-08-02 지방세법 기준 일반 주택 유상취득 세율입니다. 농어촌특별세는
+            전용면적 85㎡ 초과 여부로 구분하며, 생애최초 감면·일시적 2주택·상속·증여·법인
+            취득 등 특수 조건은 반영하지 않습니다. 정확한 세금은 관할 시·군·구청 또는
+            세무사에게 확인하세요.
           </p>
         </div>
       )}

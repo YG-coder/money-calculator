@@ -3,10 +3,10 @@
 // formatKRW, formatUnit 은 @/lib/loan 에서 export 되어 있으므로 중복 정의 없음
 
 /* ─────────────────────────────────────────────
-   취득세 계산 (2024년 기준 주택)
+   취득세 계산 (주택 · 2026-08-02 지방세법 기준 검증)
 ───────────────────────────────────────────── */
 
-export type OwnershipType = "first" | "second" | "third_plus";
+export type OwnershipType = "first" | "second" | "third" | "fourth_plus";
 
 export interface AcquisitionTaxResult {
   acquisitionTax:  number;   // 취득세 (원)
@@ -21,61 +21,65 @@ export interface AcquisitionTaxResult {
   };
 }
 
+/** 퍼센트 값을 소수점 넷째 자리까지 반올림 (지방세법 산출세율 규정) */
+function roundTo4(pct: number): number {
+  return Math.round(pct * 10_000) / 10_000;
+}
+
 /**
- * 1주택 구간별 취득세율
+ * 1주택 구간별 취득세율 (지방세법 §11①8)
  * 6억 이하          → 1%
- * 6억 초과 ~ 9억 이하 → (취득가액(억) × 2 − 3) %
+ * 6억 초과 ~ 9억 이하 → (취득가액(억) × 2/3 − 3) %, 소수점 넷째 자리 반올림
  * 9억 초과          → 3%
  */
 function firstHouseRate(priceWon: number): number {
   if (priceWon <= 600_000_000) return 0.01;
   if (priceWon <= 900_000_000) {
     const uk = priceWon / 100_000_000;
-    return (uk * 2 - 3) / 100;
+    return roundTo4(uk * (2 / 3) - 3) / 100;
   }
   return 0.03;
 }
 
 function pctStr(r: number): string {
   const v = r * 100;
-  return v % 1 === 0 ? `${v}%` : `${v.toFixed(1)}%`;
+  if (Number.isInteger(v)) return `${v}%`;
+  // 산출세율과 동일하게 소수점 넷째 자리까지 표시(불필요한 0 제거)
+  return `${parseFloat(v.toFixed(4))}%`;
 }
 
 export function calcAcquisitionTax(
   priceMan: number,           // 취득가액 (만원)
   ownership: OwnershipType,
-  isAdjustedArea: boolean,    // 조정대상지역 (2주택 이상에서만 유효)
+  isAdjustedArea: boolean,    // 조정대상지역 (2·3주택에서 유효)
+  isOver85: boolean,          // 전용면적 85㎡ 초과 여부 (농어촌특별세 과세 기준)
 ): AcquisitionTaxResult {
   const priceWon = priceMan * 10_000;
 
-  let taxRate          = 0;
-  let farmSpecialTaxRate = 0;
-  let localEduTaxRate  = 0;
-
+  // 취득세 본세율 (지방세법 §11 · §13의2)
+  let taxRate = 0;
   if (ownership === "first") {
-    taxRate             = firstHouseRate(priceWon);
-    farmSpecialTaxRate  = taxRate <= 0.01 ? 0 : 0.002;
-    localEduTaxRate     = taxRate * 0.1;
+    taxRate = firstHouseRate(priceWon);
   } else if (ownership === "second") {
-    if (isAdjustedArea) {
-      taxRate             = 0.08;
-      farmSpecialTaxRate  = 0.006;
-      localEduTaxRate     = 0.004;
-    } else {
-      taxRate             = firstHouseRate(priceWon);
-      farmSpecialTaxRate  = taxRate <= 0.01 ? 0 : 0.002;
-      localEduTaxRate     = taxRate * 0.1;
-    }
+    taxRate = isAdjustedArea ? 0.08 : firstHouseRate(priceWon);
+  } else if (ownership === "third") {
+    taxRate = isAdjustedArea ? 0.12 : 0.08;
   } else {
-    if (isAdjustedArea) {
-      taxRate             = 0.12;
-      farmSpecialTaxRate  = 0.01;
-      localEduTaxRate     = 0.004;
-    } else {
-      taxRate             = 0.08;
-      farmSpecialTaxRate  = 0.006;
-      localEduTaxRate     = 0.004;
-    }
+    // 4주택 이상 → 조정·비조정 모두 12%
+    taxRate = 0.12;
+  }
+
+  const isHeavy = taxRate === 0.08 || taxRate === 0.12;
+
+  // 지방교육세: 표준구간 본세율의 10%, 중과구간 0.4% 고정 (지방세법 §151)
+  const localEduTaxRate = isHeavy ? 0.004 : taxRate * 0.1;
+
+  // 농어촌특별세: 전용 85㎡ 이하 비과세, 초과 시 표준 0.2% / 8%중과 0.6% / 12%중과 1.0%
+  let farmSpecialTaxRate = 0;
+  if (isOver85) {
+    if (taxRate === 0.12)      farmSpecialTaxRate = 0.01;
+    else if (taxRate === 0.08) farmSpecialTaxRate = 0.006;
+    else                       farmSpecialTaxRate = 0.002;
   }
 
   const acquisitionTax = Math.floor(priceWon * taxRate);
