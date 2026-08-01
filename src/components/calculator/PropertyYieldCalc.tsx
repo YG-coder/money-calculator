@@ -218,7 +218,7 @@ export default function PropertyYieldCalc() {
             <ResultCard
               label="매입가 기준 수익률"
               value={formatPercent(result.purchaseYield)}
-              sub="매입가 대비 연 수익률"
+              sub="연 임대수익 ÷ 매입가"
             />
           </div>
 
@@ -232,10 +232,9 @@ export default function PropertyYieldCalc() {
 
           {/* 판단 가이드 */}
           <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            ⚖️ 일반적으로 자기자본 수익률{" "}
-            <strong className="text-slate-900">연 4~5% 이상</strong>이면
-            은행 예금보다 유리한 투자로 봅니다. 단, 공실 위험·세금·수선비를
-            반영하지 않은 단순 비교임에 유의하세요.
+            ⚖️ 계산된 자기자본 수익률은 현재 예금금리나 다른 투자 대안과 비교해
+            보세요. 다만 이 계산에는 공실·세금·수선비·가격 변동이 반영되지 않으므로,
+            수익률 숫자만으로 투자 여부를 판단하면 안 됩니다.
           </div>
 
           <p className="text-xs text-slate-400 leading-relaxed">

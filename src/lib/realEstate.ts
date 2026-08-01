@@ -180,7 +180,7 @@ export function calcPropertyYield(
   const investedCapital  = priceWon - depWon - loanWon;
 
   const purchaseYield =
-    priceWon > 0 ? (annualNetIncome / priceWon) * 100 : 0;
+    priceWon > 0 ? ((rentWon * 12) / priceWon) * 100 : 0;
 
   const equityYield =
     investedCapital > 0 ? (annualNetIncome / investedCapital) * 100 : 0;
