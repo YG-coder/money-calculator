@@ -21,14 +21,14 @@ export const metadata: Metadata = buildMetadata({
 const EXAMPLES: CalcExample[] = [
     {
         title: "비례율 100% (사업성 보통)",
-        desc: "권리가액 6억, 종후자산가액 9억, 비례율 100%",
+        desc: "종전자산평가액 6억, 종후자산가액 9억, 비례율 100%",
         inputs: [
-            { label: "권리가액", value: "6억원" },
+            { label: "종전자산평가액", value: "6억원" },
             { label: "종후자산가액", value: "9억원" },
             { label: "비례율", value: "100%" },
         ],
         results: [
-            { label: "조합원 평가액", value: "6억원" },
+            { label: "권리가액", value: "6억원" },
             { label: "예상 분담금", value: "3억원", highlight: true },
         ],
         note: "비례율 100%는 사업성이 평균 수준일 때의 가정입니다. 실제 사업장마다 차이가 큽니다.",
@@ -37,12 +37,12 @@ const EXAMPLES: CalcExample[] = [
         title: "비례율 80% (사업성 낮음)",
         desc: "같은 조건이지만 비례율이 80%로 떨어진 경우",
         inputs: [
-            { label: "권리가액", value: "6억원" },
+            { label: "종전자산평가액", value: "6억원" },
             { label: "종후자산가액", value: "9억원" },
             { label: "비례율", value: "80%" },
         ],
         results: [
-            { label: "조합원 평가액", value: "4억 8,000만원" },
+            { label: "권리가액", value: "4억 8,000만원" },
             { label: "예상 분담금", value: "4억 2,000만원", highlight: true },
         ],
         note: "비례율 20%p 하락만으로 분담금이 1억 2,000만원 더 늘어납니다. 사업성 검토가 핵심인 이유입니다.",
@@ -51,8 +51,8 @@ const EXAMPLES: CalcExample[] = [
 
 const FAQ = [
     {
-        q: "분담금 = 종후자산가액 − (권리가액 × 비례율)이 맞나요?",
-        a: "네. 이 계산기는 그 공식을 사용합니다. 종후자산가액에서 조합원이 권리로 인정받는 금액을 뺀 차액을 추가 부담금으로 계산합니다.",
+        q: "분담금은 어떻게 계산되나요?",
+        a: "권리가액(= 종전자산평가액 × 비례율)을 먼저 구한 뒤, 종후자산가액에서 권리가액을 빼 예상 분담금을 계산합니다. 권리가액이 종후자산가액보다 크면 환급금이 발생합니다.",
     },
     {
         q: "권리가액과 종후자산가액은 어떻게 알 수 있나요?",
