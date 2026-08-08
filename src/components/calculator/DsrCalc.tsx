@@ -25,6 +25,9 @@ const FIELDS = [
   { key: "months", kind: "integer" as const, defaultValue: "" },
 ];
 
+// 퍼센트 표기 시 부동소수점 잔여(예: 4.05000001) 정리
+const trimPct = (n: number) => Number(n.toFixed(2));
+
 // ── 내부 토글 그룹 (AmortizationCalc 버튼 그리드 패턴 재사용) ──
 function ToggleGroup<T extends string>({
   label,
@@ -242,8 +245,13 @@ export default function DsrCalc() {
               value={`${checkResult.dsrStressed.toFixed(1)}%`}
               sub={
                 checkResult.effectiveStressRate > 0
-                  ? `스트레스 금리 +${checkResult.effectiveStressRate}%p 반영`
-                  : "스트레스 금리 미적용"
+                  ? `명목 ${trimPct(
+                      checkResult.stressedRatePercent -
+                        checkResult.effectiveStressRate,
+                    )}% + 스트레스 ${trimPct(
+                      checkResult.effectiveStressRate,
+                    )}%p → ${trimPct(checkResult.stressedRatePercent)}% 기준`
+                  : "스트레스 금리 미적용 (순수고정)"
               }
               highlight={!checkResult.exceeded}
               danger={checkResult.exceeded}
@@ -285,7 +293,7 @@ export default function DsrCalc() {
               <ResultCard
                 label="DSR 기준 추정 가능 대출액"
                 value={formatUnit(estimateResult.estimatedPrincipal)}
-                sub={`원리금균등 · 스트레스 금리 ${estimateResult.stressedRatePercent}% 기준`}
+                sub={`원리금균등 · 스트레스 금리 ${trimPct(estimateResult.stressedRatePercent)}% 기준`}
                 highlight
               />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
