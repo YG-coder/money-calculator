@@ -69,7 +69,19 @@ function ToggleGroup<T extends string>({
 }
 
 export default function DsrCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
+
+  // ⚠️ 반응성: useCalcState의 getWon/getNum은 useEffect로 한 박자 뒤에 갱신되는
+  // latestStateRef를 읽어, 마지막 입력 시점에 stale 값이 잡힌다. useMemo는 state에
+  // 의존해 렌더 중 실행되므로, 여기서는 현재 렌더의 state.raw를 직접 읽는다.
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
 
   const [mode, setMode] = useState<Mode>("check");
   const [region, setRegion] = useState<Region>("metro");
@@ -82,16 +94,16 @@ export default function DsrCalc() {
 
   const checkResult = useMemo(() => {
     if (mode !== "check") return null;
-    const income = getWon("income");
-    const amount = getWon("amount");
-    const months = getNum("months");
+    const income = won("income");
+    const amount = won("amount");
+    const months = num("months");
     if (!income || !amount || !months || !rateFilled) return null;
 
     return calcDsr({
       annualIncome: income,
-      existingAnnualDebt: getWon("existingDebt"),
+      existingAnnualDebt: won("existingDebt"),
       newPrincipal: amount,
-      ratePercent: getNum("rate"),
+      ratePercent: num("rate"),
       months,
       repayment,
       region,
@@ -103,15 +115,15 @@ export default function DsrCalc() {
 
   const estimateResult = useMemo(() => {
     if (mode !== "estimate") return null;
-    const income = getWon("income");
-    const months = getNum("months");
+    const income = won("income");
+    const months = num("months");
     if (!income || !months || !rateFilled) return null;
 
     return estimatePrincipalFromDsr({
       annualIncome: income,
-      existingAnnualDebt: getWon("existingDebt"),
+      existingAnnualDebt: won("existingDebt"),
       limitPercent,
-      ratePercent: getNum("rate"),
+      ratePercent: num("rate"),
       months,
       region,
       rateType,
