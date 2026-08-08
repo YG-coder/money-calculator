@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "amortization-calculator", priority: 0.9, freq: "monthly" },
     { path: "jeonse-loan-calculator", priority: 0.9, freq: "monthly" },
     { path: "prepayment-calculator", priority: 0.9, freq: "monthly" },
+    { path: "dsr-calculator", priority: 0.9, freq: "monthly" },
 
     // 부동산 계산기
     {

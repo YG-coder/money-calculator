@@ -25,7 +25,7 @@ export function formatUnit(v: number) {
 // 공통
 // ─────────────────────────────────────────────
 
-function monthlyRate(rate: number) {
+export function monthlyRate(rate: number) {
   return rate / 100 / 12;
 }
 
@@ -67,7 +67,7 @@ type AmortizationRow = {
   balance: number;
 };
 
-function equalPaymentMonthly(principal: number, r: number, n: number) {
+export function equalPaymentMonthly(principal: number, r: number, n: number) {
   if (n <= 0) return 0;
   if (r === 0) return principal / n;
 
@@ -175,6 +175,19 @@ export function calcAmortization(
     savingMessage:
       "금리가 1%p 낮아지면 약 " + formatUnit(rateSaving) + " 절약됩니다.",
   };
+}
+
+// ─────────────────────────────────────────────
+// 2-b. 원리금균등 역산 (월 상환액 → 대출원금)
+//   equalPaymentMonthly 의 역함수. DSR 기준 추정 가능액 계산에 사용.
+//   PV = payment × ((1+r)^n − 1) / ( r(1+r)^n )
+// ─────────────────────────────────────────────
+
+export function principalFromPayment(payment: number, r: number, n: number) {
+  if (payment <= 0 || n <= 0) return 0;
+  if (r === 0) return payment * n;
+
+  return (payment * (Math.pow(1 + r, n) - 1)) / (r * Math.pow(1 + r, n));
 }
 
 // ─────────────────────────────────────────────
