@@ -245,12 +245,14 @@ export default function DsrCalc() {
               value={`${checkResult.dsrStressed.toFixed(1)}%`}
               sub={
                 checkResult.effectiveStressRate > 0
-                  ? `명목 ${trimPct(
+                  ? `적용금리 ${trimPct(
+                      checkResult.stressedRatePercent,
+                    )}% (명목 ${trimPct(
                       checkResult.stressedRatePercent -
                         checkResult.effectiveStressRate,
                     )}% + 스트레스 ${trimPct(
                       checkResult.effectiveStressRate,
-                    )}%p → ${trimPct(checkResult.stressedRatePercent)}% 기준`
+                    )}%p)`
                   : "스트레스 금리 미적용 (순수고정)"
               }
               highlight={!checkResult.exceeded}
