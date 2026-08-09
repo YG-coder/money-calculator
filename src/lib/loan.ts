@@ -319,3 +319,88 @@ export function calcPrepayment(
       : "수수료로 인해 약 " + formatUnit(netProfit) + " 손해입니다.",
   };
 }
+
+// ─────────────────────────────────────────────
+// 6. 대환대출(갈아타기) 절감 계산
+//   기존 대출을 전액 상환하고, 남은 원금을 새 금리·새 기간의 새 대출로 대환.
+//   · 원리금균등 기준
+//   · 중도상환수수료 = 남은 원금 전체 × 수수료율 (전액 상환)
+//   · 판정(유리/불리)은 하지 않는다. 두 관점(월 상환액·총이자)을 모두 제공.
+//   · 손익분기 = 월 상환액 절감으로 전환비용을 회수하는 개월수
+//     (기간이 달라지면 월 절감에 기간 조정 효과가 섞이므로 총이자 절감액을 함께 볼 것)
+// ─────────────────────────────────────────────
+
+export interface RefinanceInput {
+  remainingPrincipal: number; // 남은 원금(원)
+  oldRate: number; // 기존 금리(%)
+  oldMonths: number; // 남은 기간(개월)
+  newRate: number; // 새 금리(%)
+  newMonths: number; // 새 기간(개월)
+  prepaymentFeeRate: number; // 중도상환수수료율(%)
+  otherCost?: number; // 기타 비용(원, 선택)
+}
+
+export interface RefinanceResult {
+  oldMonthly: number; // 기존 월 상환액
+  newMonthly: number; // 새 월 상환액
+  monthlyDiff: number; // 월 상환액 절감(양수=감소)
+  oldTotalInterest: number; // 기존 총이자
+  newTotalInterest: number; // 새 총이자
+  interestSaving: number; // 이자 절감액(기존−새, 음수 가능)
+  prepaymentFee: number; // 중도상환수수료
+  otherCost: number; // 기타 비용
+  totalCost: number; // 전환비용(수수료+기타)
+  netSaving: number; // 순절감액(이자 절감−전환비용, 음수 가능)
+  breakEvenMonths: number | null; // 손익분기(월 절감 기준). 월 절감≤0이면 null
+  termExtended: boolean; // 새 기간이 기존보다 긴지
+}
+
+export function calcRefinance(input: RefinanceInput): RefinanceResult {
+  const {
+    remainingPrincipal,
+    oldRate,
+    oldMonths,
+    newRate,
+    newMonths,
+    prepaymentFeeRate,
+    otherCost = 0,
+  } = input;
+
+  const oldMonthly = equalPaymentMonthly(
+    remainingPrincipal,
+    monthlyRate(oldRate),
+    oldMonths,
+  );
+  const newMonthly = equalPaymentMonthly(
+    remainingPrincipal,
+    monthlyRate(newRate),
+    newMonths,
+  );
+
+  const oldTotalInterest = oldMonthly * oldMonths - remainingPrincipal;
+  const newTotalInterest = newMonthly * newMonths - remainingPrincipal;
+  const interestSaving = oldTotalInterest - newTotalInterest;
+
+  const prepaymentFee = remainingPrincipal * (prepaymentFeeRate / 100);
+  const totalCost = prepaymentFee + otherCost;
+  const netSaving = interestSaving - totalCost;
+
+  const monthlyDiff = oldMonthly - newMonthly;
+  const breakEvenMonths =
+    monthlyDiff > 0 ? Math.ceil(totalCost / monthlyDiff) : null;
+
+  return {
+    oldMonthly,
+    newMonthly,
+    monthlyDiff,
+    oldTotalInterest,
+    newTotalInterest,
+    interestSaving,
+    prepaymentFee,
+    otherCost,
+    totalCost,
+    netSaving,
+    breakEvenMonths,
+    termExtended: newMonths > oldMonths,
+  };
+}
