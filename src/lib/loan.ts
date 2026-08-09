@@ -404,3 +404,46 @@ export function calcRefinance(input: RefinanceInput): RefinanceResult {
     termExtended: newMonths > oldMonths,
   };
 }
+
+// ─────────────────────────────────────────────
+// 7. 금리변동 시나리오 (시뮬레이터 엔진)
+//   변동금리 대출 하나에 대해 여러 금리 변화(%p)를 적용해 월 상환액·총이자·
+//   현재 대비 증감을 계산한다. calcAmortization 재사용.
+//   · deltas는 부호 무관 (인상 +, 인하 −, 현재 0). 고정 vs 변동 등에 재사용 가능.
+//   · 예측이 아니라 "만약 금리가 ○%p 변하면"의 시나리오 도구.
+// ─────────────────────────────────────────────
+
+export interface RateScenarioRow {
+  delta: number; // %p (0 = 현재)
+  rate: number; // 적용 금리(%)
+  monthlyPayment: number; // 월 상환액 (원금균등은 첫 달 기준)
+  totalInterest: number; // 총이자
+  monthlyDiff: number; // 현재 대비 월 상환액 증감
+  interestDiff: number; // 현재 대비 총이자 증감
+  isBase: boolean; // 현재(기준) 여부
+}
+
+export function calcRateScenarios(
+  principal: number,
+  baseRate: number,
+  months: number,
+  type: RepaymentType,
+  deltas: number[],
+): RateScenarioRow[] {
+  const base = calcAmortization(principal, baseRate, months, type);
+
+  return deltas.map((delta) => {
+    const rate = Math.max(0, baseRate + delta);
+    const a = calcAmortization(principal, rate, months, type);
+
+    return {
+      delta,
+      rate,
+      monthlyPayment: a.monthlyPayment,
+      totalInterest: a.totalInterest,
+      monthlyDiff: a.monthlyPayment - base.monthlyPayment,
+      interestDiff: a.totalInterest - base.totalInterest,
+      isBase: delta === 0,
+    };
+  });
+}
