@@ -32,7 +32,6 @@ export function monthlyRate(rate: number) {
 // ─────────────────────────────────────────────
 // 1. 대출 이자 계산 (만기일시상환)
 // ─────────────────────────────────────────────
-
 export function calcLoanInterest(
   principal: number,
   rate: number,
@@ -50,6 +49,54 @@ export function calcLoanInterest(
     totalPayment,
     rateSaving: 0,
     savingMessage: "※ 만기일시상환 기준 계산입니다.",
+  };
+}
+
+// ─────────────────────────────────────────────
+// 1-b. 마이너스통장(한도대출) 이자 계산
+//   · 이자는 한도가 아니라 실제 사용금액 기준
+//   · 일할(단리): 연이율/365. 연=월×12=일×365로 일관.
+//   · 은행별 계산 기준·실제 사용일수에 따라 차이가 있을 수 있음(단리 기준)
+// ─────────────────────────────────────────────
+
+export interface OverdraftInput {
+  usedAmount: number; // 실제 사용금액(원)
+  rate: number; // 연이율(%)
+  limit?: number; // 한도(원) — 사용률 표시용, 선택
+  days?: number; // 사용일수 — 기간 이자 표시용, 선택
+}
+
+export interface OverdraftResult {
+  dailyInterest: number; // 일 이자
+  monthlyInterest: number; // 월 예상 이자
+  yearlyInterest: number; // 연 예상 이자
+  periodInterest: number | null; // 기간 이자 (days 입력 시)
+  utilization: number | null; // 사용률 % (limit 입력 시)
+}
+
+export function calcOverdraft(input: OverdraftInput): OverdraftResult {
+  const { usedAmount, rate, limit, days } = input;
+
+  if (usedAmount <= 0 || rate <= 0) {
+    return {
+      dailyInterest: 0,
+      monthlyInterest: 0,
+      yearlyInterest: 0,
+      periodInterest: null,
+      utilization: null,
+    };
+  }
+
+  const yearlyInterest = usedAmount * (rate / 100);
+  const dailyInterest = yearlyInterest / 365;
+  const monthlyInterest = yearlyInterest / 12;
+
+  return {
+    dailyInterest,
+    monthlyInterest,
+    yearlyInterest,
+    periodInterest: days && days > 0 ? dailyInterest * days : null,
+    utilization: limit && limit > 0 ? (usedAmount / limit) * 100 : null,
   };
 }
 
