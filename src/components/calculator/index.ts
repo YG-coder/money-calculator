@@ -11,6 +11,7 @@ export { default as DsrCalc }             from "./DsrCalc";
 export { default as MinusAccountCalc }    from "./MinusAccountCalc";
 export { default as RefinanceCalc }       from "./RefinanceCalc";
 export { default as RateSimulatorCalc }   from "./RateSimulatorCalc";
+export { default as FixedVariableCalc }   from "./FixedVariableCalc";
 // ── 신규: 부동산 계산기 ──
 export { default as AcquisitionTaxCalc }  from "./AcquisitionTaxCalc";
 export { default as JeonseVsWolseCalc }   from "./JeonseVsWolseCalc";

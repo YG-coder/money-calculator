@@ -447,3 +447,66 @@ export function calcRateScenarios(
     };
   });
 }
+
+// ─────────────────────────────────────────────
+// 8. 고정금리 vs 변동금리 비교
+//   같은 원금·기간·상환방식에서 고정금리와 변동금리(현재 수준 유지 가정)의
+//   총부담을 비교한다. 판정(유리/불리)은 하지 않는다.
+//   · 미래 변동금리 경로는 알 수 없으므로 "예측"이 아니라 "시나리오".
+//   · break-even 델타 = 고정금리 − 현재 변동금리.
+//     같은 조건이면 변동금리 총이자가 고정과 같아지는 지점은 변동금리 평균이
+//     고정금리와 같아질 때이므로, 이 값은 수치해법 없이 정확히 떨어진다.
+//   · calcAmortization 재사용.
+// ─────────────────────────────────────────────
+
+export interface FixedVariableScenario {
+  delta: number; // %p
+  variableRate: number; // 적용 변동금리(%)
+  variableTotalInterest: number; // 변동 총이자
+  vsFixed: number; // 변동 총이자 − 고정 총이자 (음수=변동이 적음)
+}
+
+export interface FixedVsVariableResult {
+  fixedRate: number;
+  variableRate: number;
+  fixedMonthly: number;
+  fixedTotalInterest: number;
+  variableMonthlyNow: number; // 현재 변동금리 유지 가정
+  variableTotalInterestNow: number; // 현재 변동금리 유지 가정
+  breakEvenDelta: number; // 고정 − 현재 변동 (변동이 이만큼 평균 오르면 교차)
+  scenarios: FixedVariableScenario[];
+}
+
+export function calcFixedVsVariable(
+  principal: number,
+  months: number,
+  type: RepaymentType,
+  fixedRate: number,
+  variableRate: number,
+  deltas: number[],
+): FixedVsVariableResult {
+  const fixed = calcAmortization(principal, fixedRate, months, type);
+  const varNow = calcAmortization(principal, variableRate, months, type);
+
+  const scenarios = deltas.map((delta) => {
+    const rate = Math.max(0, variableRate + delta);
+    const a = calcAmortization(principal, rate, months, type);
+    return {
+      delta,
+      variableRate: rate,
+      variableTotalInterest: a.totalInterest,
+      vsFixed: a.totalInterest - fixed.totalInterest,
+    };
+  });
+
+  return {
+    fixedRate,
+    variableRate,
+    fixedMonthly: fixed.monthlyPayment,
+    fixedTotalInterest: fixed.totalInterest,
+    variableMonthlyNow: varNow.monthlyPayment,
+    variableTotalInterestNow: varNow.totalInterest,
+    breakEvenDelta: fixedRate - variableRate,
+    scenarios,
+  };
+}
