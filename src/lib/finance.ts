@@ -360,3 +360,75 @@ export function goalFinalAmount(input: GoalAmountInput): GoalAmountResult {
     totalInterest: finalAmount - totalDeposit,
   };
 }
+
+// ─────────────────────────────────────────────
+// 6. 예금 vs 적금 비교
+//   같은 금리·같은 총액에서, 예금(처음부터 일시예치)과 적금(매달 납입)의
+//   원금 운용 기간 차이가 실제 이자에 얼마나 영향을 주는지 보여준다.
+//   · 예금은 단리(만기일시) 기준으로 고정 — "원금 운용 기간 차이"만 순수하게
+//     드러내기 위함. (월복리 예금은 이자가 더 늘며, 복리는 /finance/compound 담당)
+//   · 판정(어느 쪽 유리)은 하지 않는다. 예금은 목돈이 있다는 가정, 적금은 매달
+//     모으는 상품이라는 전제를 결과에 함께 고지한다.
+//   · calcDepositInterest · calcInstallmentSavings 재사용.
+// ─────────────────────────────────────────────
+
+export interface DepositVsSavingsInput {
+  monthlyDeposit: number; // 월 납입액(원)
+  months: number; // 기간(개월)
+  annualRate: number; // 연이율(%)
+  taxType: TaxType;
+}
+
+export interface DepositVsSavingsResult {
+  totalPrincipal: number; // 총 납입 원금(= 예금 일시예치 원금)
+  savings: InstallmentSavingsResult;
+  deposit: DepositResult;
+  savingsNetInterestRate: number; // 적금 세후 이자 ÷ 총 납입액 (%)
+  depositNetInterestRate: number; // 예금 세후 이자 ÷ 총 원금 (%)
+  netInterestMultiple: number | null; // 예금 세후이자 ÷ 적금 세후이자 (예금이 몇 배)
+}
+
+export function compareDepositVsSavings(
+  input: DepositVsSavingsInput,
+): DepositVsSavingsResult {
+  const { monthlyDeposit, months, annualRate, taxType } = input;
+
+  const savings = calcInstallmentSavings({
+    monthlyDeposit,
+    annualRate,
+    months,
+    taxType,
+  });
+
+  const totalPrincipal = savings.totalDeposited;
+
+  // 예금: 같은 총액을 처음부터 일시예치, 단리(만기일시) 기준
+  const deposit = calcDepositInterest({
+    principal: totalPrincipal,
+    annualRate,
+    months,
+    method: "simple",
+    taxType,
+  });
+
+  // 같은 분모(총 원금/총 납입액) 대비 세후 이자 비율.
+  // ⚠️ CAGR/연환산이 아니다. 적금은 총 납입액이 첫날부터 굴러가지 않으므로
+  //    (만기/총납입)^(12/n) 형태의 연환산은 현금흐름 시점을 왜곡한다.
+  //    이 페이지의 목적("같은 총액 대비 이자 차이")에는 총액 대비 비율이 정확하다.
+  const savingsNetInterestRate =
+    totalPrincipal > 0 ? (savings.netInterest / totalPrincipal) * 100 : 0;
+  const depositNetInterestRate =
+    totalPrincipal > 0 ? (deposit.netInterest / totalPrincipal) * 100 : 0;
+
+  const netInterestMultiple =
+    savings.netInterest > 0 ? deposit.netInterest / savings.netInterest : null;
+
+  return {
+    totalPrincipal,
+    savings,
+    deposit,
+    savingsNetInterestRate,
+    depositNetInterestRate,
+    netInterestMultiple,
+  };
+}

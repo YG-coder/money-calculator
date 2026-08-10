@@ -40,6 +40,7 @@ const NAV_GROUPS = [
       { href: "/finance/installment-savings", label: "적금 이자 계산기" },
       { href: "/finance/compound", label: "복리 계산기" },
       { href: "/finance/goal-savings", label: "목표 저축 계산기" },
+      { href: "/finance/deposit-vs-savings", label: "예금 vs 적금 계산기" },
     ],
   },
   {
