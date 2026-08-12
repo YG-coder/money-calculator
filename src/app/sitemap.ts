@@ -59,6 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "finance/compound", priority: 0.9, freq: "monthly" },
     { path: "finance/goal-savings", priority: 0.9, freq: "monthly" },
     { path: "finance/deposit-vs-savings", priority: 0.9, freq: "monthly" },
+    { path: "finance/cma-vs-deposit", priority: 0.9, freq: "monthly" },
 
     // 기타
     { path: "blog", priority: 0.8, freq: "daily" },

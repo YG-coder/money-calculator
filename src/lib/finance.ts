@@ -432,3 +432,67 @@ export function compareDepositVsSavings(
     netInterestMultiple,
   };
 }
+
+// ─────────────────────────────────────────────
+// 7. CMA vs 예금 비교
+//   같은 예치금액·기간에서 예금금리와 CMA 예상수익률을 비교한다.
+//   · 둘 다 단리 일시예치·일반과세 15.4% 기준으로 통일 (calcDepositInterest 재사용).
+//     → 복리 여부가 비교 결과를 흔드는 변수에서 빠지고, 입력한 두 금리만 비교하는
+//       모델이 명확해진다.
+//   · CMA는 확정금리가 아니다. 입력한 예상수익률이 기간 동안 유지된다는 "가정"이며,
+//     RP형·MMF형·MMW형·발행어음형 등 상품유형·증권사·시장상황에 따라 실제 수익률과
+//     산정·지급 방식이 다를 수 있다(고지는 UI에서).
+//   · 판정(어느 쪽 유리) 없음. 손익분기 없음(둘 다 일시예치라 같은 금리면 동일).
+// ─────────────────────────────────────────────
+
+export interface CmaVsDepositInput {
+  principal: number; // 예치금액(원)
+  months: number; // 기간(개월)
+  depositRate: number; // 예금 금리(%)
+  cmaRate: number; // CMA 예상수익률(%)
+}
+
+export interface CmaVsDepositResult {
+  deposit: DepositResult;
+  cma: DepositResult;
+  depositNetInterestRate: number; // 예금 세후이자 ÷ 원금 (%)
+  cmaNetInterestRate: number; // CMA 세후이자 ÷ 원금 (%)
+  netInterestDiff: number; // cma.netInterest − deposit.netInterest
+  maturityDiff: number; // cma.maturityAmount − deposit.maturityAmount
+}
+
+export function compareCmaVsDeposit(
+  input: CmaVsDepositInput,
+): CmaVsDepositResult {
+  const { principal, months, depositRate, cmaRate } = input;
+
+  // 둘 다 단리 일시예치·일반과세 15.4% 고정
+  const deposit = calcDepositInterest({
+    principal,
+    annualRate: depositRate,
+    months,
+    method: "simple",
+    taxType: "general",
+  });
+  const cma = calcDepositInterest({
+    principal,
+    annualRate: cmaRate,
+    months,
+    method: "simple",
+    taxType: "general",
+  });
+
+  const depositNetInterestRate =
+    principal > 0 ? (deposit.netInterest / principal) * 100 : 0;
+  const cmaNetInterestRate =
+    principal > 0 ? (cma.netInterest / principal) * 100 : 0;
+
+  return {
+    deposit,
+    cma,
+    depositNetInterestRate,
+    cmaNetInterestRate,
+    netInterestDiff: cma.netInterest - deposit.netInterest,
+    maturityDiff: cma.maturityAmount - deposit.maturityAmount,
+  };
+}

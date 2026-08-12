@@ -7,8 +7,8 @@ export const metadata: Metadata = buildMetadata({
   slug: "finance",
   title: "금융 계산기 — 예금·적금 이자와 복리 계산",
   description:
-    "예금 이자 계산기, 적금 이자 계산기, 복리 계산기, 예금 vs 적금 비교 계산기를 무료로 이용하세요. 세전·세후 이자와 만기 수령액, 같은 금리에서 예금·적금의 총 납입액 대비 이자율 차이까지 한 곳에서 비교합니다.",
-  keywords: ["금융계산기", "예금이자계산기", "적금이자계산기", "복리계산기", "저축계산기", "예금적금비교"],
+    "예금 이자 계산기, 적금 이자 계산기, 복리 계산기, 예금 vs 적금·CMA vs 예금 비교 계산기를 무료로 이용하세요. 세전·세후 이자와 만기 수령액, 예금·적금·CMA의 조건별 이자 차이까지 한 곳에서 비교합니다.",
+  keywords: ["금융계산기", "예금이자계산기", "적금이자계산기", "복리계산기", "저축계산기", "예금적금비교", "CMA예금비교"],
 });
 
 const FINANCE_CALCS = [
@@ -44,6 +44,13 @@ const FINANCE_CALCS = [
     title: "예금 vs 적금 계산기",
     desc: "같은 금리인데 왜 적금 이자가 적은지, 세후 이자와 총 납입액 대비 이자율·이자 배수로 비교합니다.",
     href: "/finance/deposit-vs-savings",
+    icon: "⚖️",
+    badge: null,
+  },
+  {
+    title: "CMA vs 예금 계산기",
+    desc: "예금 금리와 CMA 예상수익률을 같은 조건으로 넣어 세후 수령액을 비교합니다. CMA는 확정금리 아님.",
+    href: "/finance/cma-vs-deposit",
     icon: "⚖️",
     badge: "신규",
   },
