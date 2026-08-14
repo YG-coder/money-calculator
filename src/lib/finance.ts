@@ -496,3 +496,47 @@ export function compareCmaVsDeposit(
     maturityDiff: cma.maturityAmount - deposit.maturityAmount,
   };
 }
+
+// ─────────────────────────────────────────────
+// 8. 실질금리 (구매력 관점)
+//   명목금리(예금금리)에서 물가상승률을 반영한 실질 수익률.
+//   · 피셔 정확식이 메인, (명목 − 물가) 근사식은 참고로 병기.
+//     물가가 높을수록 근사식이 실질금리를 과대평가하므로 정확식이 안전하다.
+//   · 투자수익률이 아니라 예금·현금의 "구매력 변화" 관점으로만 해석한다.
+//   · principal(선택) 입력 시 1년 기준 명목 이자와 실질 가치 증감(금액)을 함께 제공.
+// ─────────────────────────────────────────────
+
+export interface RealInterestInput {
+  nominalRate: number; // 명목금리(예금금리, %)
+  inflationRate: number; // 물가상승률(%)
+  principal?: number; // 예치금액(원) — 선택, 1년 실질 수익 표시용
+}
+
+export interface RealInterestResult {
+  realRateExact: number; // 피셔 정확식 실질금리(%)
+  realRateApprox: number; // 근사식 실질금리(%) = 명목 − 물가
+  approxGap: number; // 근사식 − 정확식 (근사식이 과대평가하는 폭, %p)
+  nominalInterest1y: number | null; // 1년 명목 이자(원)
+  realGain1y: number | null; // 1년 실질 가치 증감(원) = 원금 × 정확식
+}
+
+export function calcRealInterestRate(
+  input: RealInterestInput,
+): RealInterestResult {
+  const { nominalRate, inflationRate, principal } = input;
+
+  const denom = 1 + inflationRate / 100;
+  const realRateExact =
+    denom !== 0 ? ((1 + nominalRate / 100) / denom - 1) * 100 : 0;
+  const realRateApprox = nominalRate - inflationRate;
+
+  const hasPrincipal = typeof principal === "number" && principal > 0;
+
+  return {
+    realRateExact,
+    realRateApprox,
+    approxGap: realRateApprox - realRateExact,
+    nominalInterest1y: hasPrincipal ? principal * (nominalRate / 100) : null,
+    realGain1y: hasPrincipal ? principal * (realRateExact / 100) : null,
+  };
+}

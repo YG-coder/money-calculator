@@ -42,6 +42,7 @@ const NAV_GROUPS = [
       { href: "/finance/goal-savings", label: "목표 저축 계산기" },
       { href: "/finance/deposit-vs-savings", label: "예금 vs 적금 계산기" },
       { href: "/finance/cma-vs-deposit", label: "CMA vs 예금 계산기" },
+      { href: "/finance/real-interest-rate", label: "실질금리 계산기" },
     ],
   },
   {
