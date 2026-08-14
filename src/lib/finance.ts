@@ -540,3 +540,52 @@ export function calcRealInterestRate(
     realGain1y: hasPrincipal ? principal * (realRateExact / 100) : null,
   };
 }
+
+// ─────────────────────────────────────────────
+// 9. 인플레이션 (구매력 변화)
+//   물가상승률이 지속될 때, 현재 금액의 미래 구매력과 동일 구매력 유지에 필요한
+//   미래 금액을 계산한다.
+//   · 투자수익률이 아니라 현금·저축의 구매력 변화 관점.
+//   · 미래 구매력 = 현재금액 / (1+물가)^기간  (현재가치 기준)
+//   · 동일 구매력 필요금액 = 현재금액 × (1+물가)^기간  (미래 명목금액)
+// ─────────────────────────────────────────────
+
+export interface InflationInput {
+  amount: number; // 현재 금액(원)
+  inflationRate: number; // 연 물가상승률(%)
+  years: number; // 기간(년)
+}
+
+export interface InflationResult {
+  futurePurchasingPower: number; // N년 후 현재금액의 구매력(현재가치)
+  requiredFutureAmount: number; // 같은 구매력 유지에 필요한 미래 금액(명목)
+  lossAmount: number; // 구매력 감소 금액
+  lossRate: number; // 구매력 감소율(%)
+}
+
+export function calcInflation(input: InflationInput): InflationResult {
+  const { amount, inflationRate, years } = input;
+
+  // 경계 가드: 물가 −100% 이하 또는 기간 1년 미만은 (1+물가)^기간 이 0·음수가 되어
+  // 경제적으로 무의미하다. 이 프로젝트는 계산 함수에서 throw 대신 안전값을 반환하므로,
+  // 무효 입력은 "변화 없음"(구매력·필요금액 = 현재 금액, 감소 0)으로 처리한다.
+  if (inflationRate <= -100 || years < 1) {
+    return {
+      futurePurchasingPower: amount,
+      requiredFutureAmount: amount,
+      lossAmount: 0,
+      lossRate: 0,
+    };
+  }
+
+  const factor = Math.pow(1 + inflationRate / 100, years);
+  const futurePurchasingPower = factor !== 0 ? amount / factor : amount;
+  const requiredFutureAmount = amount * factor;
+
+  return {
+    futurePurchasingPower,
+    requiredFutureAmount,
+    lossAmount: amount - futurePurchasingPower,
+    lossRate: factor !== 0 ? (1 - 1 / factor) * 100 : 0,
+  };
+}

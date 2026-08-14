@@ -61,6 +61,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "finance/deposit-vs-savings", priority: 0.9, freq: "monthly" },
     { path: "finance/cma-vs-deposit", priority: 0.9, freq: "monthly" },
     { path: "finance/real-interest-rate", priority: 0.9, freq: "monthly" },
+    { path: "finance/inflation", priority: 0.9, freq: "monthly" },
 
     // 기타
     { path: "blog", priority: 0.8, freq: "daily" },

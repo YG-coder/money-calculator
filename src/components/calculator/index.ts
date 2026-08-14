@@ -19,3 +19,4 @@ export { default as RelatedLinks }        from "./RelatedLinks";
 export { default as SavingsCompareCalc }  from "./SavingsCompareCalc";
 export { default as CmaVsDepositCalc }    from "./CmaVsDepositCalc";
 export { default as RealInterestCalc }    from "./RealInterestCalc";
+export { default as InflationCalc }       from "./InflationCalc";

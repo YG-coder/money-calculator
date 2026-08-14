@@ -43,6 +43,7 @@ const NAV_GROUPS = [
       { href: "/finance/deposit-vs-savings", label: "예금 vs 적금 계산기" },
       { href: "/finance/cma-vs-deposit", label: "CMA vs 예금 계산기" },
       { href: "/finance/real-interest-rate", label: "실질금리 계산기" },
+      { href: "/finance/inflation", label: "인플레이션 계산기" },
     ],
   },
   {
