@@ -1,7 +1,7 @@
 // src/app/jeonse-loan-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { buildMetadata } from "@/lib/metadata";
+import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import JeonseLoanCalc from "@/components/calculator/JeonseLoanCalc";
 
@@ -70,6 +70,11 @@ export default function Page() {
         description="전세대출 가능 금액과 월 이자, 자기 부담금을 빠르게 계산하세요."
         icon="🏠"
         slug="jeonse-loan-calculator"
+        breadcrumb={[
+          { name: "홈", url: BASE_URL },
+          { name: "대출 계산기", url: `${BASE_URL}/loan` },
+          { name: "전세대출 계산기", url: `${BASE_URL}/jeonse-loan-calculator` },
+        ]}
         calculator={
           <>
             <JeonseLoanCalc />

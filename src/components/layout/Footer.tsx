@@ -7,6 +7,11 @@ const LOAN_LINKS = [
   { label: "원리금상환 계산기", href: "/amortization-calculator" },
   { label: "전세대출 계산기", href: "/jeonse-loan-calculator" },
   { label: "중도상환 계산기", href: "/prepayment-calculator" },
+  { label: "DSR 계산기", href: "/dsr-calculator" },
+  { label: "마이너스통장 계산기", href: "/minus-account-calculator" },
+  { label: "대환대출 계산기", href: "/refinance-calculator" },
+  { label: "금리변동 시뮬레이터", href: "/rate-change-simulator" },
+  { label: "고정 vs 변동 계산기", href: "/fixed-vs-variable-calculator" },
 ];
 
 const REALESTATE_LINKS = [
@@ -14,6 +19,8 @@ const REALESTATE_LINKS = [
   { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator" },
   { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator" },
   { label: "재건축 분담금 계산기", href: "/real-estate/reconstruction-contribution-calculator" },
+  { label: "전월세 전환율 계산기", href: "/real-estate/jeonse-wolse-conversion" },
+  { label: "공실률 영향 계산기", href: "/real-estate/vacancy-impact" },
 ];
 
 const FINANCE_LINKS = [
@@ -21,6 +28,11 @@ const FINANCE_LINKS = [
   { label: "적금 이자 계산기", href: "/finance/installment-savings" },
   { label: "복리 계산기", href: "/finance/compound" },
   { label: "목표 저축 계산기", href: "/finance/goal-savings" },
+  { label: "예금 vs 적금 계산기", href: "/finance/deposit-vs-savings" },
+  { label: "CMA vs 예금 계산기", href: "/finance/cma-vs-deposit" },
+  { label: "실질금리 계산기", href: "/finance/real-interest-rate" },
+  { label: "인플레이션 계산기", href: "/finance/inflation" },
+  { label: "단리 vs 복리 계산기", href: "/finance/simple-vs-compound" },
 ];
 
 const INFO_LINKS = [

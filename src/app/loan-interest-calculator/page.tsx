@@ -1,7 +1,7 @@
 // src/app/loan-interest-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { buildMetadata } from "@/lib/metadata";
+import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import LoanInterestCalc from "@/components/calculator/LoanInterestCalc";
 
@@ -68,6 +68,11 @@ export default function Page() {
         description="대출 금액과 금리를 입력하면 월 이자와 총 이자를 바로 확인할 수 있습니다."
         icon="🏦"
         slug="loan-interest-calculator"
+        breadcrumb={[
+          { name: "홈", url: BASE_URL },
+          { name: "대출 계산기", url: `${BASE_URL}/loan` },
+          { name: "대출이자 계산기", url: `${BASE_URL}/loan-interest-calculator` },
+        ]}
         calculator={
           <>
             <LoanInterestCalc />

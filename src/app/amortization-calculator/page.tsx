@@ -1,7 +1,7 @@
 // src/app/amortization-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { buildMetadata } from "@/lib/metadata";
+import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import AmortizationCalc from "@/components/calculator/AmortizationCalc";
 
@@ -70,6 +70,11 @@ export default function Page() {
         description="원리금균등·원금균등 방식별 월 납입액과 전체 상환 스케줄을 확인하세요."
         icon="📊"
         slug="amortization-calculator"
+        breadcrumb={[
+          { name: "홈", url: BASE_URL },
+          { name: "대출 계산기", url: `${BASE_URL}/loan` },
+          { name: "원리금상환 계산기", url: `${BASE_URL}/amortization-calculator` },
+        ]}
         calculator={
           <>
             <AmortizationCalc />

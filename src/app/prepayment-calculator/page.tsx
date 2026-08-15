@@ -1,7 +1,7 @@
 // src/app/prepayment-calculator/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { buildMetadata } from "@/lib/metadata";
+import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import PrepaymentCalc from "@/components/calculator/PrepaymentCalc";
 
@@ -63,6 +63,11 @@ export default function Page() {
         description="중도상환 수수료와 실질 이득을 확인해 지금 갚는 것이 유리한지 판단하세요."
         icon="💸"
         slug="prepayment-calculator"
+        breadcrumb={[
+          { name: "홈", url: BASE_URL },
+          { name: "대출 계산기", url: `${BASE_URL}/loan` },
+          { name: "중도상환 계산기", url: `${BASE_URL}/prepayment-calculator` },
+        ]}
         calculator={
           <>
             <PrepaymentCalc />
