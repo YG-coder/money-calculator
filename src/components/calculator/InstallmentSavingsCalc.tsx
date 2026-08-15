@@ -43,13 +43,24 @@ const TAX_OPTIONS: { value: TaxType; label: string }[] = [
 ];
 
 export default function InstallmentSavingsCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
+
+  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
+  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
   const [taxType, setTaxType] = useState<TaxType>("general");
 
   const result = useMemo(() => {
-    const monthlyDeposit = getWon("monthly");
-    const rate = getNum("rate");
-    const months = getNum("months");
+    const monthlyDeposit = won("monthly");
+    const rate = num("rate");
+    const months = num("months");
 
     if (!monthlyDeposit || !rate || !months) return null;
 
@@ -59,7 +70,8 @@ export default function InstallmentSavingsCalc() {
       months,
       taxType,
     });
-  }, [state, taxType, getWon, getNum]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, taxType]);
 
   return (
     <div className="space-y-5">

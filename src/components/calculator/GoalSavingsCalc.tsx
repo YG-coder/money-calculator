@@ -62,13 +62,24 @@ const MODES: { value: GoalMode; label: string; hint: string }[] = [
 ];
 
 export default function GoalSavingsCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
+
+  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
+  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
   const [mode, setMode] = useState<GoalMode>("targetToMonthly");
 
   const has = (k: string) => !!state[k]?.value;
 
   const result = useMemo(() => {
-    const rate = getNum("rate");
+    const rate = num("rate");
     if (!has("rate")) return null;
 
     if (mode === "targetToMonthly") {
@@ -76,8 +87,8 @@ export default function GoalSavingsCalc() {
       return {
         mode,
         data: goalRequiredMonthly({
-          targetAmount: getWon("target"),
-          months: getNum("months"),
+          targetAmount: won("target"),
+          months: num("months"),
           annualRate: rate,
         }),
       } as const;
@@ -87,8 +98,8 @@ export default function GoalSavingsCalc() {
       return {
         mode,
         data: goalRequiredMonths({
-          monthlyDeposit: getWon("monthly"),
-          targetAmount: getWon("target"),
+          monthlyDeposit: won("monthly"),
+          targetAmount: won("target"),
           annualRate: rate,
         }),
       } as const;
@@ -98,13 +109,14 @@ export default function GoalSavingsCalc() {
     return {
       mode,
       data: goalFinalAmount({
-        monthlyDeposit: getWon("monthly"),
-        months: getNum("months"),
+        monthlyDeposit: won("monthly"),
+        months: num("months"),
         annualRate: rate,
       }),
     } as const;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, mode, getWon, getNum]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, mode]);
 
   const showTarget = mode === "targetToMonthly" || mode === "monthlyToMonths";
   const showMonthly = mode === "monthlyToMonths" || mode === "monthlyAndMonthsToAmount";

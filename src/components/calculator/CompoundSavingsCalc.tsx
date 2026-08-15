@@ -46,14 +46,25 @@ const FIELDS = [
 ];
 
 export default function CompoundSavingsCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
+
+  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
+  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
   const [showYearly, setShowYearly] = useState(false);
 
   const result = useMemo(() => {
-    const principal = getWon("principal");
-    const rate = getNum("rate");
-    const years = getNum("years");
-    const monthly = getWon("monthly");
+    const principal = won("principal");
+    const rate = num("rate");
+    const years = num("years");
+    const monthly = won("monthly");
 
     if (!rate || !years || (!principal && !monthly)) return null;
 
@@ -65,7 +76,8 @@ export default function CompoundSavingsCalc() {
       compoundsPerYear: 12,
       contribution: monthly,
     });
-  }, [state, getWon, getNum]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <div className="space-y-5">
