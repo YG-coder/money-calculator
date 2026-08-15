@@ -36,17 +36,29 @@ const FIELDS = [
 ];
 
 export default function LoanInterestCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
+
+  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
+  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
 
   const result = useMemo(() => {
-    const p = getWon("principal");
-    const r = getNum("rate");
-    const m = getNum("months");
+    const p = won("principal");
+    const r = num("rate");
+    const m = num("months");
 
     if (!p || !r || !m) return null;
 
     return calcLoanInterest(p, r, m);
-  }, [state, getWon, getNum]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <div className="space-y-5">

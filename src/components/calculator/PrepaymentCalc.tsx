@@ -44,10 +44,21 @@ const FIELDS = [
 ];
 
 export default function PrepaymentCalc() {
-  const { state, setValue, getWon, getNum } = useCalcState(FIELDS);
+  const { state, setValue } = useCalcState(FIELDS);
 
-  const remainingWon = getWon("remaining");
-  const prepayWon = getWon("prepay");
+  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
+  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
+  const won = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n * 10_000;
+  };
+  const num = (key: string): number => {
+    const n = Number(state[key]?.raw ?? "0");
+    return isNaN(n) ? 0 : n;
+  };
+
+  const remainingWon = won("remaining");
+  const prepayWon = won("prepay");
 
   const amountError =
     remainingWon > 0 && prepayWon > 0 && prepayWon > remainingWon
@@ -55,18 +66,19 @@ export default function PrepaymentCalc() {
       : "";
 
   const result = useMemo(() => {
-    const rem = getWon("remaining");
-    const pre = getWon("prepay");
-    const r = getNum("rate");
-    const m = getNum("remMonths");
+    const rem = won("remaining");
+    const pre = won("prepay");
+    const r = num("rate");
+    const m = num("remMonths");
     const feeRaw = state.feeRate?.raw ?? "";
-    const fee = feeRaw === "" ? 1.2 : getNum("feeRate");
+    const fee = feeRaw === "" ? 1.2 : num("feeRate");
 
     if (!rem || !pre || !r || !m) return null;
     if (pre > rem) return null;
 
     return calcPrepayment(rem, pre, r, m, fee);
-  }, [state, getWon, getNum]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <div className="space-y-5">
