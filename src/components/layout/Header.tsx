@@ -31,6 +31,7 @@ const NAV_GROUPS = [
       { href: "/real-estate/property-yield-calculator", label: "부동산 수익률 계산기" },
       { href: "/real-estate/reconstruction-contribution-calculator", label: "재건축 분담금 계산기" },
       { href: "/real-estate/jeonse-wolse-conversion", label: "전월세 전환율 계산기" },
+      { href: "/real-estate/vacancy-impact", label: "공실률 영향 계산기" },
     ],
   },
   {

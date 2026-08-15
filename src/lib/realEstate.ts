@@ -270,3 +270,76 @@ export function calcJeonseWolseConversion(
     legalCapMonthlyMan,
   };
 }
+
+// ─────────────────────────────────────────────
+// 공실률 영향 (공실이 임대수익에 미치는 감소 효과)
+//   · calcPropertyYield(만실 가정 수익률)의 공백을 채운다 — 공실 미반영이 그 함수의
+//     명시적 한계이므로 역할이 겹치지 않는다.
+//   · 감소율을 둘로 구분: 임대수입 감소율(=공실률) vs 순수익 감소율(운영비 반영).
+//     운영비는 공실과 무관하게 나가므로 순수익 감소율이 공실률보다 크다.
+//   · 판정/추천은 하지 않는다. 입력 기준 단순 시뮬레이션 수치만 제공.
+//   · 매입가(선택) 입력 시 만실 순수익률과 공실 반영 실효 수익률을 함께 제공.
+// ─────────────────────────────────────────────
+
+export interface VacancyImpactInput {
+  monthlyRentMan: number; // 월세 (만원)
+  vacancyRatePct: number; // 공실률 (%)
+  monthlyOpCostMan: number; // 월 운영비 (만원)
+  purchasePriceMan?: number; // 매입가 (만원) — 선택
+}
+
+export interface VacancyImpactResult {
+  grossAnnualIncome: number; // 연 만실 임대수입 (원)
+  vacancyLoss: number; // 공실 손실 (원)
+  effectiveIncome: number; // 공실 반영 임대수입 (원)
+  annualOpCost: number; // 연 운영비 (원)
+  fullNetIncome: number; // 만실 순수익 (원)
+  effectiveNetIncome: number; // 공실 반영 순수익 (원)
+  vacancyMonths: number; // 연 공실 개월수
+  incomeDropPct: number; // 임대수입 감소율 (%) = 공실률
+  netDropPct: number | null; // 순수익 감소율 (%) — 운영비 반영. 만실 순수익 0 이하면 null(산정 불가)
+  fullNetYield: number | null; // 만실 순수익 기준 수익률 (%)
+  effectiveNetYield: number | null; // 공실 반영 순수익 기준 수익률 (%)
+}
+
+export function calcVacancyImpact(
+  input: VacancyImpactInput,
+): VacancyImpactResult {
+  const { monthlyRentMan, vacancyRatePct, monthlyOpCostMan, purchasePriceMan } =
+    input;
+
+  const grossAnnualIncome = monthlyRentMan * 12 * 10_000;
+  const vacancyLoss = grossAnnualIncome * (vacancyRatePct / 100);
+  const effectiveIncome = grossAnnualIncome - vacancyLoss;
+
+  const annualOpCost = monthlyOpCostMan * 12 * 10_000;
+  const fullNetIncome = grossAnnualIncome - annualOpCost;
+  const effectiveNetIncome = effectiveIncome - annualOpCost;
+
+  const vacancyMonths = (vacancyRatePct * 12) / 100;
+  const incomeDropPct = vacancyRatePct;
+  const netDropPct =
+    fullNetIncome > 0
+      ? ((fullNetIncome - effectiveNetIncome) / fullNetIncome) * 100
+      : null;
+
+  const priceWon =
+    purchasePriceMan && purchasePriceMan > 0 ? purchasePriceMan * 10_000 : 0;
+  const fullNetYield = priceWon > 0 ? (fullNetIncome / priceWon) * 100 : null;
+  const effectiveNetYield =
+    priceWon > 0 ? (effectiveNetIncome / priceWon) * 100 : null;
+
+  return {
+    grossAnnualIncome,
+    vacancyLoss,
+    effectiveIncome,
+    annualOpCost,
+    fullNetIncome,
+    effectiveNetIncome,
+    vacancyMonths,
+    incomeDropPct,
+    netDropPct,
+    fullNetYield,
+    effectiveNetYield,
+  };
+}

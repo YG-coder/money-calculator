@@ -49,6 +49,12 @@ const CALCS = [
     href: "/real-estate/jeonse-wolse-conversion",
     icon: "🔁",
   },
+  {
+    title: "공실률 영향 계산기",
+    desc: "월세·공실률·운영비로 공실이 임대수입과 순수익을 얼마나 줄이는지, 만실 대비 감소율을 계산합니다.",
+    href: "/real-estate/vacancy-impact",
+    icon: "🏚️",
+  },
 ];
 
 const FAQ = [
