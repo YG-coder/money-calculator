@@ -21,3 +21,4 @@ export { default as CmaVsDepositCalc }    from "./CmaVsDepositCalc";
 export { default as RealInterestCalc }    from "./RealInterestCalc";
 export { default as InflationCalc }       from "./InflationCalc";
 export { default as SimpleVsCompoundCalc } from "./SimpleVsCompoundCalc";
+export { default as JeonseWolseConversionCalc } from "./JeonseWolseConversionCalc";

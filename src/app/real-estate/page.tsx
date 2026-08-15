@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = buildMetadata({
   slug: "real-estate",
-  title: "부동산 계산기 — 취득세·월세 vs 전세·수익률",
+  title: "부동산 계산기 — 취득세·전월세·수익률 등",
   description:
       "부동산 매매·임대 의사결정에 필요한 계산기를 모아뒀습니다. 취득세 계산기, 월세 vs 전세 비교 계산기, 부동산 수익률 계산기를 무료로 이용하세요. 거래 단계별 세금과 비용도 함께 정리했습니다.",
   keywords: [
@@ -42,6 +42,12 @@ const CALCS = [
     desc: "권리가액, 종후자산가액, 비례율 등을 기준으로 예상 재건축 조합원 분담금을 계산합니다.",
     href: "/real-estate/reconstruction-contribution-calculator",
     icon: "🏗️",
+  },
+  {
+    title: "전월세 전환율 계산기",
+    desc: "전세를 월세로 돌릴 때 적용된 전환율을 계산하고, 연 10%와 기준금리+2% 중 낮은 법정 상한(주택)과 비교합니다.",
+    href: "/real-estate/jeonse-wolse-conversion",
+    icon: "🔁",
   },
 ];
 

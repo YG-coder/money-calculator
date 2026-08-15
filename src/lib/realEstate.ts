@@ -199,3 +199,74 @@ export function calcPropertyYield(
     isInvestedNegative: investedCapital <= 0,
   };
 }
+
+// ─────────────────────────────────────────────
+// 전월세 전환율 (전세 ↔ 월세 환산 이율)
+//   · calcJeonseVsWolse(투자 이자율 기준 기회비용 비교)와 역할이 다르다.
+//     이 함수는 "전세보증금 일부를 월세로 돌릴 때 적용된 환산 이율"을 계산한다.
+//   · 전환율 = (월세 × 12) ÷ (전세보증금 − 월세보증금) × 100
+//   · 법정 상한(주택) = min(연 10%, 한국은행 기준금리 + 대통령령 이율 2%)
+//     (주택임대차보호법 제7조의2 각 호 중 낮은 비율, 시행령 제9조 ①②)
+//   · 판정은 하지 않는다. 상한 초과 여부는 사실로만 표시한다. 이 상한은 기존
+//     임대차에서 보증금의 전부 또는 일부를 월세로 전환하는 경우에 적용되는 기준이다.
+// ─────────────────────────────────────────────
+
+// ⚠️ 시간민감 규제 수치 — 금통위마다 바뀔 수 있음. 검증일자 확인 필수.
+// 주택 월차임 전환율 상한 = min(연 10%, 기준금리 + 연 2%)
+// (주택임대차보호법 제7조의2 각 호 중 낮은 비율, 시행령 제9조 ①②)
+export const CONVERSION_RATE_INFO = {
+  fixedCapPct: 10, // 시행령 제9조① "연 1할" (대통령령상 고정 비율)
+  baseRatePct: 2.75, // 한국은행 기준금리 (2026-07-16 0.25%p 인상)
+  legalAddPct: 2.0, // 시행령 제9조② 대통령령 이율
+  verifiedAt: "2026-08-15", // 다음 금통위: 2026-08-27 (이후 변동 가능)
+  source: "한국은행 기준금리 · 주택임대차보호법 제7조의2 · 시행령 제9조",
+};
+
+export interface ConversionInput {
+  jeonseDepositMan: number; // 전세보증금 (만원)
+  wolseDepositMan: number; // 전환 후 월세보증금 (만원)
+  wolseMonthlyMan: number; // 월세 (만원)
+}
+
+export interface ConversionResult {
+  convertedAmountMan: number; // 전환 대상 금액 = 전세보증금 − 월세보증금 (만원)
+  appliedRatePct: number; // 적용 전환율 (%)
+  legalCapPct: number; // 법정 상한 = min(연 10%, 기준금리 + 대통령령 이율) (%)
+  exceedsCap: boolean; // 적용 전환율 > 법정 상한
+  legalCapMonthlyMan: number; // 법정 상한 적용 시 월세 (만원)
+}
+
+export function calcJeonseWolseConversion(
+  input: ConversionInput,
+): ConversionResult {
+  const { jeonseDepositMan, wolseDepositMan, wolseMonthlyMan } = input;
+
+  const converted = jeonseDepositMan - wolseDepositMan; // 만원 (전환 대상)
+  // 법정 상한 = min(연 10%, 기준금리 + 대통령령 이율) — 주임법 제7조의2 각 호 중 낮은 비율
+  const legalCapPct = Math.min(
+    CONVERSION_RATE_INFO.fixedCapPct,
+    CONVERSION_RATE_INFO.baseRatePct + CONVERSION_RATE_INFO.legalAddPct,
+  );
+
+  if (converted <= 0) {
+    return {
+      convertedAmountMan: 0,
+      appliedRatePct: 0,
+      legalCapPct,
+      exceedsCap: false,
+      legalCapMonthlyMan: 0,
+    };
+  }
+
+  // 전환율은 만원/만원 비율이라 단위 변환 불필요
+  const appliedRatePct = ((wolseMonthlyMan * 12) / converted) * 100;
+  const legalCapMonthlyMan = (converted * (legalCapPct / 100)) / 12;
+
+  return {
+    convertedAmountMan: converted,
+    appliedRatePct,
+    legalCapPct,
+    exceedsCap: appliedRatePct > legalCapPct,
+    legalCapMonthlyMan,
+  };
+}

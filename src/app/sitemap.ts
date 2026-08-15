@@ -47,6 +47,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
       freq: "monthly",
     },
+    {
+      path: "real-estate/jeonse-wolse-conversion",
+      priority: 0.9,
+      freq: "monthly",
+    },
 
     // ── 허브 랜딩 (기존 누락 보완 · 별도 커밋 권장: fix(sitemap)) ──
     { path: "loan", priority: 0.8, freq: "weekly" },
