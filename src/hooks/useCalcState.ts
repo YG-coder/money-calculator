@@ -91,7 +91,9 @@ export function useCalcState(fields: FieldDef[]) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const latestStateRef = useRef<CalcState>({});
 
   function buildInitialState(): CalcState {
@@ -119,7 +121,15 @@ export function useCalcState(fields: FieldDef[]) {
     latestStateRef.current = state;
   }, [state]);
 
-  useEffect(() => {
+  // URL(searchParams)이 바뀌면 렌더 중에 상태를 맞춘다.
+  // effect 안에서 setState 하면 값이 한 프레임 늦게 반영되고 리렌더가 한 번 더 발생한다.
+  const [syncKey, setSyncKey] = useState<{
+    params: typeof searchParams;
+    fields: FieldDef[];
+  }>({ params: searchParams, fields });
+
+  if (syncKey.params !== searchParams || syncKey.fields !== fields) {
+    setSyncKey({ params: searchParams, fields });
     setState((prev) => {
       let changed = false;
       const next = { ...prev };
@@ -149,7 +159,7 @@ export function useCalcState(fields: FieldDef[]) {
 
       return changed ? next : prev;
     });
-  }, [fields, searchParams]);
+  }
 
   const scheduleUrlUpdate = useCallback(() => {
     clearTimeout(debounceRef.current);

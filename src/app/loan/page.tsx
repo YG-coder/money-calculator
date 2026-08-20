@@ -98,7 +98,7 @@ export default function Page() {
       <section className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 px-4 py-14 text-white">
         <div className="mx-auto max-w-4xl">
           <nav className="mb-4 flex items-center gap-1.5 text-xs text-brand-300">
-            <a href="/" className="hover:text-white transition-colors">홈</a>
+            <Link href="/" className="hover:text-white transition-colors">홈</Link>
             <span>›</span>
             <span className="font-semibold text-white">대출 계산기</span>
           </nav>

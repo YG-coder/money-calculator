@@ -1,4 +1,5 @@
 // src/app/amortization-calculator/page.tsx
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
@@ -86,12 +87,12 @@ export default function Page() {
                 원리금균등과 원금균등 차이를 모르고 선택하면 불필요한 이자를 더
                 낼 수 있습니다.
               </p>
-              <a
+              <Link
                 href="/blog/equal-payment-vs-equal-principal"
                 className="block rounded-xl bg-slate-900 py-3 text-center font-bold text-white hover:bg-slate-800"
               >
                 👉 상환 방식 완벽 비교
-              </a>
+              </Link>
             </div>
           </>
         }

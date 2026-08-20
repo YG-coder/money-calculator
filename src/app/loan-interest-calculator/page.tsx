@@ -1,4 +1,5 @@
 // src/app/loan-interest-calculator/page.tsx
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
@@ -84,12 +85,12 @@ export default function Page() {
                 같은 대출 금액이라도 금리에 따라 총 이자는 크게 달라집니다. 지금
                 조건이 최선인지 꼭 비교해보세요.
               </p>
-              <a
+              <Link
                 href="/blog/loan-interest-calculation"
                 className="block rounded-xl bg-slate-900 py-3 text-center font-bold text-white hover:bg-slate-800"
               >
                 👉 대출 이자 계산 방법 완벽 정리
-              </a>
+              </Link>
             </div>
           </>
         }

@@ -1,4 +1,5 @@
 // src/app/prepayment-calculator/page.tsx
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
@@ -79,12 +80,12 @@ export default function Page() {
                 중도상환 수수료와 절약 이자를 비교하지 않으면 손해를 볼 수
                 있습니다.
               </p>
-              <a
+              <Link
                 href="/blog/loan-interest-calculation"
                 className="block rounded-xl bg-slate-900 py-3 text-center font-bold text-white hover:bg-slate-800"
               >
                 👉 대출 이자 계산 + 절약 5가지 방법
-              </a>
+              </Link>
             </div>
           </>
         }

@@ -74,11 +74,15 @@ export function Header() {
     return () => document.removeEventListener("mousedown", onMouseDown);
   }, []);
 
-  useEffect(() => {
+  // 경로가 바뀌면 렌더 중에 메뉴 상태를 초기화한다.
+  // (effect 안에서 setState 하면 불필요한 리렌더가 한 번 더 발생)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
     setMobileGroup(null);
     setOpenGroup(null);
-  }, [pathname]);
+  }
 
   function isGroupActive(group: (typeof NAV_GROUPS)[0]) {
     if (group.items.length === 0) return pathname.startsWith(group.baseHref);

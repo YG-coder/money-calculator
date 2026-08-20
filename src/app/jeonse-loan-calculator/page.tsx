@@ -1,4 +1,5 @@
 // src/app/jeonse-loan-calculator/page.tsx
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
@@ -86,12 +87,12 @@ export default function Page() {
                 전세 보증금의 기회비용을 월세와 비교해보면 의외의 결과가 나올 수
                 있습니다. 보증기관(HUG·HF·SGI) 차이도 함께 정리되어 있습니다.
               </p>
-              <a
+              <Link
                 href="/blog/jeonse-vs-wolse"
                 className="block rounded-xl bg-slate-900 py-3 text-center font-bold text-white hover:bg-slate-800"
               >
                 👉 전세 vs 월세 + 보증기관 가이드
-              </a>
+              </Link>
             </div>
           </>
         }
