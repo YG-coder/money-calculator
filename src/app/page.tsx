@@ -112,7 +112,7 @@ export default function Page() {
 
       {/* ── 목적별 시작 ── */}
       <section id="start" className="scroll-mt-16 bg-slate-50 py-14">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <h2 className="text-2xl font-black text-slate-900">
             어떤 상황이신가요?
           </h2>
@@ -121,7 +121,7 @@ export default function Page() {
             나머지는 자연스럽게 이어집니다.
           </p>
 
-          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {PURPOSE_GROUPS.map((g) => (
               <div
                 key={g.id}
