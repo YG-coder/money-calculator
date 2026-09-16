@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcOverdraft, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -27,6 +28,7 @@ export default function MinusAccountCalc() {
   };
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const used = won("used");
     const rate = num("rate");
     if (!used || !rate) return null;
@@ -50,6 +52,7 @@ export default function MinusAccountCalc() {
         hint="한도가 아니라, 실제로 쓴 금액을 입력하세요. 이자는 이 금액 기준으로 붙습니다."
         value={state.used?.value ?? ""}
         onChange={(v) => setValue("used", v)}
+        error={state.used?.error}
       />
 
       <InputField
@@ -60,6 +63,7 @@ export default function MinusAccountCalc() {
         placeholder="예: 6.5"
         value={state.rate?.value ?? ""}
         onChange={(v) => setValue("rate", v)}
+        error={state.rate?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -71,6 +75,7 @@ export default function MinusAccountCalc() {
           hint="사용률 표시용"
           value={state.limit?.value ?? ""}
           onChange={(v) => setValue("limit", v)}
+          error={state.limit?.error}
         />
         <InputField
           label="사용일수 (선택)"
@@ -80,6 +85,7 @@ export default function MinusAccountCalc() {
           hint="기간 이자 표시용"
           value={state.days?.value ?? ""}
           onChange={(v) => setValue("days", v)}
+          error={state.days?.error}
         />
       </div>
 

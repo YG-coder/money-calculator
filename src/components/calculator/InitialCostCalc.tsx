@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon } from "@/lib/calcInput";
+import { readWon, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import type { OwnershipType } from "@/lib/realEstate";
 import type { FirstHomeReduction } from "@/lib/policy/acquisitionTax";
@@ -102,7 +102,10 @@ export default function InitialCostCalc() {
     regMode,
   ]);
 
-  const result = outcome.status === "ok" ? outcome.result : null;
+  // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
+  const rejected = hasRejectedInput(state);
+  const result =
+    !rejected && outcome.status === "ok" ? outcome.result : null;
 
   // 인계 링크용 — 엔진에 넘긴 값과 같은 출처를 쓴다
   const priceWon = readWon(state, "price");
@@ -119,6 +122,7 @@ export default function InitialCostCalc() {
         hint="단위: 만원 (5억 → 50,000)"
         value={state.price?.value ?? ""}
         onChange={(v) => setValue("price", v)}
+        error={state.price?.error}
       />
 
       {/* ── 취득세 조건 ── */}
@@ -235,6 +239,7 @@ export default function InitialCostCalc() {
                 hint="매매가가 아닌 지방세법상 시가표준액입니다."
                 value={state.officialPrice?.value ?? ""}
                 onChange={(v) => setValue("officialPrice", v)}
+                error={state.officialPrice?.error}
               />
               <label className="flex items-center gap-2 text-sm text-slate-600">
                 <input
@@ -272,6 +277,7 @@ export default function InitialCostCalc() {
             hint="부가가치세 제외 금액을 입력하세요."
             value={state.brokerageManual?.value ?? ""}
             onChange={(v) => setValue("brokerageManual", v)}
+            error={state.brokerageManual?.error}
           />
         )}
 
@@ -311,6 +317,7 @@ export default function InitialCostCalc() {
             hint="등록면허세·지방교육세·국민주택채권·법무사 수수료 등 합계"
             value={state.registration?.value ?? ""}
             onChange={(v) => setValue("registration", v)}
+            error={state.registration?.error}
           />
         )}
       </div>
@@ -323,6 +330,7 @@ export default function InitialCostCalc() {
         hint="이사비·수리비·가전 구입비 등. 없으면 비워두세요."
         value={state.other?.value ?? ""}
         onChange={(v) => setValue("other", v)}
+        error={state.other?.error}
       />
 
       {/* ── 자금 조달 ── */}
@@ -335,6 +343,7 @@ export default function InitialCostCalc() {
           hint="LTV 계산기 결과를 넣어보세요."
           value={state.loan?.value ?? ""}
           onChange={(v) => setValue("loan", v)}
+          error={state.loan?.error}
         />
         <InputField
           label="승계 임대보증금 (선택)"
@@ -344,11 +353,12 @@ export default function InitialCostCalc() {
           hint="갭투자 등 임대차를 승계하는 경우"
           value={state.deposit?.value ?? ""}
           onChange={(v) => setValue("deposit", v)}
+          error={state.deposit?.error}
         />
       </div>
 
       {/* ── 결과 ── */}
-      {outcome.status === "needsInput" && (
+      {!rejected && outcome.status === "needsInput" && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
           <p className="font-bold">입력이 더 필요합니다</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum } from "@/lib/calcInput";
+import { readNum, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcPropertyYield } from "@/lib/realEstate";
 import InputField from "@/components/calculator/InputField";
@@ -63,6 +63,7 @@ export default function PropertyYieldCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const price = readNum(state, "purchasePrice");
     const rent = readNum(state, "monthlyRent");
 
@@ -107,6 +108,7 @@ export default function PropertyYieldCalc() {
             hint="없으면 0 입력"
             value={state.deposit?.value ?? ""}
             onChange={(v) => setValue("deposit", v)}
+            error={state.deposit?.error}
           />
         </div>
       </div>
@@ -134,6 +136,7 @@ export default function PropertyYieldCalc() {
             hint="임대인 부담분 (없으면 0)"
             value={state.monthlyCost?.value ?? ""}
             onChange={(v) => setValue("monthlyCost", v)}
+            error={state.monthlyCost?.error}
           />
           <InputField
             label="취득 부대비용 (선택)"
@@ -143,6 +146,7 @@ export default function PropertyYieldCalc() {
             hint="취득세·중개보수·등기비용 등 매입 시점의 일회성 비용. 넣으면 자기자본 수익률 분모에 포함됩니다. 모르면 0으로 두세요."
             value={state.extraCost?.value ?? ""}
             onChange={(v) => setValue("extraCost", v)}
+            error={state.extraCost?.error}
           />
         </div>
       </div>
@@ -161,6 +165,7 @@ export default function PropertyYieldCalc() {
             hint="없으면 0 입력"
             value={state.loanAmount?.value ?? ""}
             onChange={(v) => setValue("loanAmount", v)}
+            error={state.loanAmount?.error}
           />
           <InputField
             label="대출 연 금리"

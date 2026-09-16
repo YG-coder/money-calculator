@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
@@ -79,6 +80,7 @@ export default function GoalSavingsCalc() {
   const has = (k: string) => !!state[k]?.value;
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const rate = num("rate");
     if (!has("rate")) return null;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcPrepayment, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -66,6 +67,7 @@ export default function PrepaymentCalc() {
       : "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const rem = won("remaining");
     const pre = won("prepay");
     const r = num("rate");
@@ -137,6 +139,7 @@ export default function PrepaymentCalc() {
         hint="은행별 상이 (보통 0.6~1.5%)"
         value={state.feeRate?.value ?? ""}
         onChange={(v) => setValue("feeRate", v)}
+        error={state.feeRate?.error}
       />
 
       {amountError && (

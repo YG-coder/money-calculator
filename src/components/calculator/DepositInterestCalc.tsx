@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
@@ -63,6 +64,7 @@ export default function DepositInterestCalc() {
   const [taxType, setTaxType] = useState<TaxType>("general");
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const principal = won("principal");
     const rate = num("rate");
     const months = num("months");

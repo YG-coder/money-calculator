@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon } from "@/lib/calcInput";
+import { readWon, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcLtv, type RoomDeductionChoice } from "@/lib/ltv";
 import {
@@ -54,7 +54,10 @@ export default function LtvCalc() {
     });
   }, [state, region, borrower, roomMode]);
 
-  const result = outcome.status === "ok" ? outcome.result : null;
+  // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
+  const rejected = hasRejectedInput(state);
+  const result =
+    !rejected && outcome.status === "ok" ? outcome.result : null;
 
   // 인계 링크에 넣을 주택가격 (원). 엔진에 넘긴 값과 같은 출처를 쓴다.
   const priceWon = readWon(state, "price");
@@ -70,6 +73,7 @@ export default function LtvCalc() {
         hint="단위: 만원 (10억 → 100,000)"
         value={state.price?.value ?? ""}
         onChange={(v) => setValue("price", v)}
+        error={state.price?.error}
       />
 
       <ToggleGroup<LtvRegion>
@@ -106,6 +110,7 @@ export default function LtvCalc() {
         hint="기존 근저당 등 선순위 채권액. 없으면 비워두세요."
         value={state.senior?.value ?? ""}
         onChange={(v) => setValue("senior", v)}
+        error={state.senior?.error}
       />
 
       {/* ── 방공제 — 명시적으로 선택해야 계산한다 ── */}
@@ -131,6 +136,7 @@ export default function LtvCalc() {
               hint="금융회사가 적용한 공제액을 입력하세요. 0원이면 '공제하지 않음'을 선택하세요."
               value={state.room?.value ?? ""}
               onChange={(v) => setValue("room", v)}
+              error={state.room?.error}
             />
 
             <div>
@@ -167,7 +173,7 @@ export default function LtvCalc() {
       </div>
 
       {/* ── 결과 ── */}
-      {outcome.status === "needsInput" && (
+      {!rejected && outcome.status === "needsInput" && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
           <p className="font-bold">입력이 더 필요합니다</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
@@ -186,7 +192,7 @@ export default function LtvCalc() {
         </div>
       )}
 
-      {outcome.status === "unsupported" && (
+      {!rejected && outcome.status === "unsupported" && (
         <div className="rounded-2xl border border-slate-300 bg-slate-50 p-5 text-sm text-slate-700">
           <p className="font-bold">이 조건은 지원하지 않습니다</p>
           <p className="mt-2">{outcome.reason} 금융회사에 직접 확인하세요.</p>
@@ -325,7 +331,7 @@ export default function LtvCalc() {
         </div>
       )}
 
-      {!result && outcome.status === "needsInput" && (
+      {!result && !rejected && outcome.status === "needsInput" && (
         <PolicyNote
           metas={[ROOM_DEDUCTION_META]}
           showUnsupported={false}

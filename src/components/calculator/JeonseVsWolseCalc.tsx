@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum } from "@/lib/calcInput";
+import { readNum, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcJeonseVsWolse } from "@/lib/realEstate";
 import InputField from "@/components/calculator/InputField";
@@ -46,6 +46,7 @@ export default function JeonseVsWolseCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const jd = readNum(state, "jeonseDeposit");
     const wd = readNum(state, "wolseDeposit");
     const wm = readNum(state, "wolseMonthly");
@@ -88,6 +89,7 @@ export default function JeonseVsWolseCalc() {
             hint="없으면 0 입력"
             value={state.wolseDeposit?.value ?? ""}
             onChange={(v) => setValue("wolseDeposit", v)}
+            error={state.wolseDeposit?.error}
           />
           <InputField
             label="월 임대료 (월세)"

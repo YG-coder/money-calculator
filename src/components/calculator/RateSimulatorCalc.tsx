@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
+import { hasRejectedInput } from "@/lib/calcInput";
 import {
   calcRateScenarios,
   formatKRW,
@@ -37,6 +38,7 @@ export default function RateSimulatorCalc() {
   const rateFilled = (state.rate?.raw ?? "") !== "";
 
   const rows = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const principal = won("principal");
     const months = num("months");
     if (!principal || !rateFilled || !months) return null;
@@ -60,6 +62,7 @@ export default function RateSimulatorCalc() {
         hint="단위: 만원 (3억 → 30,000)"
         value={state.principal?.value ?? ""}
         onChange={(v) => setValue("principal", v)}
+        error={state.principal?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -71,6 +74,7 @@ export default function RateSimulatorCalc() {
           placeholder="예: 4.0"
           value={state.rate?.value ?? ""}
           onChange={(v) => setValue("rate", v)}
+          error={state.rate?.error}
         />
         <InputField
           label="남은 기간"
@@ -79,6 +83,7 @@ export default function RateSimulatorCalc() {
           placeholder="예: 360"
           value={state.months?.value ?? ""}
           onChange={(v) => setValue("months", v)}
+          error={state.months?.error}
         />
       </div>
 
@@ -116,6 +121,7 @@ export default function RateSimulatorCalc() {
         hint="현재 금리에서 몇 %p 오를 경우를 추가로 볼지"
         value={state.customDelta?.value ?? ""}
         onChange={(v) => setValue("customDelta", v)}
+        error={state.customDelta?.error}
       />
 
       {rows && (

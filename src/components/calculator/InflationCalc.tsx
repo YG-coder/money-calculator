@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import { calcInflation } from "@/lib/finance";
@@ -28,6 +29,7 @@ export default function InflationCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const amount = won("amount");
     const years = num("years");
     const inflationRate = num("inflation");
@@ -53,6 +55,7 @@ export default function InflationCalc() {
         hint="단위: 만원 (1,000만원 → 1,000)"
         value={state.amount?.value ?? ""}
         onChange={(v) => setValue("amount", v)}
+        error={state.amount?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -65,6 +68,7 @@ export default function InflationCalc() {
           placeholder="예: 3.0"
           value={state.inflation?.value ?? ""}
           onChange={(v) => setValue("inflation", v)}
+          error={state.inflation?.error}
         />
         <InputField
           label="기간"
@@ -74,6 +78,7 @@ export default function InflationCalc() {
           placeholder="예: 10"
           value={state.years?.value ?? ""}
           onChange={(v) => setValue("years", v)}
+          error={state.years?.error}
         />
       </div>
 

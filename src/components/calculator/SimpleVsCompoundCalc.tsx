@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcCompoundInterest } from "@/lib/finance";
@@ -28,6 +29,7 @@ export default function SimpleVsCompoundCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const principal = won("principal");
     const years = num("years");
     const rate = num("rate");
@@ -79,6 +81,7 @@ export default function SimpleVsCompoundCalc() {
         hint="단위: 만원 (1,000만원 → 1,000)"
         value={state.principal?.value ?? ""}
         onChange={(v) => setValue("principal", v)}
+        error={state.principal?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -91,6 +94,7 @@ export default function SimpleVsCompoundCalc() {
           placeholder="예: 5.0"
           value={state.rate?.value ?? ""}
           onChange={(v) => setValue("rate", v)}
+          error={state.rate?.error}
         />
         <InputField
           label="기간"
@@ -100,6 +104,7 @@ export default function SimpleVsCompoundCalc() {
           placeholder="예: 10"
           value={state.years?.value ?? ""}
           onChange={(v) => setValue("years", v)}
+          error={state.years?.error}
         />
       </div>
 

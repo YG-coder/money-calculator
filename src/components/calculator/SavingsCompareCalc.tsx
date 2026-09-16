@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import {
@@ -38,6 +39,7 @@ export default function SavingsCompareCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const monthly = won("monthly");
     const months = num("months");
     if (!monthly || !months || !filled("rate")) return null;
@@ -61,6 +63,7 @@ export default function SavingsCompareCalc() {
         hint="적금에 매달 넣는 금액. 예금은 이 금액 × 기간을 처음부터 예치했다고 가정합니다."
         value={state.monthly?.value ?? ""}
         onChange={(v) => setValue("monthly", v)}
+        error={state.monthly?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -71,6 +74,7 @@ export default function SavingsCompareCalc() {
           placeholder="예: 12"
           value={state.months?.value ?? ""}
           onChange={(v) => setValue("months", v)}
+          error={state.months?.error}
         />
         <InputField
           label="연 이자율"
@@ -80,6 +84,7 @@ export default function SavingsCompareCalc() {
           placeholder="예: 5.0"
           value={state.rate?.value ?? ""}
           onChange={(v) => setValue("rate", v)}
+          error={state.rate?.error}
         />
       </div>
 

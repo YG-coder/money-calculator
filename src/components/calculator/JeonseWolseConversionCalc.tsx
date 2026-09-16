@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import {
@@ -30,6 +31,7 @@ export default function JeonseWolseConversionCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const jeonse = man("jeonse");
     const wolseDeposit = man("wolseDeposit");
     // 전환 대상 = 전세보증금 − 월세보증금 이 0보다 커야 성립
@@ -54,6 +56,7 @@ export default function JeonseWolseConversionCalc() {
         hint="전환 전 전세 보증금 (3억 → 30,000)"
         value={state.jeonse?.value ?? ""}
         onChange={(v) => setValue("jeonse", v)}
+        error={state.jeonse?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -65,6 +68,7 @@ export default function JeonseWolseConversionCalc() {
           hint="월세 전환 후 남기는 보증금"
           value={state.wolseDeposit?.value ?? ""}
           onChange={(v) => setValue("wolseDeposit", v)}
+          error={state.wolseDeposit?.error}
         />
         <InputField
           label="월세"
@@ -74,6 +78,7 @@ export default function JeonseWolseConversionCalc() {
           hint="매달 내는 월세"
           value={state.wolse?.value ?? ""}
           onChange={(v) => setValue("wolse", v)}
+          error={state.wolse?.error}
         />
       </div>
 

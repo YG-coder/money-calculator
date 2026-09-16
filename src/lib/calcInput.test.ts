@@ -12,6 +12,8 @@ import {
   hasDroppedChars,
   stripFormatting,
   droppedCharsMessage,
+  isRejectedField,
+  hasRejectedInput,
 } from "@/lib/calcInput";
 
 const st = (entries: Record<string, string>): CalcState =>
@@ -259,5 +261,74 @@ describe("droppedCharsMessage", () => {
   it("필드 종류에 따라 문구가 다르다", () => {
     expect(droppedCharsMessage("money")).toContain("숫자만");
     expect(droppedCharsMessage("decimal")).toContain("소수점");
+  });
+});
+
+// ─────────────────────────────────────────────
+// 거부된 입력 상태 — 2026-09-16 회귀 방지
+//
+// 붙여넣기·타이핑으로 허용되지 않은 문자가 섞이면 useCalcState 가
+// 원문을 화면에 남기고 raw 를 비운다. 이 상태를 "정상적인 미입력"과
+// 반드시 구분해야 한다. 아래는 그때 확인된 동작을 고정한 것이다.
+// ─────────────────────────────────────────────
+
+const rejected = (value: string): CalcState => ({
+  amount: { value, raw: "", error: "숫자만 입력할 수 있습니다" },
+});
+const empty: CalcState = { amount: { value: "", raw: "", error: "" } };
+const filled: CalcState = { amount: { value: "5,000", raw: "5000", error: "" } };
+
+describe("isRejectedField — 미입력과 오류 상태 구분", () => {
+  it("원문이 남아 있고 raw 가 비면 거부 상태", () => {
+    for (const v of ["-5000", "1e5", "abc123", "12.5"]) {
+      expect(isRejectedField(rejected(v), "amount"), v).toBe(true);
+    }
+  });
+
+  it("정상적인 미입력은 거부 상태가 아니다", () => {
+    expect(isRejectedField(empty, "amount")).toBe(false);
+  });
+
+  it("정상 입력은 거부 상태가 아니다", () => {
+    expect(isRejectedField(filled, "amount")).toBe(false);
+  });
+
+  it("없는 키는 false", () => {
+    expect(isRejectedField(empty, "nope")).toBe(false);
+  });
+});
+
+describe("hasRejectedInput — 선택 입력도 결과를 차단한다", () => {
+  it("필드 하나라도 거부 상태면 true", () => {
+    expect(
+      hasRejectedInput({ ...filled, extra: rejected("abc").amount }),
+    ).toBe(true);
+  });
+
+  it("전부 미입력이면 false (선택 입력은 0 으로 계산해도 된다)", () => {
+    expect(hasRejectedInput({ a: empty.amount, b: empty.amount })).toBe(false);
+  });
+
+  it("빈 상태는 false", () => {
+    expect(hasRejectedInput({})).toBe(false);
+  });
+});
+
+describe("거부 상태에서의 읽기 유틸 — 0 으로 계산되면 안 되는 이유", () => {
+  it("readNum 은 0 을 돌려주고 isFilled 는 false 다", () => {
+    const state = rejected("-5000");
+    expect(readNum(state, "amount")).toBe(0);
+    expect(isFilled(state, "amount")).toBe(false);
+  });
+
+  it("그래서 미입력과 값이 같아진다 — hasRejectedInput 로 구분해야 한다", () => {
+    const state = rejected("-5000");
+    expect(readNum(state, "amount")).toBe(readNum(empty, "amount"));
+    expect(hasRejectedInput(state)).toBe(true);
+    expect(hasRejectedInput(empty)).toBe(false);
+  });
+
+  it("거부된 값은 URL 에 저장되지 않는다 (raw 가 비어 있음)", () => {
+    expect(rejected("-5000").amount.raw).toBe("");
   });
 });

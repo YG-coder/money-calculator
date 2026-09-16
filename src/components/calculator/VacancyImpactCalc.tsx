@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcVacancyImpact } from "@/lib/realEstate";
@@ -25,6 +26,7 @@ export default function VacancyImpactCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const rent = man("rent");
     const vacancy = man("vacancy");
     // 월세·공실률 필수, 운영비/매입가는 선택. 공실률 0~100 범위 가드.
@@ -50,6 +52,7 @@ export default function VacancyImpactCalc() {
           placeholder="예: 100"
           value={state.rent?.value ?? ""}
           onChange={(v) => setValue("rent", v)}
+          error={state.rent?.error}
         />
         <InputField
           label="공실률"
@@ -62,6 +65,7 @@ export default function VacancyImpactCalc() {
           hint="연간 비어 있는 비율"
           value={state.vacancy?.value ?? ""}
           onChange={(v) => setValue("vacancy", v)}
+          error={state.vacancy?.error}
         />
       </div>
 
@@ -75,6 +79,7 @@ export default function VacancyImpactCalc() {
           hint="관리비·수선 등 고정 지출"
           value={state.opCost?.value ?? ""}
           onChange={(v) => setValue("opCost", v)}
+          error={state.opCost?.error}
         />
         <InputField
           label="매입가 (선택)"
@@ -85,6 +90,7 @@ export default function VacancyImpactCalc() {
           hint="입력 시 실효 수익률 표시"
           value={state.price?.value ?? ""}
           onChange={(v) => setValue("price", v)}
+          error={state.price?.error}
         />
       </div>
 

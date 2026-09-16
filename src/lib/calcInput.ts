@@ -158,6 +158,30 @@ export function toDisplay(raw: string, kind: FieldKind): string {
 //   신규·수정 계산기는 useMemo 안에서 getWon/getNum 대신 반드시 이 유틸을 사용할 것.
 // ─────────────────────────────────────────────
 
+/**
+ * 이 필드가 "거부된 입력"을 들고 있는지 판정한다.
+ *
+ * 거부 상태는 허용되지 않은 문자가 섞여 계산에 쓸 수 없는 값이다.
+ * useCalcState 가 원문을 화면에 남기고 raw 만 비우므로 이렇게 나타난다.
+ *
+ *   raw === ""  &&  value !== ""
+ *
+ * ⚠️ 정상적인 미입력과 구분해야 한다. 미입력은 raw 와 value 가 모두 "" 이고,
+ *    선택 입력이라면 0 으로 계산해도 된다. 반면 거부 상태는 사용자가 무언가를
+ *    입력했지만 그 값을 쓸 수 없는 상태이므로 **0 으로 계산하면 안 된다.**
+ */
+export function isRejectedField(state: CalcState, key: string): boolean {
+  const field = state[key];
+  if (field === undefined) return false;
+
+  return field.raw === "" && field.value !== "";
+}
+
+/** 하나라도 거부된 입력이 있으면 true. 계산기는 이때 결과를 내지 않는다. */
+export function hasRejectedInput(state: CalcState): boolean {
+  return Object.keys(state).some((key) => isRejectedField(state, key));
+}
+
 /** 현재 렌더 기준 raw 문자열. 미입력이면 "". */
 export function readRaw(state: CalcState, key: string): string {
   return state[key]?.raw ?? "";

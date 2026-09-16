@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import { compareCmaVsDeposit } from "@/lib/finance";
@@ -29,6 +30,7 @@ export default function CmaVsDepositCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const principal = won("principal");
     const months = num("months");
     if (!principal || !months || !filled("depositRate") || !filled("cmaRate"))
@@ -53,6 +55,7 @@ export default function CmaVsDepositCalc() {
         hint="단위: 만원. 예금·CMA 모두 이 금액을 처음부터 예치했다고 가정합니다."
         value={state.principal?.value ?? ""}
         onChange={(v) => setValue("principal", v)}
+        error={state.principal?.error}
       />
 
       <InputField
@@ -62,6 +65,7 @@ export default function CmaVsDepositCalc() {
         placeholder="예: 12"
         value={state.months?.value ?? ""}
         onChange={(v) => setValue("months", v)}
+        error={state.months?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -73,6 +77,7 @@ export default function CmaVsDepositCalc() {
           placeholder="예: 3.5"
           value={state.depositRate?.value ?? ""}
           onChange={(v) => setValue("depositRate", v)}
+          error={state.depositRate?.error}
         />
         <InputField
           label="CMA 예상수익률"
@@ -82,6 +87,7 @@ export default function CmaVsDepositCalc() {
           placeholder="예: 3.0"
           value={state.cmaRate?.value ?? ""}
           onChange={(v) => setValue("cmaRate", v)}
+          error={state.cmaRate?.error}
         />
       </div>
 

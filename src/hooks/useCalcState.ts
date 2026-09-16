@@ -41,6 +41,8 @@ export {
   isValidUrlValue,
   hasDroppedChars,
   stripFormatting,
+  isRejectedField,
+  hasRejectedInput,
 } from "@/lib/calcInput";
 
 export type FieldDef = {

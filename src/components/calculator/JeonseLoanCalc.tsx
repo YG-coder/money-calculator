@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon } from "@/lib/calcInput";
+import { readNum, readWon, hasRejectedInput } from "@/lib/calcInput";
 import { calcJeonseLoan, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "./InputField";
 import ResultCard from "./ResultCard";
@@ -70,6 +70,7 @@ export default function JeonseLoanCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const d = readWon(state, "deposit");
     const r = readNum(state, "rate");
     const m = readNum(state, "months");
@@ -147,6 +148,7 @@ export default function JeonseLoanCalc() {
             hint="이자 부담 비율 계산용"
             value={state.income?.value ?? ""}
             onChange={(v) => setValue("income", v)}
+            error={state.income?.error}
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcRefinance, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -30,6 +31,7 @@ export default function RefinanceCalc() {
   };
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const remaining = won("remaining");
     const oldRate = num("oldRate");
     const oldMonths = num("oldMonths");
@@ -64,6 +66,7 @@ export default function RefinanceCalc() {
             hint="단위: 만원 (2억 → 20,000)"
             value={state.remaining?.value ?? ""}
             onChange={(v) => setValue("remaining", v)}
+            error={state.remaining?.error}
           />
           <div className="grid grid-cols-2 gap-3">
             <InputField
@@ -74,6 +77,7 @@ export default function RefinanceCalc() {
               placeholder="예: 5.5"
               value={state.oldRate?.value ?? ""}
               onChange={(v) => setValue("oldRate", v)}
+              error={state.oldRate?.error}
             />
             <InputField
               label="남은 기간"
@@ -82,6 +86,7 @@ export default function RefinanceCalc() {
               placeholder="예: 240"
               value={state.oldMonths?.value ?? ""}
               onChange={(v) => setValue("oldMonths", v)}
+              error={state.oldMonths?.error}
             />
           </div>
         </div>
@@ -99,6 +104,7 @@ export default function RefinanceCalc() {
             placeholder="예: 4.0"
             value={state.newRate?.value ?? ""}
             onChange={(v) => setValue("newRate", v)}
+            error={state.newRate?.error}
           />
           <InputField
             label="새 기간"
@@ -107,6 +113,7 @@ export default function RefinanceCalc() {
             placeholder="예: 240"
             value={state.newMonths?.value ?? ""}
             onChange={(v) => setValue("newMonths", v)}
+            error={state.newMonths?.error}
           />
         </div>
       </div>
@@ -124,6 +131,7 @@ export default function RefinanceCalc() {
             hint="남은 원금 기준"
             value={state.feeRate?.value ?? ""}
             onChange={(v) => setValue("feeRate", v)}
+            error={state.feeRate?.error}
           />
           <InputField
             label="기타 비용 (선택)"
@@ -133,6 +141,7 @@ export default function RefinanceCalc() {
             hint="인지세·감정료 등"
             value={state.otherCost?.value ?? ""}
             onChange={(v) => setValue("otherCost", v)}
+            error={state.otherCost?.error}
           />
         </div>
       </div>

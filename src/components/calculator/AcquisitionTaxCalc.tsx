@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum } from "@/lib/calcInput";
+import { readNum, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcAcquisitionTax, type OwnershipType } from "@/lib/realEstate";
 import type { FirstHomeReduction } from "@/lib/policy/acquisitionTax";
@@ -33,6 +33,7 @@ export default function AcquisitionTaxCalc() {
   const [isTemporaryTwoHouse, setIsTemporaryTwoHouse] = useState(false);
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const priceMan = readNum(state, "price");
     if (!priceMan || priceMan <= 0) return null;
     return calcAcquisitionTax({
@@ -207,6 +208,7 @@ export default function AcquisitionTaxCalc() {
                 hint="매매가가 아닌 지방세법상 시가표준액입니다"
                 value={state.officialPrice?.value ?? ""}
                 onChange={(v) => setValue("officialPrice", v)}
+                error={state.officialPrice?.error}
               />
               <label className="flex items-center gap-2 text-sm text-slate-600">
                 <input

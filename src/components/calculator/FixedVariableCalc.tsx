@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import {
   calcFixedVsVariable,
@@ -38,6 +39,7 @@ export default function FixedVariableCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const principal = won("principal");
     const months = num("months");
     if (!principal || !months || !filled("fixedRate") || !filled("variableRate"))
@@ -64,6 +66,7 @@ export default function FixedVariableCalc() {
         hint="단위: 만원 (3억 → 30,000)"
         value={state.principal?.value ?? ""}
         onChange={(v) => setValue("principal", v)}
+        error={state.principal?.error}
       />
 
       <InputField
@@ -73,6 +76,7 @@ export default function FixedVariableCalc() {
         placeholder="예: 360"
         value={state.months?.value ?? ""}
         onChange={(v) => setValue("months", v)}
+        error={state.months?.error}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -84,6 +88,7 @@ export default function FixedVariableCalc() {
           placeholder="예: 4.5"
           value={state.fixedRate?.value ?? ""}
           onChange={(v) => setValue("fixedRate", v)}
+          error={state.fixedRate?.error}
         />
         <InputField
           label="현재 변동 금리"
@@ -93,6 +98,7 @@ export default function FixedVariableCalc() {
           placeholder="예: 3.8"
           value={state.variableRate?.value ?? ""}
           onChange={(v) => setValue("variableRate", v)}
+          error={state.variableRate?.error}
         />
       </div>
 

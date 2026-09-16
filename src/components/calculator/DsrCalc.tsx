@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon, isFilled } from "@/lib/calcInput";
+import { readNum, readWon, isFilled, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
   calcDsr,
@@ -104,6 +104,7 @@ export default function DsrCalc() {
   }, [state, loanKind, repayment, region, rateType, creditKind, fixedTerm]);
 
   const checkResult = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     if (mode !== "check") return null;
     const income = readWon(state, "income");
     const amount = readWon(state, "amount");
@@ -119,6 +120,7 @@ export default function DsrCalc() {
   }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind]);
 
   const estimateResult = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     if (mode !== "estimate") return null;
     const income = readWon(state, "income");
     if (!income || !rateFilled) return null;
@@ -168,6 +170,7 @@ export default function DsrCalc() {
         hint="단위: 만원"
         value={state.income?.value ?? ""}
         onChange={(v) => setValue("income", v)}
+        error={state.income?.error}
       />
 
       {/* ── 기존 부채 ── */}
@@ -184,6 +187,7 @@ export default function DsrCalc() {
           hint="아래에 따로 입력하는 신용대출·전세대출을 제외한 나머지 부채의 DSR 산정용 연간 원리금. 금융회사 앱·상담자료의 값이 가장 정확합니다."
           value={state.existingDebt?.value ?? ""}
           onChange={(v) => setValue("existingDebt", v)}
+          error={state.existingDebt?.error}
         />
 
         <div className="space-y-3 rounded-xl bg-slate-50 p-3">
@@ -198,6 +202,7 @@ export default function DsrCalc() {
               placeholder="예: 3,000"
               value={state.creditBalance?.value ?? ""}
               onChange={(v) => setValue("creditBalance", v)}
+              error={state.creditBalance?.error}
             />
             <InputField
               label="마이너스통장 약정한도"
@@ -207,6 +212,7 @@ export default function DsrCalc() {
               hint="사용액이 아니라 한도 전액"
               value={state.creditLineLimit?.value ?? ""}
               onChange={(v) => setValue("creditLineLimit", v)}
+              error={state.creditLineLimit?.error}
             />
           </div>
           <InputField
@@ -218,6 +224,7 @@ export default function DsrCalc() {
             hint="위 두 금액에 적용할 평균 금리. 산정만기 5년 기준으로 연간 원리금을 계산합니다."
             value={state.creditRate?.value ?? ""}
             onChange={(v) => setValue("creditRate", v)}
+            error={state.creditRate?.error}
           />
           <InputField
             label="적격 분할상환 신용대출 잔액"
@@ -227,6 +234,7 @@ export default function DsrCalc() {
             hint="스트레스 금리 적용 여부를 판단하는 총잔액에만 합산합니다. 실제 연간 원리금은 위 '기타 부채 연간 원리금'에 입력하세요."
             value={state.creditInstallmentBalance?.value ?? ""}
             onChange={(v) => setValue("creditInstallmentBalance", v)}
+            error={state.creditInstallmentBalance?.error}
           />
         </div>
 
@@ -253,6 +261,7 @@ export default function DsrCalc() {
             hint="1주택자가 수도권·규제지역에서 받는 전세대출은 이자상환분만 DSR에 반영됩니다."
             value={state.jeonseInterest?.value ?? ""}
             onChange={(v) => setValue("jeonseInterest", v)}
+            error={state.jeonseInterest?.error}
           />
         )}
       </fieldset>
@@ -332,6 +341,7 @@ export default function DsrCalc() {
             placeholder="예: 4.5"
             value={state.rate?.value ?? ""}
             onChange={(v) => setValue("rate", v)}
+            error={state.rate?.error}
           />
           {loanKind === "mortgage" ? (
             <InputField
@@ -341,6 +351,7 @@ export default function DsrCalc() {
               placeholder="예: 360"
               value={state.months?.value ?? ""}
               onChange={(v) => setValue("months", v)}
+              error={state.months?.error}
             />
           ) : (
             <div className="flex items-end pb-2 text-xs leading-relaxed text-slate-400">
@@ -366,6 +377,7 @@ export default function DsrCalc() {
             }
             value={state.amount?.value ?? ""}
             onChange={(v) => setValue("amount", v)}
+            error={state.amount?.error}
           />
         )}
 
@@ -391,6 +403,7 @@ export default function DsrCalc() {
             hint="금융회사에서 안내받은 DSR 산정용 연간 원리금을 입력하세요. 자동 계산하지 않습니다."
             value={state.installmentAnnual?.value ?? ""}
             onChange={(v) => setValue("installmentAnnual", v)}
+            error={state.installmentAnnual?.error}
           />
         )}
       </fieldset>

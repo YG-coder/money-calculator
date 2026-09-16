@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, isFilled } from "@/lib/calcInput";
+import { readNum, isFilled, hasRejectedInput } from "@/lib/calcInput";
 import { formatKRW } from "@/lib/loan";
 import {
   calcExchange,
@@ -53,6 +53,7 @@ export default function ExchangeCalc() {
   const isBuy = direction === "buy";
 
   const outcome = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     const amount = readNum(state, "amount");
     if (!amount) return null;
 
@@ -138,6 +139,7 @@ export default function ExchangeCalc() {
           hint="이 계산기는 실시간 환율을 가져오지 않습니다. 거래하려는 은행이 고시한 오늘의 매매기준율을 직접 입력하세요."
           value={state.baseRate?.value ?? ""}
           onChange={(v) => setValue("baseRate", v)}
+          error={state.baseRate?.error}
         />
 
         <ToggleGroup<SpreadInputMode>
@@ -161,6 +163,7 @@ export default function ExchangeCalc() {
             hint="은행·통화·상품마다 다르므로 기본값을 두지 않습니다. 고시환율표의 '환전 수수료율'을 확인해 입력하세요."
             value={state.spreadPct?.value ?? ""}
             onChange={(v) => setValue("spreadPct", v)}
+            error={state.spreadPct?.error}
           />
         ) : (
           <InputField
@@ -174,6 +177,7 @@ export default function ExchangeCalc() {
             hint="매매기준율과 같은 단위로 입력하세요. 이 값에서 수수료율을 역산합니다."
             value={state.cashRate?.value ?? ""}
             onChange={(v) => setValue("cashRate", v)}
+            error={state.cashRate?.error}
           />
         )}
 
@@ -186,6 +190,7 @@ export default function ExchangeCalc() {
           hint="우대율은 수수료를 깎아주는 비율입니다. 90% 우대는 수수료의 10%만 낸다는 뜻이고, 100%면 매매기준율 그대로 환전합니다."
           value={state.preferential?.value ?? ""}
           onChange={(v) => setValue("preferential", v)}
+          error={state.preferential?.error}
         />
       </fieldset>
 
@@ -202,6 +207,7 @@ export default function ExchangeCalc() {
         }
         value={state.amount?.value ?? ""}
         onChange={(v) => setValue("amount", v)}
+        error={state.amount?.error}
       />
 
       {/* ── 계산 차단 안내 ── */}

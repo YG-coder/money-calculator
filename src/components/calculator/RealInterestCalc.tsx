@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { hasRejectedInput } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import { calcRealInterestRate } from "@/lib/finance";
@@ -28,6 +29,7 @@ export default function RealInterestCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
+    if (hasRejectedInput(state)) return null;
     if (!filled("nominal") || !filled("inflation")) return null;
 
     return calcRealInterestRate({
@@ -49,6 +51,7 @@ export default function RealInterestCalc() {
           placeholder="예: 5.0"
           value={state.nominal?.value ?? ""}
           onChange={(v) => setValue("nominal", v)}
+          error={state.nominal?.error}
         />
         <InputField
           label="물가 상승률"
@@ -58,6 +61,7 @@ export default function RealInterestCalc() {
           placeholder="예: 3.0"
           value={state.inflation?.value ?? ""}
           onChange={(v) => setValue("inflation", v)}
+          error={state.inflation?.error}
         />
       </div>
 
@@ -69,6 +73,7 @@ export default function RealInterestCalc() {
         hint="입력하면 1년 기준 명목 이자와 실질 가치 증감을 금액으로 보여줍니다."
         value={state.principal?.value ?? ""}
         onChange={(v) => setValue("principal", v)}
+        error={state.principal?.error}
       />
 
       {result && (
