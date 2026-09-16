@@ -108,6 +108,20 @@ export function useCalcState(fields: FieldDef[]) {
 
       for (const f of fields) {
         const kind = getKind(f);
+
+        // 거부된 입력을 들고 있는 필드는 URL 동기화로 덮지 않는다.
+        //
+        // 거부 상태는 raw 가 비어 있는데 화면 값은 남아 있는 상태다.
+        // (정상 필드는 raw 가 "" 이면 value 도 "" 다 — toDisplay("") === "")
+        // 이 필드는 URL 에 키가 없으므로, 덮어쓰면 방금 표시한 오류가 사라진다.
+        const prevField = prev[f.key];
+        const isRejected =
+          prevField !== undefined &&
+          prevField.raw === "" &&
+          prevField.value !== "";
+
+        if (isRejected && searchParams?.get(f.key) == null) continue;
+
         const urlRaw = sanitize(
           readUrlValue(searchParams?.get(f.key), f.defaultValue, kind),
           kind,
@@ -157,17 +171,31 @@ export function useCalcState(fields: FieldDef[]) {
       if (!field) return;
 
       const kind = getKind(field);
+
+      // 붙여넣기·타이핑으로 허용되지 않은 문자가 제거되면 값이 조용히 달라진다.
+      // ("-5000"→5000, "1e5"→15, 금액 필드의 "12.5"→125 등)
+      //
+      // 이때 정리된 숫자를 raw 에 넣으면 그 값으로 계산되고 URL 에도 저장되어,
+      // 새로고침하면 오류가 사라진 정상값으로 되살아난다.
+      // 그래서 **원문은 화면에 그대로 두고 raw 는 비운다.**
+      //   · raw 가 "" 이므로 계산에 쓰이지 않고 (isFilled=false)
+      //   · scheduleUrlUpdate 가 빈 raw 를 건너뛰므로 URL 에도 남지 않는다
+      if (hasDroppedChars(inputValue, kind)) {
+        setState((prev) => ({
+          ...prev,
+          [key]: {
+            value: inputValue,
+            raw: "",
+            error: droppedCharsMessage(kind),
+          },
+        }));
+
+        scheduleUrlUpdate();
+        return;
+      }
+
       const raw = sanitize(inputValue, kind);
-
-      // 붙여넣기 등으로 허용되지 않은 문자가 제거되면 값이 조용히 달라진다.
-      // 이때는 필드 자체 검증보다 먼저 알린다. (URL 경로는 readUrlValue 가 이미 막는다)
-      const dropped = hasDroppedChars(inputValue, kind);
-      const error = dropped
-        ? droppedCharsMessage(kind)
-        : field.validate
-          ? (field.validate(raw) ?? "")
-          : "";
-
+      const error = field.validate ? (field.validate(raw) ?? "") : "";
       const display = toDisplay(raw, kind);
 
       setState((prev) => ({
