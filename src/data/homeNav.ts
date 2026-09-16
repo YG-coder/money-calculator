@@ -110,6 +110,11 @@ export const CALC = {
     desc: "목표금액·월납입·기간 중 둘을 정하면 나머지를 역산합니다.",
     href: "/finance/goal-savings",
   },
+  monthlySurplus: {
+    title: "월 잉여자금 계산기",
+    desc: "월 소득과 7개 지출로 매달 남는 금액과 연간 환산을 계산합니다.",
+    href: "/funds/monthly-surplus",
+  },
 } as const satisfies Record<string, CalcEntry>;
 
 export type CalcKey = keyof typeof CALC;
@@ -180,6 +185,17 @@ export const PURPOSE_GROUPS: PurposeGroup[] = [
     primaryNote: "목표와 기간을 정하면 월 납입액을 역산합니다.",
     secondary: ["deposit", "installmentSavings", "exchange"],
     hub: { label: "금융 계산기 전체", href: "/finance" },
+  },
+  {
+    id: "plan",
+    title: "매달 얼마가 남는지",
+    when: "대출·저축·이사를 실행하기 전에 지금 쓸 수 있는 현금부터 확인할 때.",
+    // 자금계획 허브의 출발점은 "지금 남는 돈"이다. 필요한 돈을 계산하려면
+    // 현재 현금흐름이 먼저 있어야 한다.
+    primary: "monthlySurplus",
+    primaryNote: "소득에서 이미 빠진 금액은 지출에 다시 넣지 않습니다.",
+    secondary: ["goalSavings"],
+    hub: { label: "자금계획 계산기 전체", href: "/funds" },
   },
 ];
 
@@ -261,5 +277,10 @@ export const CATEGORY_HUBS = [
     title: "금융 계산기",
     href: "/finance",
     desc: "예금·적금·복리·물가·환전",
+  },
+  {
+    title: "자금계획 계산기",
+    href: "/funds",
+    desc: "매달 남는 돈과 앞으로 필요한 현금",
   },
 ];

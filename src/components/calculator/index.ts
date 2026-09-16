@@ -28,3 +28,4 @@ export { default as SimpleVsCompoundCalc } from "./SimpleVsCompoundCalc";
 export { default as JeonseWolseConversionCalc } from "./JeonseWolseConversionCalc";
 export { default as VacancyImpactCalc } from "./VacancyImpactCalc";
 export { default as ExchangeCalc } from "./ExchangeCalc";
+export { default as MonthlySurplusCalc } from "./MonthlySurplusCalc";

@@ -74,6 +74,13 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: "자금계획",
+    baseHref: "/funds",
+    items: [
+      { href: "/funds/monthly-surplus", label: "월 잉여자금 계산기" },
+    ],
+  },
+  {
     label: "금융 가이드",
     baseHref: "/blog",
     items: [],

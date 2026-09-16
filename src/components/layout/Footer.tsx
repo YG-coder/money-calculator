@@ -50,6 +50,10 @@ const FINANCE_LINKS = [
   { label: "환전 계산기", href: "/finance/exchange" },
 ];
 
+const FUNDS_LINKS = [
+  { label: "월 잉여자금 계산기", href: "/funds/monthly-surplus" },
+];
+
 const INFO_LINKS = [
   { label: "소개", href: "/about" },
   { label: "금융 가이드", href: "/blog" },
@@ -63,7 +67,7 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-400">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-5">
+        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-6">
           <div>
             <Link
               href="/"
@@ -132,6 +136,24 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               {FINANCE_LINKS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-200">
+              자금계획
+            </h3>
+            <ul className="space-y-2">
+              {FUNDS_LINKS.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}

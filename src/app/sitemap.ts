@@ -14,6 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: StaticPage[] = [
     { path: "", priority: 1.0, freq: "daily" },
 
+    // 자금계획
+    { path: "funds", priority: 0.8, freq: "weekly" },
+    { path: "funds/monthly-surplus", priority: 0.9, freq: "monthly" },
+
     // 대출 계산기
     { path: "loan-interest-calculator", priority: 0.9, freq: "monthly" },
     { path: "amortization-calculator", priority: 0.9, freq: "monthly" },
