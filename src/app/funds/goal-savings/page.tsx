@@ -179,6 +179,7 @@ export default function Page() {
         examples={EXAMPLES}
         faq={FAQ}
         relatedCalcs={[
+          { label: "월 잉여자금 계산기", href: "/funds/monthly-surplus", icon: "🧮" },
           { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
           { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
           { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
