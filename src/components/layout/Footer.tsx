@@ -67,7 +67,10 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-400">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-6">
+        {/* 열이 6개가 되면서 lg(1024px)에서 6열로 나누면 링크가 두 줄로 꺾인다.
+              (부동산 수익률·재건축 분담금·전월세 전환율, 운영 문의 이메일)
+              그래서 6열은 xl 부터 쓰고 lg 까지는 3열 2행으로 둔다. */}
+          <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3 xl:grid-cols-6">
           <div>
             <Link
               href="/"

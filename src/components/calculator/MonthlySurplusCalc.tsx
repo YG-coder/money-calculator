@@ -58,9 +58,18 @@ const FIELDS = [
 export default function MonthlySurplusCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
+  /** 입력값에 오류 표시가 있으면 계산을 진행하지 않는다. */
+  const hasInputError = useMemo(
+    () => FIELDS.some((f) => !!state[f.key]?.error),
+    [state],
+  );
+
   const result = useMemo(() => {
+    if (hasInputError) return null;
     if (!isFilled(state, "income")) return null;
 
+    // 미입력 지출 항목은 설계상 0 으로 다룬다(0 을 넣은 것과 결과가 같다).
+    // 반면 금액으로 성립하지 않는 값은 엔진이 null 을 돌려주므로 결과를 내지 않는다.
     const expensesWon = Object.fromEntries(
       EXPENSE_KEYS.map((key) => [key, readWon(state, key)]),
     ) as ExpenseAmounts;
@@ -69,9 +78,10 @@ export default function MonthlySurplusCalc() {
       incomeWon: readWon(state, "income"),
       expensesWon,
     });
-  }, [state]);
+  }, [state, hasInputError]);
 
   const anyExpenseFilled = EXPENSE_KEYS.some((key) => isFilled(state, key));
+  const blockedByError = hasInputError && isFilled(state, "income");
 
   return (
     <div className="space-y-5">
@@ -115,6 +125,13 @@ export default function MonthlySurplusCalc() {
           ))}
         </div>
       </div>
+
+      {blockedByError && (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          입력값에 확인이 필요한 항목이 있어 결과를 표시하지 않았습니다. 위에
+          표시된 항목을 수정해 주세요.
+        </p>
+      )}
 
       {result && (
         <div className="space-y-4">

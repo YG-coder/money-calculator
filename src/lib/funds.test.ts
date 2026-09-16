@@ -10,6 +10,13 @@ import {
 /** 만원 단위를 원으로 */
 const 만 = (v: number) => v * 10_000;
 
+/** 정상 입력 케이스용 — null 이면 테스트를 실패시킨다 */
+function calc(input: Parameters<typeof calcMonthlySurplus>[0]) {
+  const r = calcMonthlySurplus(input);
+  if (r === null) throw new Error("정상 입력인데 null 이 반환되었습니다");
+  return r;
+}
+
 function expenses(partial: Partial<ExpenseAmounts> = {}): ExpenseAmounts {
   const base = Object.fromEntries(
     EXPENSE_KEYS.map((k) => [k, 0]),
@@ -39,7 +46,7 @@ describe("sumExpenses", () => {
 });
 
 describe("calcMonthlySurplus — 정상 흑자", () => {
-  const r = calcMonthlySurplus({
+  const r = calc({
     incomeWon: 만(400),
     expensesWon: expenses({
       housing: 만(80),
@@ -75,7 +82,7 @@ describe("calcMonthlySurplus — 정상 흑자", () => {
 });
 
 describe("calcMonthlySurplus — 적자", () => {
-  const r = calcMonthlySurplus({
+  const r = calc({
     incomeWon: 만(200),
     expensesWon: expenses({ housing: 만(150), food: 만(80) }),
   });
@@ -99,7 +106,7 @@ describe("calcMonthlySurplus — 적자", () => {
 
 describe("calcMonthlySurplus — 경계", () => {
   it("잉여자금 정확히 0 은 적자가 아니다", () => {
-    const r = calcMonthlySurplus({
+    const r = calc({
       incomeWon: 만(300),
       expensesWon: expenses({ housing: 만(300) }),
     });
@@ -109,7 +116,7 @@ describe("calcMonthlySurplus — 경계", () => {
   });
 
   it("지출이 전부 0 이면 잉여자금 = 소득", () => {
-    const r = calcMonthlySurplus({
+    const r = calc({
       incomeWon: 만(300),
       expensesWon: expenses(),
     });
@@ -119,7 +126,7 @@ describe("calcMonthlySurplus — 경계", () => {
   });
 
   it("소득 0 이면 지출 비율은 null (0 으로 나누지 않는다)", () => {
-    const r = calcMonthlySurplus({
+    const r = calc({
       incomeWon: 0,
       expensesWon: expenses({ housing: 만(50) }),
     });
@@ -129,46 +136,87 @@ describe("calcMonthlySurplus — 경계", () => {
   });
 
   it("소득 0 · 지출 0 이면 전부 0 이고 비율은 null", () => {
-    const r = calcMonthlySurplus({ incomeWon: 0, expensesWon: expenses() });
+    const r = calc({ incomeWon: 0, expensesWon: expenses() });
     expect(r.surplusWon).toBe(0);
     expect(r.isDeficit).toBe(false);
     expect(r.expenseRatioPct).toBeNull();
   });
 });
 
-describe("calcMonthlySurplus — 잘못된 입력 방어", () => {
-  it("NaN 은 0 으로 본다", () => {
-    const r = calcMonthlySurplus({
-      incomeWon: Number.NaN,
+describe("sumExpenses — 잘못된 값", () => {
+  it("음수가 있으면 null", () => {
+    expect(sumExpenses(expenses({ housing: 만(-100) }))).toBeNull();
+  });
+
+  it("NaN 이 있으면 null", () => {
+    expect(sumExpenses(expenses({ food: Number.NaN }))).toBeNull();
+  });
+
+  it("키가 아예 없으면 0 으로 다룬다 (미입력 항목)", () => {
+    const partial = { housing: 만(100) } as unknown as ExpenseAmounts;
+    expect(sumExpenses(partial)).toBe(만(100));
+  });
+});
+
+describe("calcMonthlySurplus — 잘못된 입력은 0 이 아니라 null", () => {
+  it("소득이 NaN 이면 null (0 원으로 계산하지 않는다)", () => {
+    expect(
+      calcMonthlySurplus({ incomeWon: Number.NaN, expensesWon: expenses() }),
+    ).toBeNull();
+  });
+
+  it("소득이 Infinity 면 null", () => {
+    expect(
+      calcMonthlySurplus({
+        incomeWon: Number.POSITIVE_INFINITY,
+        expensesWon: expenses(),
+      }),
+    ).toBeNull();
+  });
+
+  it("소득이 음수면 null", () => {
+    expect(
+      calcMonthlySurplus({ incomeWon: 만(-300), expensesWon: expenses() }),
+    ).toBeNull();
+  });
+
+  it("지출에 음수가 있으면 null — 소득만으로 계산하지 않는다", () => {
+    expect(
+      calcMonthlySurplus({
+        incomeWon: 만(300),
+        expensesWon: expenses({ housing: 만(-100) }),
+      }),
+    ).toBeNull();
+  });
+
+  it("지출에 NaN 이 있으면 null", () => {
+    expect(
+      calcMonthlySurplus({
+        incomeWon: 만(300),
+        expensesWon: expenses({ food: Number.NaN }),
+      }),
+    ).toBeNull();
+  });
+
+  it("잘못된 값과 '실제 0원'은 구분된다", () => {
+    const zero = calcMonthlySurplus({
+      incomeWon: 만(300),
+      expensesWon: expenses({ housing: 0 }),
+    });
+    const invalid = calcMonthlySurplus({
+      incomeWon: 만(300),
       expensesWon: expenses({ housing: Number.NaN }),
     });
-    expect(r.incomeWon).toBe(0);
-    expect(r.totalExpenseWon).toBe(0);
-    expect(r.surplusWon).toBe(0);
+    expect(zero).not.toBeNull();
+    expect(zero!.totalExpenseWon).toBe(0);
+    expect(invalid).toBeNull();
   });
 
-  it("Infinity 는 0 으로 본다", () => {
-    const r = calcMonthlySurplus({
-      incomeWon: Number.POSITIVE_INFINITY,
-      expensesWon: expenses({ food: Number.NEGATIVE_INFINITY }),
-    });
-    expect(r.incomeWon).toBe(0);
-    expect(r.totalExpenseWon).toBe(0);
-  });
-
-  it("음수 입력은 0 으로 막는다 (지출이 소득을 늘리지 않는다)", () => {
-    const r = calcMonthlySurplus({
-      incomeWon: 만(300),
-      expensesWon: expenses({ housing: 만(-100) }),
-    });
-    expect(r.totalExpenseWon).toBe(0);
-    expect(r.surplusWon).toBe(만(300));
-  });
-
-  it("누락된 항목 키가 있어도 0 으로 처리한다", () => {
+  it("누락된 항목 키는 유효한 미입력으로 본다", () => {
     const partial = { housing: 만(100) } as unknown as ExpenseAmounts;
     const r = calcMonthlySurplus({ incomeWon: 만(300), expensesWon: partial });
-    expect(r.totalExpenseWon).toBe(만(100));
-    expect(r.surplusWon).toBe(만(200));
+    expect(r).not.toBeNull();
+    expect(r!.totalExpenseWon).toBe(만(100));
+    expect(r!.surplusWon).toBe(만(200));
   });
 });

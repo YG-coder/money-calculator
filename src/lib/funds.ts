@@ -46,21 +46,48 @@ export interface MonthlySurplusResult {
   isDeficit: boolean;
 }
 
-/** 숫자가 아니거나 유한하지 않으면 0 으로 본다. 음수 입력은 0 으로 막는다. */
-function safeAmount(v: number): number {
-  if (typeof v !== "number" || !Number.isFinite(v)) return 0;
-  return v < 0 ? 0 : v;
+/**
+ * 금액으로 쓸 수 있는 값인지 판정한다.
+ *
+ * ⚠️ 잘못된 값을 0 으로 바꾸지 않는다. 0 으로 바꾸면 사용자 화면에서는
+ *    "0원을 입력한 것"과 구분되지 않아 조용한 오답이 된다.
+ *    미입력을 0 으로 다루는 것은 호출부(컴포넌트)의 설계 결정이고,
+ *    엔진은 넘어온 숫자가 금액으로 성립하는지만 본다.
+ */
+function isValidAmount(v: number): boolean {
+  return typeof v === "number" && Number.isFinite(v) && v >= 0;
 }
 
-export function sumExpenses(expensesWon: ExpenseAmounts): number {
-  return EXPENSE_KEYS.reduce((acc, key) => acc + safeAmount(expensesWon[key]), 0);
+/** 7개 항목의 합. 하나라도 금액으로 성립하지 않으면 null. */
+export function sumExpenses(expensesWon: ExpenseAmounts): number | null {
+  let total = 0;
+
+  for (const key of EXPENSE_KEYS) {
+    const amount = expensesWon[key];
+    // 키가 아예 없는 경우(undefined)는 "항목을 쓰지 않음"으로 보고 0 으로 다룬다.
+    if (amount === undefined) continue;
+    if (!isValidAmount(amount)) return null;
+    total += amount;
+  }
+
+  return total;
 }
 
+/**
+ * 월 잉여자금을 계산한다.
+ *
+ * 금액으로 성립하지 않는 값(음수·NaN·Infinity·숫자 아님)이 하나라도 있으면
+ * **null 을 반환한다.** 호출부는 결과를 표시하지 말고 입력을 다시 받아야 한다.
+ */
 export function calcMonthlySurplus(
   input: MonthlySurplusInput,
-): MonthlySurplusResult {
-  const incomeWon = safeAmount(input.incomeWon);
+): MonthlySurplusResult | null {
+  const incomeWon = input.incomeWon;
+  if (!isValidAmount(incomeWon)) return null;
+
   const totalExpenseWon = sumExpenses(input.expensesWon);
+  if (totalExpenseWon === null) return null;
+
   const surplusWon = incomeWon - totalExpenseWon;
 
   return {
