@@ -125,13 +125,13 @@ export default function Page() {
             {PURPOSE_GROUPS.map((g) => (
               <div
                 key={g.id}
-                className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5"
+                className="row-span-6 grid grid-rows-subgrid gap-y-0 rounded-2xl border border-slate-200 bg-white p-5"
               >
                 <h3 className="text-base font-black text-slate-900">
                   {g.title}
                 </h3>
-                {/* grow: 설명 길이가 달라도 카드마다 CTA 위치를 맞춘다 */}
-                <p className="mt-1.5 grow text-sm leading-relaxed text-slate-600">
+                {/* 같은 줄의 카드가 행 높이를 공유해 설명·버튼·링크를 정렬한다. */}
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
                   {g.when}
                 </p>
 
