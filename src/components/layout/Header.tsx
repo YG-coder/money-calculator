@@ -79,6 +79,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/funds/monthly-surplus", label: "월 잉여자금 계산기" },
       { href: "/funds/emergency-fund", label: "비상자금 계산기" },
+      { href: "/funds/moving-cost", label: "이사자금 계산기" },
     ],
   },
   {

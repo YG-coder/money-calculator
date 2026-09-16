@@ -53,6 +53,7 @@ const FINANCE_LINKS = [
 const FUNDS_LINKS = [
   { label: "월 잉여자금 계산기", href: "/funds/monthly-surplus" },
   { label: "비상자금 계산기", href: "/funds/emergency-fund" },
+  { label: "이사자금 계산기", href: "/funds/moving-cost" },
 ];
 
 const INFO_LINKS = [

@@ -30,3 +30,4 @@ export { default as VacancyImpactCalc } from "./VacancyImpactCalc";
 export { default as ExchangeCalc } from "./ExchangeCalc";
 export { default as MonthlySurplusCalc } from "./MonthlySurplusCalc";
 export { default as EmergencyFundCalc } from "./EmergencyFundCalc";
+export { default as MovingCostCalc } from "./MovingCostCalc";

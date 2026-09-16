@@ -215,3 +215,87 @@ export function calcCoverageMonths(
     remainMonths: Math.floor(exactMonths % MONTHS_PER_YEAR),
   };
 }
+
+// ─────────────────────────────────────────────
+// 6. 이사자금 (이사를 실행하는 데 필요한 추가 현금)
+// ─────────────────────────────────────────────
+// ⚠️ 이 엔진은 **금액만** 다룬다. 보증금이 실제로 반환되는지, 언제 반환되는지,
+//    감액 가능성이 있는지는 판단하지 않는다. 회수 예상액은 사용자가 넣은 값이다.
+//
+// ⚠️ 보증금 회수 전에 새 보증금을 먼저 내야 하는 시차 때문에 필요한
+//    일시적 현금은 이 계산으로 산정하지 않는다. 시점을 다루지 않기 때문이다.
+//
+// ⚠️ 임대차 중개보수는 사용자 직접 입력이다. 매매 요율표를 재사용하지 않는다.
+//    (policy/brokerage.ts 는 주택 매매·교환 상한요율만 지원한다)
+
+export const MOVING_COST_KEYS = [
+  "movingFee",
+  "brokerage",
+  "appliance",
+  "etc",
+] as const;
+
+export type MovingCostKey = (typeof MOVING_COST_KEYS)[number];
+
+export type MovingCosts = Record<MovingCostKey, number>;
+
+export interface MovingCostInput {
+  /** 새 보증금(원) — 필수 */
+  newDepositWon: number;
+  /** 기존 보증금 회수 예상액(원). 사용자가 넣은 예상값이다 */
+  returnedDepositWon: number;
+  /** 이사 부대비용 항목별 금액(원) */
+  costsWon: MovingCosts;
+}
+
+export interface MovingCostResult {
+  newDepositWon: number;
+  returnedDepositWon: number;
+  /** 보증금 차액 = 새 보증금 − 회수 예상액. 음수일 수 있다 */
+  depositDiffWon: number;
+  /** 이사 부대비용 합계 */
+  extraCostWon: number;
+  /** 보증금 차액 + 부대비용. 음수면 계산상 남는 금액이다 */
+  totalNeededWon: number;
+  /** totalNeededWon < 0 */
+  isSurplus: boolean;
+}
+
+/** 부대비용 합계. 하나라도 금액으로 성립하지 않으면 null. */
+export function sumMovingCosts(costsWon: MovingCosts): number | null {
+  let total = 0;
+
+  for (const key of MOVING_COST_KEYS) {
+    const amount = costsWon[key];
+    // 키가 없는 경우(미입력)는 0 으로 다룬다. 잘못된 값과는 구분한다.
+    if (amount === undefined) continue;
+    if (!isValidNonNegative(amount)) return null;
+    total += amount;
+  }
+
+  return total;
+}
+
+export function calcMovingCost(
+  input: MovingCostInput,
+): MovingCostResult | null {
+  const { newDepositWon, returnedDepositWon, costsWon } = input;
+
+  if (!isValidNonNegative(newDepositWon)) return null;
+  if (!isValidNonNegative(returnedDepositWon)) return null;
+
+  const extraCostWon = sumMovingCosts(costsWon);
+  if (extraCostWon === null) return null;
+
+  const depositDiffWon = newDepositWon - returnedDepositWon;
+  const totalNeededWon = depositDiffWon + extraCostWon;
+
+  return {
+    newDepositWon,
+    returnedDepositWon,
+    depositDiffWon,
+    extraCostWon,
+    totalNeededWon,
+    isSurplus: totalNeededWon < 0,
+  };
+}

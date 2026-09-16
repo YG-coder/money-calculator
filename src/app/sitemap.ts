@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "funds", priority: 0.8, freq: "weekly" },
     { path: "funds/monthly-surplus", priority: 0.9, freq: "monthly" },
     { path: "funds/emergency-fund", priority: 0.9, freq: "monthly" },
+    { path: "funds/moving-cost", priority: 0.9, freq: "monthly" },
 
     // 대출 계산기
     { path: "loan-interest-calculator", priority: 0.9, freq: "monthly" },

@@ -197,6 +197,7 @@ export default function Page() {
         examples={EXAMPLES}
         faq={FAQ}
         relatedCalcs={[
+          { label: "이사자금 계산기",       href: "/funds/moving-cost",                      icon: "📦" },
           { label: "월세 vs 전세 계산기",  href: "/real-estate/jeonse-vs-wolse-calculator", icon: "⚖️" },
           { label: "대출이자 계산기",       href: "/loan-interest-calculator",               icon: "🏦" },
           { label: "중도상환 계산기",       href: "/prepayment-calculator",                  icon: "💸" },

@@ -172,6 +172,11 @@ export default function Page() {
             faq={FAQ}
             relatedCalcs={[
               {
+                label: "이사자금 계산기",
+                href: "/funds/moving-cost",
+                icon: "📦",
+              },
+              {
                 label: "취득세 계산기",
                 href: "/real-estate/acquisition-tax-calculator",
                 icon: "🏠",

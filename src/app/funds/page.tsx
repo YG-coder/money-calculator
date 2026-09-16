@@ -30,6 +30,12 @@ const FUNDS_CALCS = [
     href: "/funds/emergency-fund",
     icon: "🛟",
   },
+  {
+    title: "이사자금 계산기",
+    desc: "보증금 차액과 이사비·중개보수 등 부대비용을 더해 추가로 필요한 현금을 계산합니다.",
+    href: "/funds/moving-cost",
+    icon: "📦",
+  },
 ];
 
 export default function Page() {
