@@ -24,6 +24,8 @@ import {
   sanitize,
   toDisplay,
   readUrlValue,
+  hasDroppedChars,
+  droppedCharsMessage,
   type CalcState,
   type FieldKind,
   type FieldState,
@@ -37,6 +39,8 @@ export {
   readWon,
   isFilled,
   isValidUrlValue,
+  hasDroppedChars,
+  stripFormatting,
 } from "@/lib/calcInput";
 
 export type FieldDef = {
@@ -154,7 +158,16 @@ export function useCalcState(fields: FieldDef[]) {
 
       const kind = getKind(field);
       const raw = sanitize(inputValue, kind);
-      const error = field.validate ? (field.validate(raw) ?? "") : "";
+
+      // 붙여넣기 등으로 허용되지 않은 문자가 제거되면 값이 조용히 달라진다.
+      // 이때는 필드 자체 검증보다 먼저 알린다. (URL 경로는 readUrlValue 가 이미 막는다)
+      const dropped = hasDroppedChars(inputValue, kind);
+      const error = dropped
+        ? droppedCharsMessage(kind)
+        : field.validate
+          ? (field.validate(raw) ?? "")
+          : "";
+
       const display = toDisplay(raw, kind);
 
       setState((prev) => ({

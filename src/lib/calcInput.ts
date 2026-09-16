@@ -40,6 +40,39 @@ export function sanitize(input: string, kind: FieldKind): string {
   return `${parts[0]}.${parts.slice(1).join("")}`;
 }
 
+/** 허용하는 표기 정리 — 쉼표와 앞뒤 공백. 이것만 걷어낸 값이 사용자가 의도한 문자열이다. */
+export function stripFormatting(input: string): string {
+  return input.replace(/,/g, "").trim();
+}
+
+/**
+ * 허용되지 않은 문자가 제거되었는지 판정한다.
+ *
+ * ⚠️ sanitize() 는 허용 문자만 남기므로, 붙여넣기로 들어온 값에서 의미 있는 문자가
+ *    조용히 사라질 수 있다. 실제로 확인된 사례:
+ *
+ *      "-5000"  → "5000"   부호가 사라져 음수가 양수가 된다
+ *      "1e5"    → "15"     지수 표기가 다른 숫자가 된다
+ *      "abc123" → "123"    잘린 일부만 계산된다
+ *      "12.5"   → "125"    금액·정수 필드에서 소수점이 사라져 10 배가 된다
+ *
+ *    쉼표와 앞뒤 공백은 허용하는 표기 정리이므로 "5,000" · " 5000 " 은 정상이다.
+ *    그 외 문자가 제거되었다면 사용자의 의도와 다른 값이므로 계산하지 않고 알린다.
+ */
+export function hasDroppedChars(input: string, kind: FieldKind): boolean {
+  const intended = stripFormatting(input);
+  if (!intended) return false;
+
+  return sanitize(input, kind) !== intended;
+}
+
+/** hasDroppedChars 가 true 일 때 보여 줄 문구. */
+export function droppedCharsMessage(kind: FieldKind): string {
+  return kind === "decimal"
+    ? "숫자와 소수점만 입력할 수 있습니다"
+    : "숫자만 입력할 수 있습니다";
+}
+
 /**
  * URL 쿼리로 들어온 값이 이 필드에 넣어도 되는 값인지 판정한다.
  *

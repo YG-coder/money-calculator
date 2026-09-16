@@ -9,6 +9,9 @@ import {
   type CalcState,
   isValidUrlValue,
   readUrlValue,
+  hasDroppedChars,
+  stripFormatting,
+  droppedCharsMessage,
 } from "@/lib/calcInput";
 
 const st = (entries: Record<string, string>): CalcState =>
@@ -193,5 +196,68 @@ describe("readUrlValue — 무시할 때 기본값으로 되돌린다", () => {
   it("파라미터 자체가 없으면 fallback", () => {
     expect(readUrlValue(null, "0", "money")).toBe("0");
     expect(readUrlValue(undefined, "", "money")).toBe("");
+  });
+});
+
+// ─────────────────────────────────────────────
+// 붙여넣기로 문자가 사라지는 경우 판정
+// ─────────────────────────────────────────────
+
+describe("hasDroppedChars — 허용 표기와 잘못된 입력 구분", () => {
+  it("쉼표·앞뒤 공백은 허용 표기이므로 false", () => {
+    expect(hasDroppedChars("5,000", "money")).toBe(false);
+    expect(hasDroppedChars(" 5000 ", "money")).toBe(false);
+    expect(hasDroppedChars("1,234,567", "money")).toBe(false);
+    expect(hasDroppedChars("5000", "money")).toBe(false);
+  });
+
+  it("빈 값은 false", () => {
+    expect(hasDroppedChars("", "money")).toBe(false);
+    expect(hasDroppedChars("   ", "money")).toBe(false);
+  });
+
+  it("음수 부호가 사라지면 true", () => {
+    expect(hasDroppedChars("-5000", "money")).toBe(true);
+  });
+
+  it("지수 표기는 true", () => {
+    expect(hasDroppedChars("1e5", "money")).toBe(true);
+  });
+
+  it("문자가 섞이면 true", () => {
+    expect(hasDroppedChars("abc123", "money")).toBe(true);
+    expect(hasDroppedChars("12a3원", "money")).toBe(true);
+  });
+
+  it("금액·정수 필드의 소수점은 true (10 배 오차를 막는다)", () => {
+    expect(hasDroppedChars("12.5", "money")).toBe(true);
+    expect(hasDroppedChars("12.5", "integer")).toBe(true);
+  });
+
+  it("소수 필드의 소수점은 정상 입력이므로 false", () => {
+    expect(hasDroppedChars("3.5", "decimal")).toBe(false);
+    expect(hasDroppedChars("3.", "decimal")).toBe(false);
+    expect(hasDroppedChars("0.25", "decimal")).toBe(false);
+  });
+
+  it("소수 필드에서도 문자·부호는 true", () => {
+    expect(hasDroppedChars("-3.5", "decimal")).toBe(true);
+    expect(hasDroppedChars("3.5%", "decimal")).toBe(true);
+    expect(hasDroppedChars("3.5.7", "decimal")).toBe(true);
+  });
+});
+
+describe("stripFormatting", () => {
+  it("쉼표와 앞뒤 공백만 제거한다", () => {
+    expect(stripFormatting(" 1,234 ")).toBe("1234");
+    expect(stripFormatting("-5,000")).toBe("-5000");
+    expect(stripFormatting("abc")).toBe("abc");
+  });
+});
+
+describe("droppedCharsMessage", () => {
+  it("필드 종류에 따라 문구가 다르다", () => {
+    expect(droppedCharsMessage("money")).toContain("숫자만");
+    expect(droppedCharsMessage("decimal")).toContain("소수점");
   });
 });
