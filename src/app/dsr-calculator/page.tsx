@@ -250,6 +250,11 @@ export default function Page() {
         faq={FAQ}
         relatedCalcs={[
           {
+            label: "월 잉여자금 계산기",
+            href: "/funds/monthly-surplus",
+            icon: "🧮",
+          },
+          {
             label: "LTV 계산기 (담보 기준 한도)",
             href: "/ltv-calculator",
             icon: "📏",

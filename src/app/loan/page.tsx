@@ -394,6 +394,33 @@ export default function Page() {
 
       <section className="border-t border-slate-100 bg-slate-50 py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-5 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <p className="mb-1 text-sm font-bold text-slate-800">
+              🧮 매달 얼마가 남는지부터 보고 싶다면
+            </p>
+            <p className="mb-4 text-sm text-slate-500">
+              월 잉여자금 계산기로 소득에서 지출을 뺀 생활 현금흐름을 확인할 수
+              있습니다. 다만 <strong className="text-slate-700">대출 규제에서
+              쓰는 소득 기준과는 계산 방식이 다릅니다.</strong> DSR 은 연소득을
+              별도 기준으로 정의하므로 두 값을 같은 것으로 보거나 그대로 옮겨
+              쓸 수 없습니다.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/funds/monthly-surplus"
+                className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800"
+              >
+                월 잉여자금 계산기 →
+              </Link>
+              <Link
+                href="/funds"
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              >
+                자금계획 계산기 전체 →
+              </Link>
+            </div>
+          </div>
+
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <p className="mb-1 text-sm font-bold text-slate-800">
               🏠 부동산 매매 준비 중이신가요?

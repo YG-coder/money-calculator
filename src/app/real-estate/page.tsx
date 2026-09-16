@@ -452,7 +452,8 @@ export default function Page() {
 
             <p className="mb-4 text-sm text-slate-500">
               부동산 매매 시 대출이자·원리금·전세대출 등 대출 계산기도 함께
-              이용할 수 있습니다.
+              이용할 수 있습니다. 임차 계약으로 옮길 때 필요한 현금은 이사자금
+              계산기에서 확인하세요.
             </p>
 
             <div className="flex flex-wrap gap-3">
@@ -468,6 +469,13 @@ export default function Page() {
                 className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"
               >
                 전세대출 계산기 →
+              </Link>
+
+              <Link
+                href="/funds/moving-cost"
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              >
+                이사자금 계산기 →
               </Link>
             </div>
           </div>
