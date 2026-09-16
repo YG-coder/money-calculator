@@ -180,6 +180,7 @@ export default function Page() {
           </>
         }
         relatedCalcs={[
+          { label: "비상자금 계산기", href: "/funds/emergency-fund", icon: "🛟" },
           { label: "목표 저축 계산기", href: "/finance/goal-savings", icon: "🎯" },
           { label: "DSR 계산기", href: "/dsr-calculator", icon: "📊" },
           {

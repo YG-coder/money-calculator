@@ -2,7 +2,12 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon, isFilled, hasRejectedInput } from "@/lib/calcInput";
+import {
+  readWon,
+  isFilled,
+  hasRejectedInput,
+  hasFieldError,
+} from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
   calcMonthlySurplus,
@@ -59,10 +64,7 @@ export default function MonthlySurplusCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   /** 입력값에 오류 표시가 있으면 계산을 진행하지 않는다. */
-  const hasInputError = useMemo(
-    () => FIELDS.some((f) => !!state[f.key]?.error),
-    [state],
-  );
+  const hasInputError = hasFieldError(state);
 
   const result = useMemo(() => {
     if (hasRejectedInput(state)) return null;

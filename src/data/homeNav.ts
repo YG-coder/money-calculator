@@ -115,6 +115,11 @@ export const CALC = {
     desc: "월 소득과 7개 지출로 매달 남는 금액과 연간 환산을 계산합니다.",
     href: "/funds/monthly-surplus",
   },
+  emergencyFund: {
+    title: "비상자금 계산기",
+    desc: "정한 기간에 필요한 금액과, 가진 돈으로 감당할 기간을 계산합니다.",
+    href: "/funds/emergency-fund",
+  },
 } as const satisfies Record<string, CalcEntry>;
 
 export type CalcKey = keyof typeof CALC;
@@ -194,7 +199,7 @@ export const PURPOSE_GROUPS: PurposeGroup[] = [
     // 현재 현금흐름이 먼저 있어야 한다.
     primary: "monthlySurplus",
     primaryNote: "소득에서 이미 빠진 금액은 지출에 다시 넣지 않습니다.",
-    secondary: ["goalSavings"],
+    secondary: ["emergencyFund", "goalSavings"],
     hub: { label: "자금계획 계산기 전체", href: "/funds" },
   },
 ];

@@ -177,6 +177,17 @@ export function isRejectedField(state: CalcState, key: string): boolean {
   return field.raw === "" && field.value !== "";
 }
 
+/**
+ * 필드에 표시 중인 오류가 하나라도 있으면 true.
+ *
+ * 거부된 입력(hasRejectedInput)뿐 아니라 각 계산기의 validate 가 만든 오류
+ * (상한 초과 등)도 포함한다. 오류 문구와 계산 결과가 함께 보이면
+ * 사용자가 어느 쪽을 믿어야 할지 알 수 없다.
+ */
+export function hasFieldError(state: CalcState): boolean {
+  return Object.values(state).some((field) => !!field?.error);
+}
+
 /** 하나라도 거부된 입력이 있으면 true. 계산기는 이때 결과를 내지 않는다. */
 export function hasRejectedInput(state: CalcState): boolean {
   return Object.keys(state).some((key) => isRejectedField(state, key));

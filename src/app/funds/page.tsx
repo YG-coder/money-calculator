@@ -24,6 +24,12 @@ const FUNDS_CALCS = [
     href: "/funds/monthly-surplus",
     icon: "🧮",
   },
+  {
+    title: "비상자금 계산기",
+    desc: "대비하고 싶은 기간의 필요 금액과, 지금 가진 돈으로 감당할 수 있는 기간을 계산합니다.",
+    href: "/funds/emergency-fund",
+    icon: "🛟",
+  },
 ];
 
 export default function Page() {

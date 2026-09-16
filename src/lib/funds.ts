@@ -100,3 +100,118 @@ export function calcMonthlySurplus(
     isDeficit: surplusWon < 0,
   };
 }
+
+// ─────────────────────────────────────────────
+// 5. 비상자금 (소득이 없는 기간의 필수지출 대비)
+// ─────────────────────────────────────────────
+// ⚠️ 이 엔진이 다루는 것은 비상자금의 여러 용도 중 **소득 상실 대비** 하나다.
+//    차량·주택 수리, 갑작스러운 의료비처럼 사건별로 금액이 정해지는 지출은
+//    기간 × 월 지출로 산정되지 않으므로 계산 대상이 아니다.
+//
+// ⚠️ 권장 개월 수·적정 금액을 두지 않는다. 대비 개월은 전적으로 사용자 입력이다.
+// ⚠️ 이자·물가·실업급여·정부지원금을 반영하지 않는다. 사칙연산만 쓴다.
+
+/** 기간 표시 소수 자릿수. 버틸 수 있는 기간은 과대 표시가 위험하므로 내림한다. */
+export const COVERAGE_DECIMALS = 1;
+
+// ── 모드 A: 대비기간 기준 ──
+
+export interface EmergencyNeedInput {
+  /** 월 필수지출(원) */
+  monthlyEssentialWon: number;
+  /** 대비 개월 (사용자가 정한다. 기본값 없음) */
+  months: number;
+  /** 현재 보유자금(원). 미입력이면 null — 0 원과 구분한다 */
+  availableWon: number | null;
+}
+
+export interface EmergencyNeedResult {
+  monthlyEssentialWon: number;
+  months: number;
+  /** 전체 필요자금 = 월 필수지출 × 대비 개월 */
+  requiredWon: number;
+  /** 보유자금을 입력한 경우에만 값이 있다 */
+  availableWon: number | null;
+  /** 추가로 필요한 금액. 보유자금이 더 크면 0 으로 막는다(음수 표시 안 함) */
+  shortfallWon: number | null;
+}
+
+/** 금액·기간으로 쓸 수 있는 값인지. 잘못된 값은 0 으로 바꾸지 않고 null 로 되돌린다. */
+function isValidNonNegative(v: number): boolean {
+  return typeof v === "number" && Number.isFinite(v) && v >= 0;
+}
+
+export function calcEmergencyNeed(
+  input: EmergencyNeedInput,
+): EmergencyNeedResult | null {
+  const { monthlyEssentialWon, months, availableWon } = input;
+
+  if (!isValidNonNegative(monthlyEssentialWon)) return null;
+  if (!isValidNonNegative(months)) return null;
+  if (availableWon !== null && !isValidNonNegative(availableWon)) return null;
+
+  const requiredWon = monthlyEssentialWon * months;
+
+  return {
+    monthlyEssentialWon,
+    months,
+    requiredWon,
+    availableWon,
+    shortfallWon:
+      availableWon === null ? null : Math.max(0, requiredWon - availableWon),
+  };
+}
+
+// ── 모드 B: 소득공백 기준 ──
+
+export interface CoverageInput {
+  /** 현재 보유자금(원). 미입력이면 null */
+  availableWon: number | null;
+  /** 월 필수지출(원) */
+  monthlyEssentialWon: number;
+}
+
+export type CoverageOutcome =
+  /** 월 필수지출이 0 이라 나눌 수 없다. 기간을 산정하지 않고 이유를 알린다 */
+  | { status: "cannotDivide" }
+  | {
+      status: "ok";
+      /** 나눗셈 결과 그대로 */
+      exactMonths: number;
+      /** 화면 표시용 — 소수 1 자리 내림 */
+      displayMonths: number;
+      /** 보조 표기: 내림한 년 */
+      years: number;
+      /** 보조 표기: 년을 뺀 나머지 개월(내림) */
+      remainMonths: number;
+    };
+
+/** 소수 자릿수만큼 내림. (과대 표시 방지) */
+export function floorTo(value: number, decimals: number): number {
+  const factor = 10 ** decimals;
+  return Math.floor(value * factor) / factor;
+}
+
+export function calcCoverageMonths(
+  input: CoverageInput,
+): CoverageOutcome | null {
+  const { availableWon, monthlyEssentialWon } = input;
+
+  // 보유자금 미입력은 결과를 내지 않는다. (0 원 입력과 구분)
+  if (availableWon === null) return null;
+  if (!isValidNonNegative(availableWon)) return null;
+  if (!isValidNonNegative(monthlyEssentialWon)) return null;
+
+  if (monthlyEssentialWon === 0) return { status: "cannotDivide" };
+
+  const exactMonths = availableWon / monthlyEssentialWon;
+  const displayMonths = floorTo(exactMonths, COVERAGE_DECIMALS);
+
+  return {
+    status: "ok",
+    exactMonths,
+    displayMonths,
+    years: Math.floor(exactMonths / MONTHS_PER_YEAR),
+    remainMonths: Math.floor(exactMonths % MONTHS_PER_YEAR),
+  };
+}

@@ -43,6 +43,7 @@ export {
   stripFormatting,
   isRejectedField,
   hasRejectedInput,
+  hasFieldError,
 } from "@/lib/calcInput";
 
 export type FieldDef = {
