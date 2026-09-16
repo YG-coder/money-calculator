@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import { compareCmaVsDeposit } from "@/lib/finance";
@@ -30,7 +30,7 @@ export default function CmaVsDepositCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const principal = won("principal");
     const months = num("months");
     if (!principal || !months || !filled("depositRate") || !filled("cmaRate"))

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import {
@@ -39,7 +39,7 @@ export default function SavingsCompareCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const monthly = won("monthly");
     const months = num("months");
     if (!monthly || !months || !filled("rate")) return null;

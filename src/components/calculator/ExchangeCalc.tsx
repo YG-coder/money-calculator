@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, isFilled, hasRejectedInput } from "@/lib/calcInput";
+import { readNum, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW } from "@/lib/loan";
 import {
   calcExchange,
@@ -53,7 +53,16 @@ export default function ExchangeCalc() {
   const isBuy = direction === "buy";
 
   const outcome = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    // 스프레드 입력 방식에 따라 쓰지 않는 필드는 제외한다.
+    if (
+      hasFieldErrorIn(state, [
+        "baseRate",
+        "preferential",
+        "amount",
+        spreadMode === "rate" ? "spreadPct" : "cashRate",
+      ])
+    )
+      return null;
     const amount = readNum(state, "amount");
     if (!amount) return null;
 

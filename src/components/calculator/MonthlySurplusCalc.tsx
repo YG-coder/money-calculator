@@ -5,7 +5,6 @@ import { useCalcState } from "@/hooks/useCalcState";
 import {
   readWon,
   isFilled,
-  hasRejectedInput,
   hasFieldError,
 } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
@@ -67,7 +66,6 @@ export default function MonthlySurplusCalc() {
   const hasInputError = hasFieldError(state);
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
     if (hasInputError) return null;
     if (!isFilled(state, "income")) return null;
 

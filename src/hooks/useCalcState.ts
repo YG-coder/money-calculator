@@ -44,6 +44,7 @@ export {
   isRejectedField,
   hasRejectedInput,
   hasFieldError,
+  hasFieldErrorIn,
 } from "@/lib/calcInput";
 
 export type FieldDef = {

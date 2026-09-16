@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcInstallmentSavings, type TaxType } from "@/lib/finance";
@@ -59,7 +59,7 @@ export default function InstallmentSavingsCalc() {
   const [taxType, setTaxType] = useState<TaxType>("general");
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const monthlyDeposit = won("monthly");
     const rate = num("rate");
     const months = num("months");

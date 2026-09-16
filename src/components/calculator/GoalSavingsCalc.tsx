@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldErrorIn } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
@@ -80,7 +80,14 @@ export default function GoalSavingsCalc() {
   const has = (k: string) => !!state[k]?.value;
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    // 현재 모드에서 실제로 쓰는 입력만 본다.
+    const activeKeys =
+      mode === "targetToMonthly"
+        ? ["target", "months", "rate"]
+        : mode === "monthlyToMonths"
+          ? ["monthly", "target", "rate"]
+          : ["monthly", "months", "rate"];
+    if (hasFieldErrorIn(state, activeKeys)) return null;
     const rate = num("rate");
     if (!has("rate")) return null;
 
@@ -117,7 +124,6 @@ export default function GoalSavingsCalc() {
       }),
     } as const;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, mode]);
 
   const showTarget = mode === "targetToMonthly" || mode === "monthlyToMonths";

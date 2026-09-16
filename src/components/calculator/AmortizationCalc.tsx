@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import {
   calcAmortization,
@@ -55,7 +55,7 @@ export default function AmortizationCalc() {
   };
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const p = won("principal");
     const r = num("rate");
     const m = num("months");

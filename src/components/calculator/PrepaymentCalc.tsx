@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcPrepayment, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -67,7 +67,7 @@ export default function PrepaymentCalc() {
       : "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const rem = won("remaining");
     const pre = won("prepay");
     const r = num("rate");

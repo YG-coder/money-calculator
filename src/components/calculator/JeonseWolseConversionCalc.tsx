@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW } from "@/lib/loan";
 import {
@@ -31,7 +31,7 @@ export default function JeonseWolseConversionCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const jeonse = man("jeonse");
     const wolseDeposit = man("wolseDeposit");
     // 전환 대상 = 전세보증금 − 월세보증금 이 0보다 커야 성립

@@ -6,8 +6,7 @@ import {
   readWon,
   readNum,
   isFilled,
-  hasRejectedInput,
-  hasFieldError,
+  hasFieldErrorIn,
 } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcEmergencyNeed, calcCoverageMonths } from "@/lib/funds";
@@ -40,9 +39,12 @@ export default function EmergencyFundCalc() {
   const { state, setValue } = useCalcState(FIELDS);
   const [mode, setMode] = useState<Mode>("need");
 
-  // 거부된 입력과 상한 초과 등 검증 오류를 모두 차단 사유로 본다.
-  const rejected = hasRejectedInput(state);
-  const blocked = hasFieldError(state);
+  // 거부된 입력과 상한 초과 등 검증 오류를 차단 사유로 본다.
+  // 단 현재 모드에서 쓰는 입력만 본다. 숨겨진 대비기간의 오류가
+  // '버틸 기간 구하기'를 막으면 안 된다.
+  const activeKeys =
+    mode === "need" ? ["essential", "months", "available"] : ["essential", "available"];
+  const blocked = hasFieldErrorIn(state, activeKeys);
 
   /** 보유자금은 선택 입력이다. 미입력(null)과 0 원을 구분한다. */
   const availableWon = isFilled(state, "available")

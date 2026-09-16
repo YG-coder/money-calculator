@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcLoanInterest, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -51,7 +51,7 @@ export default function LoanInterestCalc() {
   };
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const p = won("principal");
     const r = num("rate");
     const m = num("months");

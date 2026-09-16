@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon, hasRejectedInput } from "@/lib/calcInput";
+import { readNum, readWon, hasFieldError } from "@/lib/calcInput";
 import { formatKRW } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
 import ResultCard from "@/components/calculator/ResultCard";
@@ -35,7 +35,7 @@ export default function ReconstructionContributionCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     // readWon: 만원 단위 입력 → 원 단위로 변환됨
     const previous = readWon(state, "previousAsset");
     const proportionalRatio = readNum(state, "ratio");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcVacancyImpact } from "@/lib/realEstate";
@@ -26,7 +26,7 @@ export default function VacancyImpactCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const rent = man("rent");
     const vacancy = man("vacancy");
     // 월세·공실률 필수, 운영비/매입가는 선택. 공실률 0~100 범위 가드.

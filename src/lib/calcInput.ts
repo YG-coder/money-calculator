@@ -193,6 +193,17 @@ export function hasRejectedInput(state: CalcState): boolean {
   return Object.keys(state).some((key) => isRejectedField(state, key));
 }
 
+/**
+ * 지정한 키들 중 하나라도 오류가 있으면 true.
+ *
+ * 모드가 있는 계산기에서 쓴다. 화면에 보이지 않는 비활성 모드의 입력 오류가
+ * 현재 모드의 정상 계산을 막으면 안 되기 때문이다.
+ * (예: 대비기간에 오류를 낸 뒤 그 입력이 없는 모드로 전환한 경우)
+ */
+export function hasFieldErrorIn(state: CalcState, keys: string[]): boolean {
+  return keys.some((key) => !!state[key]?.error);
+}
+
 /** 현재 렌더 기준 raw 문자열. 미입력이면 "". */
 export function readRaw(state: CalcState, key: string): string {
   return state[key]?.raw ?? "";

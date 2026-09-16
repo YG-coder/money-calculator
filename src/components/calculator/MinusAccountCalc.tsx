@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { calcOverdraft, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "@/components/calculator/InputField";
@@ -28,7 +28,7 @@ export default function MinusAccountCalc() {
   };
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const used = won("used");
     const rate = num("rate");
     if (!used || !rate) return null;

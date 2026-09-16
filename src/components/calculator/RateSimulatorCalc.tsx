@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import {
   calcRateScenarios,
   formatKRW,
@@ -38,7 +38,7 @@ export default function RateSimulatorCalc() {
   const rateFilled = (state.rate?.raw ?? "") !== "";
 
   const rows = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const principal = won("principal");
     const months = num("months");
     if (!principal || !rateFilled || !months) return null;

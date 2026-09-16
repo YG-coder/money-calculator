@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, hasRejectedInput } from "@/lib/calcInput";
+import { readNum, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcAcquisitionTax, type OwnershipType } from "@/lib/realEstate";
 import type { FirstHomeReduction } from "@/lib/policy/acquisitionTax";
@@ -33,7 +33,14 @@ export default function AcquisitionTaxCalc() {
   const [isTemporaryTwoHouse, setIsTemporaryTwoHouse] = useState(false);
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    // 화면에 보이는 입력만 본다. 시가표준액은 비수도권을 고를 때만 쓴다.
+    if (
+      hasFieldErrorIn(state, [
+        "price",
+        ...(isMetroArea === false ? ["officialPrice"] : []),
+      ])
+    )
+      return null;
     const priceMan = readNum(state, "price");
     if (!priceMan || priceMan <= 0) return null;
     return calcAcquisitionTax({

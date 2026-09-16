@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon, hasRejectedInput } from "@/lib/calcInput";
+import { readWon, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcLtv, type RoomDeductionChoice } from "@/lib/ltv";
 import {
@@ -55,7 +55,12 @@ export default function LtvCalc() {
   }, [state, region, borrower, roomMode]);
 
   // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
-  const rejected = hasRejectedInput(state);
+  // 방공제 금액은 '직접 입력'을 고른 경우에만 쓴다.
+  const rejected = hasFieldErrorIn(state, [
+    "price",
+    "senior",
+    ...(roomMode === "amount" ? ["room"] : []),
+  ]);
   const result =
     !rejected && outcome.status === "ok" ? outcome.result : null;
 

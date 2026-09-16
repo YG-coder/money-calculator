@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcCompoundInterest } from "@/lib/finance";
@@ -62,7 +62,7 @@ export default function CompoundSavingsCalc() {
   const [showYearly, setShowYearly] = useState(false);
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const principal = won("principal");
     const rate = num("rate");
     const years = num("years");

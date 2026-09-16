@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { hasRejectedInput } from "@/lib/calcInput";
+import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcCompoundInterest } from "@/lib/finance";
@@ -29,7 +29,7 @@ export default function SimpleVsCompoundCalc() {
   const filled = (key: string) => (state[key]?.raw ?? "") !== "";
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const principal = won("principal");
     const years = num("years");
     const rate = num("rate");

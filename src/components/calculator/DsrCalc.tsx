@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon, isFilled, hasRejectedInput } from "@/lib/calcInput";
+import { readNum, readWon, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
   calcDsr,
@@ -103,8 +103,32 @@ export default function DsrCalc() {
     };
   }, [state, loanKind, repayment, region, rateType, creditKind, fixedTerm]);
 
+  /**
+   * 화면에 보이는 입력만 차단 사유로 본다.
+   * 대출 종류·상환 방식·모드에 따라 노출되는 입력이 달라지므로,
+   * 숨겨진 입력의 오류가 현재 계산을 막지 않게 한다.
+   */
+  const activeErrorKeys = useMemo(
+    () => [
+      "income",
+      "existingDebt",
+      "creditBalance",
+      "creditLineLimit",
+      "creditInstallmentBalance",
+      "creditRate",
+      "jeonseInterest",
+      "amount",
+      "rate",
+      ...(loanKind === "mortgage" ? ["months"] : []),
+      ...(loanKind === "credit" && creditKind === "installment"
+        ? ["installmentAnnual"]
+        : []),
+    ],
+    [loanKind, creditKind],
+  );
+
   const checkResult = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldErrorIn(state, activeErrorKeys)) return null;
     if (mode !== "check") return null;
     const income = readWon(state, "income");
     const amount = readWon(state, "amount");
@@ -117,10 +141,10 @@ export default function DsrCalc() {
       newLoan,
       limitPercent,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys]);
 
   const estimateResult = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldErrorIn(state, activeErrorKeys)) return null;
     if (mode !== "estimate") return null;
     const income = readWon(state, "income");
     if (!income || !rateFilled) return null;
@@ -132,7 +156,7 @@ export default function DsrCalc() {
       limitPercent,
       newLoan,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys]);
 
   // 정책 레이어가 값을 돌려주지 않는 조건(미선택·미지원·유예 만료)은
   // 임의 대체값 없이 사유를 그대로 화면에 노출한다.

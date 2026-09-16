@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon, hasRejectedInput } from "@/lib/calcInput";
+import { readWon, hasRejectedInput, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import type { OwnershipType } from "@/lib/realEstate";
 import type { FirstHomeReduction } from "@/lib/policy/acquisitionTax";
@@ -103,7 +103,17 @@ export default function InitialCostCalc() {
   ]);
 
   // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
-  const rejected = hasRejectedInput(state);
+  // 화면에 보이는 입력만 본다. 중개보수 직접 입력·등기비용 직접 입력·
+  // 시가표준액은 각 선택을 고른 경우에만 쓴다.
+  const rejected = hasFieldErrorIn(state, [
+    "price",
+    "other",
+    "loan",
+    "deposit",
+    ...(isMetroArea === false ? ["officialPrice"] : []),
+    ...(brokerageMode === "amount" ? ["brokerageManual"] : []),
+    ...(regMode === "amount" ? ["registration"] : []),
+  ]);
   const result =
     !rejected && outcome.status === "ok" ? outcome.result : null;
 

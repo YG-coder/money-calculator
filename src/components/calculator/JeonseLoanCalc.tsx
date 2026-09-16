@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon, hasRejectedInput } from "@/lib/calcInput";
+import { readNum, readWon, hasFieldError } from "@/lib/calcInput";
 import { calcJeonseLoan, formatKRW, formatUnit } from "@/lib/loan";
 import InputField from "./InputField";
 import ResultCard from "./ResultCard";
@@ -70,7 +70,7 @@ export default function JeonseLoanCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
-    if (hasRejectedInput(state)) return null;
+    if (hasFieldError(state)) return null;
     const d = readWon(state, "deposit");
     const r = readNum(state, "rate");
     const m = readNum(state, "months");
