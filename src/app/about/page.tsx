@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   slug: "about",
   title: "머니계산기 소개 — 금융 결정을 숫자로 확인하는 계산기",
   description:
-    "머니계산기의 대출·부동산·저축 계산 기능, 계산 원칙, 정책 검증 방식과 운영 정보를 안내합니다.",
+    "머니계산기의 대출·부동산·금융·자금계획 계산 기능, 계산 원칙, 정책 검증 방식과 운영 정보를 안내합니다.",
 });
 
 export default function Page() {
@@ -27,7 +27,7 @@ export default function Page() {
               머니계산기(머니계산기.kr)
             </strong>
             는 대출 한도와 상환 부담, 주택 구입에 필요한 현금, 임대수익률,
-            예·적금과 환전 비용처럼 서로 연결된 금융 결정을 숫자로 비교할 수
+            예·적금과 환전 비용, 목표 저축·비상자금·이사자금처럼 생활에 필요한 돈을 숫자로 비교할 수
             있도록 만든 무료 계산 서비스입니다.
           </p>
         </section>
@@ -130,7 +130,7 @@ export default function Page() {
 
         <section>
           <h2 className="mb-3 text-lg font-bold text-slate-800">제공 기능</h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[
               [
                 "대출 한도와 상환",
@@ -146,17 +146,23 @@ export default function Page() {
               ],
               [
                 "저축과 현금 관리",
-                "예금·적금의 세후 이자, 복리, 목표 저축액과 환전 비용을 계산합니다.",
+                "예금·적금의 세후 이자, 복리, 물가에 따른 구매력과 환전 비용을 계산합니다.",
                 "/finance",
                 "금융 계산기 전체",
+              ],
+              [
+                "생활에 필요한 자금계획",
+                "목표 저축, 월 잉여자금, 소득 공백에 대비할 비상자금과 이사에 필요한 현금을 계산합니다.",
+                "/funds",
+                "자금계획 계산기 전체",
               ],
             ].map(([title, desc, href, label]) => (
               <div
                 key={title}
-                className="rounded-xl border border-slate-200 p-4"
+                className="flex flex-col rounded-xl border border-slate-200 p-4"
               >
                 <h3 className="font-bold text-slate-900">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                <p className="mt-2 grow text-sm leading-relaxed text-slate-600">
                   {desc}
                 </p>
                 <Link
