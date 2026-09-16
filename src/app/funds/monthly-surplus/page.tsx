@@ -182,7 +182,7 @@ export default function Page() {
         relatedCalcs={[
           { label: "비상자금 계산기", href: "/funds/emergency-fund", icon: "🛟" },
           { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
-          { label: "목표 저축 계산기", href: "/finance/goal-savings", icon: "🎯" },
+          { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
           { label: "DSR 계산기", href: "/dsr-calculator", icon: "📊" },
           {
             label: "원리금상환 계산기",

@@ -78,7 +78,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "finance/deposit", priority: 0.9, freq: "monthly" },
     { path: "finance/installment-savings", priority: 0.9, freq: "monthly" },
     { path: "finance/compound", priority: 0.9, freq: "monthly" },
-    { path: "finance/goal-savings", priority: 0.9, freq: "monthly" },
+    { path: "funds/goal-savings", priority: 0.9, freq: "monthly" },
     { path: "finance/deposit-vs-savings", priority: 0.9, freq: "monthly" },
     { path: "finance/cma-vs-deposit", priority: 0.9, freq: "monthly" },
     { path: "finance/real-interest-rate", priority: 0.9, freq: "monthly" },

@@ -108,7 +108,7 @@ export const CALC = {
   goalSavings: {
     title: "목표 저축 계산기",
     desc: "목표금액·월납입·기간 중 둘을 정하면 나머지를 역산합니다.",
-    href: "/finance/goal-savings",
+    href: "/funds/goal-savings",
   },
   monthlySurplus: {
     title: "월 잉여자금 계산기",
@@ -189,16 +189,14 @@ export const PURPOSE_GROUPS: PurposeGroup[] = [
     id: "cash",
     title: "저축하고 현금 관리",
     when: "목돈을 모으거나 굴릴 때, 그리고 외화를 바꿔야 할 때.",
-    // 저축의 출발점은 "얼마를 모아야 하나"이므로 목표 저축을 대표로 둔다.
-    // 예·적금 이자 계산은 목표가 정해진 뒤의 단계다.
-    primary: "goalSavings",
-    primaryNote: "목표와 기간을 정하면 월 납입액을 역산합니다.",
-    secondary: ["deposit", "installmentSavings", "exchange"],
+    primary: "deposit",
+    primaryNote: "예치금과 금리로 세전·세후 이자를 확인합니다.",
+    secondary: ["installmentSavings", "compound", "exchange"],
     hub: { label: "금융 계산기 전체", href: "/finance" },
   },
   {
     id: "plan",
-    title: "매달 얼마가 남는지",
+    title: "필요한 돈과 저축 계획",
     when: "대출·저축·이사를 실행하기 전에 지금 쓸 수 있는 현금부터 확인할 때.",
     // 자금계획 허브의 출발점은 "지금 남는 돈"이다. 필요한 돈을 계산하려면
     // 현재 현금흐름이 먼저 있어야 한다.

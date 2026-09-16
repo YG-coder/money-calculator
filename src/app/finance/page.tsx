@@ -47,13 +47,6 @@ const FINANCE_CALCS = [
     badge: null,
   },
   {
-    title: "목표 저축 계산기",
-    desc: "목표 금액·월 납입액·기간 중 둘을 정하면 나머지를 계산해 저축 계획을 세웁니다.",
-    href: "/finance/goal-savings",
-    icon: "🎯",
-    badge: null,
-  },
-  {
     title: "예금 vs 적금 계산기",
     desc: "같은 금리인데 왜 적금 이자가 적은지, 세후 이자와 총 납입액 대비 이자율·이자 배수로 비교합니다.",
     href: "/finance/deposit-vs-savings",
@@ -149,6 +142,7 @@ export default function Page() {
         <h2 className="mb-6 text-xl font-black text-slate-800">
           전체 금융 계산기
         </h2>
+        <p className="mb-6 text-sm text-slate-600">목표 금액까지 필요한 월 납입액과 기간은 자금계획의 <Link href="/funds/goal-savings" className="font-semibold text-brand-600 underline">목표 저축 계산기</Link>에서 확인하세요.</p>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FINANCE_CALCS.map((c) => (
             <Link

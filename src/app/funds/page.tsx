@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   slug: "funds",
   title: "자금계획 계산기 — 필요한 돈과 마련 가능한 돈",
   description:
-    "생활에 필요한 현금과 지금 마련할 수 있는 금액의 차이를 계산합니다. 월 잉여자금 계산기로 매달 남는 돈과 연간 환산 금액을 확인하세요. 저축액이나 소비 수준을 권하지 않고 금액만 계산합니다.",
+    "생활에 필요한 현금과 지금 마련할 수 있는 금액의 차이를 계산합니다. 목표 저축·월 잉여자금·비상자금·이사자금을 계산하세요. 저축액이나 소비 수준을 권하지 않고 금액만 계산합니다.",
   keywords: [
     "자금계획계산기",
     "월잉여자금계산기",
@@ -18,6 +18,12 @@ export const metadata: Metadata = buildMetadata({
 });
 
 const FUNDS_CALCS = [
+  {
+    title: "목표 저축 계산기",
+    desc: "목표 금액·월 납입액·기간 중 둘을 정하면 나머지를 계산해 저축 계획을 세웁니다.",
+    href: "/funds/goal-savings",
+    icon: "🎯",
+  },
   {
     title: "월 잉여자금 계산기",
     desc: "월 소득과 7개 지출 항목으로 매달 남는 금액과 연간 환산 금액을 계산합니다.",
@@ -67,7 +73,7 @@ export default function Page() {
         <h2 className="mb-6 text-xl font-black text-slate-800">
           전체 자금계획 계산기
         </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
           {FUNDS_CALCS.map((c) => (
             <Link
               key={c.href}
@@ -156,7 +162,7 @@ export default function Page() {
           <p className="mb-4">
             목표 금액을 정해 두고 매달 얼마씩 모아야 하는지 역산하려면{" "}
             <Link
-              href="/finance/goal-savings"
+              href="/funds/goal-savings"
               className="font-semibold text-brand-600 underline underline-offset-2"
             >
               목표 저축 계산기

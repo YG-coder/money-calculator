@@ -1,4 +1,4 @@
-// src/app/finance/goal-savings/page.tsx
+// src/app/funds/goal-savings/page.tsx
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import GoalSavingsCalc from "@/components/calculator/GoalSavingsCalc";
 
 export const metadata: Metadata = buildMetadata({
-  slug: "finance/goal-savings",
+  slug: "funds/goal-savings",
   title: "목표 저축 계산기 — 월 납입액·기간·목표금액 역산",
   description:
     "목표 금액을 정하면 매달 얼마씩 저축해야 하는지, 매달 넣는 금액으로 목표까지 얼마나 걸리는지, 일정 기간 뒤 얼마를 모을 수 있는지 계산합니다. 월복리 세전 기준.",
@@ -16,8 +16,8 @@ export const metadata: Metadata = buildMetadata({
 
 const crumbs = [
   { name: "홈", url: BASE_URL },
-  { name: "금융 계산기", url: `${BASE_URL}/finance` },
-  { name: "목표 저축 계산기", url: `${BASE_URL}/finance/goal-savings` },
+  { name: "자금계획", url: `${BASE_URL}/funds` },
+  { name: "목표 저축 계산기", url: `${BASE_URL}/funds/goal-savings` },
 ];
 
 const EXAMPLES: CalcExample[] = [
@@ -85,7 +85,7 @@ export default function Page() {
         title="목표 저축 계산기"
         description="목표 금액·월 납입액·기간 중 두 가지를 정하면 나머지 하나를 계산해 저축 계획을 세워줍니다."
         icon="🎯"
-        slug="finance/goal-savings"
+        slug="funds/goal-savings"
         breadcrumb={crumbs}
         calculator={<GoalSavingsCalc />}
         guide={

@@ -41,7 +41,6 @@ const FINANCE_LINKS = [
   { label: "예금 이자 계산기", href: "/finance/deposit" },
   { label: "적금 이자 계산기", href: "/finance/installment-savings" },
   { label: "복리 계산기", href: "/finance/compound" },
-  { label: "목표 저축 계산기", href: "/finance/goal-savings" },
   { label: "예금 vs 적금 계산기", href: "/finance/deposit-vs-savings" },
   { label: "CMA vs 예금 계산기", href: "/finance/cma-vs-deposit" },
   { label: "실질금리 계산기", href: "/finance/real-interest-rate" },
@@ -51,6 +50,7 @@ const FINANCE_LINKS = [
 ];
 
 const FUNDS_LINKS = [
+  { label: "목표 저축 계산기", href: "/funds/goal-savings" },
   { label: "월 잉여자금 계산기", href: "/funds/monthly-surplus" },
   { label: "비상자금 계산기", href: "/funds/emergency-fund" },
   { label: "이사자금 계산기", href: "/funds/moving-cost" },

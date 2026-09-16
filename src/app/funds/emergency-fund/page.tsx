@@ -210,7 +210,7 @@ export default function Page() {
             icon: "🧮",
           },
           { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
-          { label: "목표 저축 계산기", href: "/finance/goal-savings", icon: "🎯" },
+          { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
           { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
         ]}
         relatedGuides={[]}

@@ -132,7 +132,7 @@ export default function Page() {
           { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
           { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
           { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
-          { label: "목표저축 계산기", href: "/finance/goal-savings", icon: "🎯" },
+          { label: "목표저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
         ]}
         relatedGuides={[]}
       />

@@ -64,7 +64,6 @@ const NAV_GROUPS = [
       { href: "/finance/deposit", label: "예금 이자 계산기" },
       { href: "/finance/installment-savings", label: "적금 이자 계산기" },
       { href: "/finance/compound", label: "복리 계산기" },
-      { href: "/finance/goal-savings", label: "목표 저축 계산기" },
       { href: "/finance/deposit-vs-savings", label: "예금 vs 적금 계산기" },
       { href: "/finance/cma-vs-deposit", label: "CMA vs 예금 계산기" },
       { href: "/finance/real-interest-rate", label: "실질금리 계산기" },
@@ -77,6 +76,7 @@ const NAV_GROUPS = [
     label: "자금계획",
     baseHref: "/funds",
     items: [
+      { href: "/funds/goal-savings", label: "목표 저축 계산기" },
       { href: "/funds/monthly-surplus", label: "월 잉여자금 계산기" },
       { href: "/funds/emergency-fund", label: "비상자금 계산기" },
       { href: "/funds/moving-cost", label: "이사자금 계산기" },
