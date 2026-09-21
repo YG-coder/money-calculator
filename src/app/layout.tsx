@@ -29,7 +29,9 @@ export const metadata: Metadata = {
     "머니계산기",
   ],
 
+  // 소유권 인증 유지를 위해 광고 설정 변경 시에도 인증값을 보존합니다.
   verification: {
+    google: "esF2Zr1HJuwM5slp-24iq4uYhUHTAeTz49oERjMm73k",
     other: {
       "naver-site-verification": "bc4843cbf5606163e8d5e3a5433f37cfdb974828",
     },
