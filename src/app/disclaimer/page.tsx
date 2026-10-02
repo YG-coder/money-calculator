@@ -15,7 +15,7 @@ export default function Page() {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-2 text-3xl font-black text-slate-900">면책 고지</h1>
       <p className="mb-8 text-sm text-slate-400">
-        Disclaimer · 최종 갱신: 2026년 8월 29일
+        Disclaimer · 최종 갱신: 2026년 10월 3일
       </p>
 
       <div className="space-y-8 rounded-2xl border border-slate-100 bg-white p-8 text-[15px] leading-relaxed text-slate-600 shadow-sm">
@@ -240,39 +240,9 @@ export default function Page() {
           </ul>
         </section>
 
-        {/* 6. 광고 및 제휴 */}
+        {/* 6. 문의 */}
         <section>
-          <h2 className="mb-3 text-lg font-bold text-slate-800">
-            6. 광고 및 제휴 정책
-          </h2>
-          <p className="mb-3">
-            본 사이트는 운영 비용 충당을 위해 Google AdSense 등 디스플레이
-            광고를 게재할 수 있습니다. 광고 운영은 다음 원칙을 따릅니다.
-          </p>
-          <ul className="space-y-2 text-sm">
-            <li className="flex gap-3">
-              <span className="shrink-0 text-brand-600">•</span>
-              <span>광고는 콘텐츠와 명확히 구분되도록 표시합니다.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="shrink-0 text-brand-600">•</span>
-              <span>
-                광고주 또는 제휴 관계가 콘텐츠 내용에 영향을 주지 않도록
-                편집상의 독립성을 유지합니다.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="shrink-0 text-brand-600">•</span>
-              <span>
-                특정 금융 상품을 광고가 아닌 콘텐츠로 위장해 추천하지 않습니다.
-              </span>
-            </li>
-          </ul>
-        </section>
-
-        {/* 7. 문의 */}
-        <section>
-          <h2 className="mb-3 text-lg font-bold text-slate-800">7. 문의</h2>
+          <h2 className="mb-3 text-lg font-bold text-slate-800">6. 문의</h2>
           <p>
             본 면책 고지 또는 콘텐츠에 관한 문의·정정 요청·오류 제보는 운영자
             이메일로 보내주시기 바랍니다.

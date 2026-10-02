@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   slug: "terms",
   title: "이용약관",
   description:
-    "머니계산기 계산 서비스와 금융 정보 콘텐츠의 이용 조건, 결과의 한계, 저작권, 광고 및 문의 방법을 안내합니다.",
+    "머니계산기 계산 서비스와 금융 정보 콘텐츠의 이용 조건, 결과의 한계, 저작권 및 문의 방법을 안내합니다.",
 });
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-3xl font-black text-slate-900">이용약관</h1>
       <p className="mb-8 text-sm text-slate-400">
-        최종 수정일: 2026년 8월 29일
+        최종 수정일: 2026년 10월 3일
       </p>
 
       <div className="space-y-7 rounded-2xl border border-slate-100 bg-white p-8 text-sm leading-relaxed text-slate-600 shadow-sm">
@@ -98,12 +98,11 @@ export default function TermsPage() {
 
         <section>
           <h2 className="mb-2 text-base font-bold text-slate-800">
-            8. 광고 및 외부 서비스
+            8. 외부 서비스
           </h2>
           <p>
-            본 사이트는 운영 비용을 위해 광고를 게재하거나 공식 기관의 외부
-            페이지로 연결할 수 있습니다. 광고와 외부 사이트의 상품·서비스는 해당
-            제공자의 책임으로 운영되며, 자세한 데이터 처리 방식은
+            본 사이트는 공식 기관의 외부 페이지로 연결할 수 있습니다. 외부 사이트의
+            상품·서비스는 해당 제공자의 책임으로 운영되며, 자세한 데이터 처리 방식은
             개인정보처리방침을 확인하시기 바랍니다.
           </p>
         </section>
