@@ -19,13 +19,14 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   sanitize,
   toDisplay,
   readUrlValue,
   hasDroppedChars,
   droppedCharsMessage,
+  buildCalcSearchParams,
   type CalcState,
   type FieldKind,
   type FieldState,
@@ -60,7 +61,6 @@ function getKind(field: FieldDef): FieldKind {
 
 export function useCalcState(fields: FieldDef[]) {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -96,6 +96,15 @@ export function useCalcState(fields: FieldDef[]) {
   useEffect(() => {
     latestStateRef.current = state;
   }, [state]);
+
+  useEffect(() => {
+    const cancelUpdate = () => clearTimeout(debounceRef.current);
+    window.addEventListener("popstate", cancelUpdate);
+    return () => {
+      cancelUpdate();
+      window.removeEventListener("popstate", cancelUpdate);
+    };
+  }, [fields]);
 
   // URL(searchParams)이 바뀌면 렌더 중에 상태를 맞춘다.
   // effect 안에서 setState 하면 값이 한 프레임 늦게 반영되고 리렌더가 한 번 더 발생한다.
@@ -153,21 +162,25 @@ export function useCalcState(fields: FieldDef[]) {
 
   const scheduleUrlUpdate = useCallback(() => {
     clearTimeout(debounceRef.current);
+    const sourcePath = window.location.pathname;
+    const sourceSearch = window.location.search;
 
     debounceRef.current = setTimeout(() => {
-      const current = latestStateRef.current;
-      const params = new URLSearchParams();
+      // 입력 직후 다른 페이지로 이동하면 그 페이지의 URL을 덮어쓰지 않는다.
+      if (window.location.pathname !== sourcePath || window.location.search !== sourceSearch) return;
 
-      for (const f of fields) {
-        const raw = current[f.key]?.raw ?? f.defaultValue;
-        if (raw !== "") {
-          params.set(f.key, raw);
-        }
-      }
+      const params = buildCalcSearchParams(
+        window.location.search,
+        fields,
+        latestStateRef.current,
+      );
+      const query = params.toString();
+      const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
 
-      router.replace(`?${params.toString()}`, { scroll: false });
+      // Next.js의 브라우저 이력 연동으로 입력마다 서버 요청을 보내지 않는다.
+      window.history.replaceState(null, "", nextUrl);
     }, 350);
-  }, [fields, router]);
+  }, [fields]);
 
   const setValue = useCallback(
     (key: string, inputValue: string) => {
@@ -183,7 +196,7 @@ export function useCalcState(fields: FieldDef[]) {
       // 새로고침하면 오류가 사라진 정상값으로 되살아난다.
       // 그래서 **원문은 화면에 그대로 두고 raw 는 비운다.**
       //   · raw 가 "" 이므로 계산에 쓰이지 않고 (isFilled=false)
-      //   · scheduleUrlUpdate 가 빈 raw 를 건너뛰므로 URL 에도 남지 않는다
+      //   · buildCalcSearchParams가 거부된 필드의 키를 지우므로 URL에도 남지 않는다
       if (hasDroppedChars(inputValue, kind)) {
         setState((prev) => ({
           ...prev,

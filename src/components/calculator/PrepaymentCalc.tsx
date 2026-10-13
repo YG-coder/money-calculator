@@ -41,6 +41,8 @@ const FIELDS = [
     key: "feeRate",
     kind: "decimal" as const,
     defaultValue: "1.2",
+    validate: (v: string) =>
+      !v ? "수수료가 없으면 0을 입력해주세요" : undefined,
   },
 ];
 
@@ -72,8 +74,7 @@ export default function PrepaymentCalc() {
     const pre = won("prepay");
     const r = num("rate");
     const m = num("remMonths");
-    const feeRaw = state.feeRate?.raw ?? "";
-    const fee = feeRaw === "" ? 1.2 : num("feeRate");
+    const fee = num("feeRate");
 
     if (!rem || !pre || !r || !m) return null;
     if (pre > rem) return null;

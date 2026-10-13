@@ -5,10 +5,18 @@
 @layer base {
   html { scroll-behavior: smooth; }
   * { box-sizing: border-box; }
+  :where(a, button, summary, select):focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+  }
   /* 숫자 입력 스피너 제거 */
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 @layer utilities {

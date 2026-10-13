@@ -75,8 +75,14 @@ export default function RootLayout({
   return (
     <html lang="ko" data-scroll-behavior="smooth">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased">
+        <a
+          href="#main-content"
+          className="sr-only fixed left-4 top-4 z-[60] rounded-lg bg-brand-700 px-4 py-3 font-bold text-white focus:not-sr-only focus:fixed focus:px-4 focus:py-3"
+        >
+          본문으로 바로가기
+        </a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

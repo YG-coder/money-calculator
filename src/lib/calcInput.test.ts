@@ -14,6 +14,7 @@ import {
   droppedCharsMessage,
   isRejectedField,
   hasRejectedInput,
+  buildCalcSearchParams,
 } from "@/lib/calcInput";
 
 const st = (entries: Record<string, string>): CalcState =>
@@ -186,6 +187,14 @@ describe("isValidUrlValue — 잘못된 쿼리값 무시", () => {
     expect(isValidUrlValue("4.5", "integer")).toBe(false);
     expect(isValidUrlValue("4.5.6", "decimal")).toBe(false);
   });
+
+  it("입력 중인 소수도 URL 동기화 후 유지한다", () => {
+    for (const value of ["4.", ".5", "0.50"]) {
+      expect(isValidUrlValue(value, "decimal"), value).toBe(true);
+      expect(readUrlValue(value, "3.5", "decimal"), value).toBe(value);
+    }
+    expect(isValidUrlValue(".", "decimal")).toBe(false);
+  });
 });
 
 describe("readUrlValue — 무시할 때 기본값으로 되돌린다", () => {
@@ -198,6 +207,61 @@ describe("readUrlValue — 무시할 때 기본값으로 되돌린다", () => {
   it("파라미터 자체가 없으면 fallback", () => {
     expect(readUrlValue(null, "0", "money")).toBe("0");
     expect(readUrlValue(undefined, "", "money")).toBe("");
+  });
+
+  it("명시적으로 지운 값은 기본값으로 되돌리지 않는다", () => {
+    expect(readUrlValue("", "24", "integer")).toBe("");
+    expect(readUrlValue("", "1.2", "decimal")).toBe("");
+    expect(readUrlValue(" ", "24", "integer")).toBe("24");
+  });
+});
+
+describe("buildCalcSearchParams — 입력과 URL의 왕복", () => {
+  const fields = [
+    { key: "amount", defaultValue: "" },
+    { key: "months", defaultValue: "24" },
+    { key: "rate", defaultValue: "3.5" },
+  ];
+
+  it("지운 기본값을 명시적인 빈 값으로 저장하고 복원한다", () => {
+    const params = buildCalcSearchParams("months=24", fields, st({ months: "" }));
+    expect(params.has("months")).toBe(true);
+    expect(readUrlValue(params.get("months"), "24", "integer")).toBe("");
+  });
+
+  it("기본값이 없는 빈 필드는 URL에서 제거한다", () => {
+    const params = buildCalcSearchParams("amount=5000", fields, st({ amount: "" }));
+    expect(params.has("amount")).toBe(false);
+  });
+
+  it("0을 빈 입력과 구분해 저장한다", () => {
+    const params = buildCalcSearchParams("", fields, st({ amount: "0", rate: "0" }));
+    expect(params.get("amount")).toBe("0");
+    expect(params.get("rate")).toBe("0");
+  });
+
+  it("계산기 밖에서 쓰는 쿼리값과 중복값을 유지한다", () => {
+    const params = buildCalcSearchParams("source=home&tag=a&tag=b&amount=100", fields, st({ amount: "5000" }));
+    expect(params.get("source")).toBe("home");
+    expect(params.getAll("tag")).toEqual(["a", "b"]);
+    expect(params.get("amount")).toBe("5000");
+  });
+
+  it("거부된 입력은 기본값 유무와 관계없이 URL에 저장하지 않는다", () => {
+    const state = {
+      amount: { value: "-5000", raw: "", error: "숫자만 입력할 수 있습니다" },
+      months: { value: "abc", raw: "", error: "숫자만 입력할 수 있습니다" },
+    };
+    const params = buildCalcSearchParams("amount=5000&months=24", fields, state);
+    expect(params.has("amount")).toBe(false);
+    expect(params.has("months")).toBe(false);
+  });
+
+  it("소수를 쓰던 중에도 입력값이 달라지지 않는다", () => {
+    for (const raw of ["3.", ".5", "3.50"]) {
+      const params = buildCalcSearchParams("", fields, st({ rate: raw }));
+      expect(readUrlValue(params.get("rate"), "3.5", "decimal")).toBe(raw);
+    }
   });
 });
 

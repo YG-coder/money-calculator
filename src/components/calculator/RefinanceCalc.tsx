@@ -13,7 +13,12 @@ const FIELDS = [
   { key: "oldMonths", kind: "integer" as const, defaultValue: "" },
   { key: "newRate", kind: "decimal" as const, defaultValue: "" },
   { key: "newMonths", kind: "integer" as const, defaultValue: "" },
-  { key: "feeRate", kind: "decimal" as const, defaultValue: "1.2" },
+  {
+    key: "feeRate",
+    kind: "decimal" as const,
+    defaultValue: "1.2",
+    validate: (v: string) => !v ? "수수료가 없으면 0을 입력해주세요" : undefined,
+  },
   { key: "otherCost", kind: "money" as const, defaultValue: "" },
 ];
 

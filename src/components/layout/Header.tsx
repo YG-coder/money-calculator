@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const NAV_GROUPS = [
   {
@@ -95,17 +95,47 @@ export function Header() {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
+
+  const closeMenus = useCallback(() => {
+    setOpenGroup(null);
+    setMobileOpen(false);
+    setMobileGroup(null);
+  }, []);
 
   useEffect(() => {
-    function onMouseDown(e: MouseEvent) {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setOpenGroup(null);
+    function onPointerDown(e: PointerEvent) {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        closeMenus();
       }
     }
 
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
-  }, []);
+    function onFocusIn(e: FocusEvent) {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        closeMenus();
+      }
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Escape" || (!openGroup && !mobileOpen)) return;
+      e.preventDefault();
+      const trigger = mobileOpen
+        ? mobileButtonRef.current
+        : navRef.current?.querySelector<HTMLButtonElement>('button[aria-expanded="true"]');
+      closeMenus();
+      trigger?.focus();
+    }
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [closeMenus, mobileOpen, openGroup]);
 
   // 경로가 바뀌면 렌더 중에 메뉴 상태를 초기화한다.
   // (effect 안에서 setState 하면 불필요한 리렌더가 한 번 더 발생)
@@ -127,7 +157,13 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/90 shadow-sm backdrop-blur-sm">
+    <header
+      ref={headerRef}
+      onClick={(event) => {
+        if ((event.target as HTMLElement).closest("a")) closeMenus();
+      }}
+      className="sticky top-0 z-50 border-b border-slate-100 bg-white/90 shadow-sm backdrop-blur-sm"
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-15 items-center justify-between py-3">
           <Link
@@ -141,7 +177,7 @@ export function Header() {
             </span>
           </Link>
 
-          <nav ref={navRef} className="hidden items-center gap-1 md:flex">
+          <nav ref={navRef} aria-label="주 메뉴" className="hidden items-center gap-1 md:flex">
             {NAV_GROUPS.map((group) => {
               const active = isGroupActive(group);
 
@@ -150,6 +186,7 @@ export function Header() {
                   <Link
                     key={group.label}
                     href={group.baseHref}
+                    aria-current={pathname === group.baseHref ? "page" : undefined}
                     className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                       active
                         ? "bg-brand-50 text-brand-700"
@@ -166,9 +203,10 @@ export function Header() {
               return (
                 <div key={group.label} className="relative">
                   <button
+                    type="button"
                     onClick={() => setOpenGroup(isOpen ? null : group.label)}
-                    aria-haspopup="true"
                     aria-expanded={isOpen}
+                    aria-controls={`desktop-nav-${group.baseHref.slice(1)}`}
                     className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                       active || isOpen
                         ? "bg-brand-50 text-brand-700"
@@ -194,9 +232,10 @@ export function Header() {
                   </button>
 
                   {isOpen && (
-                    <div className="absolute left-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-slate-100 bg-white py-1.5 shadow-lg">
+                    <div id={`desktop-nav-${group.baseHref.slice(1)}`} className="absolute left-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-slate-100 bg-white py-1.5 shadow-lg">
                       <Link
                         href={group.baseHref}
+                        aria-current={pathname === group.baseHref ? "page" : undefined}
                         className={`block px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
                           pathname === group.baseHref
                             ? "bg-brand-50 text-brand-700"
@@ -210,6 +249,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
+                          aria-current={pathname === item.href ? "page" : undefined}
                           className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
                             pathname === item.href
                               ? "bg-brand-50 text-brand-700"
@@ -227,8 +267,15 @@ export function Header() {
           </nav>
 
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="메뉴"
+            ref={mobileButtonRef}
+            type="button"
+            onClick={() => {
+              setMobileOpen(!mobileOpen);
+              setMobileGroup(null);
+            }}
+            aria-label={mobileOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
             className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 md:hidden"
           >
             {mobileOpen ? (
@@ -264,13 +311,14 @@ export function Header() {
         </div>
 
         {mobileOpen && (
-          <nav className="space-y-0.5 border-t border-slate-100 py-2 pb-3 md:hidden">
+          <nav id="mobile-navigation" aria-label="모바일 주 메뉴" className="max-h-[calc(100dvh-4rem)] space-y-0.5 overflow-y-auto overscroll-contain border-t border-slate-100 py-2 pb-3 md:hidden">
             {NAV_GROUPS.map((group) => {
               if (group.items.length === 0) {
                 return (
                   <Link
                     key={group.label}
                     href={group.baseHref}
+                    aria-current={pathname === group.baseHref ? "page" : undefined}
                     className={`block rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
                       pathname.startsWith(group.baseHref)
                         ? "bg-brand-50 text-brand-700"
@@ -287,6 +335,9 @@ export function Header() {
               return (
                 <div key={group.label}>
                   <button
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={`mobile-nav-${group.baseHref.slice(1)}`}
                     onClick={() =>
                       setMobileGroup(isExpanded ? null : group.label)
                     }
@@ -315,9 +366,10 @@ export function Header() {
                   </button>
 
                   {isExpanded && (
-                    <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-brand-100 pl-3">
+                    <div id={`mobile-nav-${group.baseHref.slice(1)}`} className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-brand-100 pl-3">
                       <Link
                         href={group.baseHref}
+                        aria-current={pathname === group.baseHref ? "page" : undefined}
                         className="block rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-slate-600"
                       >
                         전체 보기
@@ -326,6 +378,7 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
+                          aria-current={pathname === item.href ? "page" : undefined}
                           className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                             pathname === item.href
                               ? "bg-brand-50 text-brand-700"

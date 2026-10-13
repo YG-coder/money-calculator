@@ -39,6 +39,8 @@ const FIELDS = [
     key: "ltv",
     kind: "decimal" as const,
     defaultValue: "80",
+    validate: (v: string) =>
+      !v ? "대출 비율을 입력해주세요" : Number(v) > 100 ? "대출 비율은 100% 이하로 입력해주세요" : undefined,
   },
 ];
 
@@ -78,7 +80,7 @@ export default function JeonseLoanCalc() {
     if (!d || !r || !m) return null;
 
     const income = readWon(state, "income");
-    const ltv = readNum(state, "ltv") || 80;
+    const ltv = readNum(state, "ltv");
 
     return calcJeonseLoan(d, r, m, income, ltv);
   }, [state]);
