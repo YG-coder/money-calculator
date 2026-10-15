@@ -69,9 +69,8 @@ export default function MovingCostCalc() {
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <p className="text-sm font-bold text-slate-800">입력 기준</p>
         <p className="mt-1 text-sm leading-relaxed text-slate-600">
-          <strong>새 보증금</strong>만 필수입니다. 나머지는 선택 항목이며{" "}
-          <strong>없으면 0 입력원</strong>으로 계산합니다. 해당 없는 항목은 그대로
-          비워 두세요.
+          새 보증금·회수할 기존 보증금·이사 부대비용을 모두 입력하세요.
+          해당 없는 항목은 <strong>0을 직접 입력</strong>해야 계산합니다.
         </p>
       </div>
 

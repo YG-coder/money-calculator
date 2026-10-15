@@ -216,7 +216,7 @@ export default function DsrCalc() {
         </legend>
 
         <InputField
-          label="기타 부채 연간 원리금 (선택)"
+          label="기타 부채 연간 원리금 (없으면 0 입력)"
           name="existingDebt"
           suffix="만원"
           placeholder="예: 600"

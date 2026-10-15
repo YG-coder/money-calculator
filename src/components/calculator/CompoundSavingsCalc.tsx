@@ -40,7 +40,7 @@ const FIELDS = [
           : undefined,
   },
   {
-    // 월 추가 납입액 — 선택 입력(없으면 0 입력)
+    // 월 추가 납입액 — 해당 금액이 없으면 0을 직접 입력
     key: "monthly",
     kind: "money" as const,
     defaultValue: "",
@@ -123,8 +123,8 @@ export default function CompoundSavingsCalc() {
         label="월 추가 납입액 (없으면 0 입력)"
         name="monthly"
         suffix="만원"
-        placeholder="예: 20 (없으면 비워두세요)"
-        hint="매달 추가로 넣는 금액. 비워두면 초기 원금만 계산합니다."
+        placeholder="예: 20 (없으면 0 입력)"
+        hint="매달 추가로 넣는 금액. 초기 원금만 계산하려면 0을 직접 입력하세요."
         value={state.monthly?.value ?? ""}
         error={state.monthly?.error}
         onChange={(v) => setValue("monthly", v)}

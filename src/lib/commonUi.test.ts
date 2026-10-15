@@ -42,3 +42,13 @@ it('toggle group exposes only the selected option',()=>{
   expect(html.match(/aria-pressed="false"/g)).toHaveLength(1);
  }
 });
+
+it('required money fields do not retain optional-or-blank guidance',async()=>{
+ for(const name of ['MovingCost','MonthlySurplus','CompoundSavings','InitialCost','Dsr']) {
+  const {default:C}=await import(`../components/calculator/${name}Calc.tsx`);
+  const text=visibleCopy(uiHarness(C).html()).replace(/\s+/g,' ');
+  expect(text,name).not.toMatch(/비워\s*두|입력원/);
+  expect(text,name).toMatch(/없으면 0|없는 항목은 0/);
+  expect(text,name).not.toContain('만 필수');
+ }
+});

@@ -339,11 +339,11 @@ export default function InitialCostCalc() {
       </div>
 
       <InputField
-        label="기타 비용 (선택)"
+        label="기타 비용 (없으면 0 입력)"
         name="other"
         suffix="만원"
         placeholder="예: 0"
-        hint="이사비·수리비·가전 구입비 등. 없으면 비워두세요."
+        hint="이사비·수리비·가전 구입비 등. 없으면 0을 직접 입력하세요."
         value={state.other?.value ?? ""}
         onChange={(v) => setValue("other", v)}
         error={state.other?.error}
@@ -352,7 +352,7 @@ export default function InitialCostCalc() {
       {/* ── 자금 조달 ── */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <InputField
-          label="대출금 (선택)"
+          label="대출금 (없으면 0 입력)"
           name="loan"
           suffix="만원"
           placeholder="예: 30,000"
@@ -362,7 +362,7 @@ export default function InitialCostCalc() {
           error={state.loan?.error}
         />
         <InputField
-          label="승계 임대보증금 (선택)"
+          label="승계 임대보증금 (없으면 0 입력)"
           name="deposit"
           suffix="만원"
           placeholder="예: 0"

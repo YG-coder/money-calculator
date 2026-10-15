@@ -71,7 +71,7 @@ export default function MonthlySurplusCalc() {
     if (hasInputError) return null;
     if (!isFilled(state, "income")) return null;
 
-    // 미입력 지출 항목은 설계상 0 으로 다룬다(0 을 넣은 것과 결과가 같다).
+    // 지출 항목은 모두 명시해야 하며, 해당 없는 항목은 0을 직접 입력한다.
     // 반면 금액으로 성립하지 않는 값은 엔진이 null 을 돌려주므로 결과를 내지 않는다.
     const expensesWon = Object.fromEntries(
       EXPENSE_KEYS.map((key) => [key, readWon(state, key)]),
@@ -112,7 +112,7 @@ export default function MonthlySurplusCalc() {
 
       <div>
         <p className="mb-3 text-sm font-semibold text-slate-600">
-          월 지출 (해당 없는 항목은 비워두세요)
+          월 지출 (해당 없는 항목은 0을 입력하세요)
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {EXPENSE_FIELDS.map((f) => (
