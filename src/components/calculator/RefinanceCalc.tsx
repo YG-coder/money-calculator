@@ -1,4 +1,5 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
 import { useMemo } from "react";
 import { hasFieldError } from "@/lib/calcInput";
@@ -36,6 +37,7 @@ export default function RefinanceCalc() {
   };
 
   const result = useMemo(() => {
+    if (hasMissingInput(state, ["remaining", "oldRate", "oldMonths", "newRate", "newMonths", "feeRate", "otherCost"])) return null;
     if (hasFieldError(state)) return null;
     const remaining = won("remaining");
     const oldRate = num("oldRate");
@@ -59,6 +61,7 @@ export default function RefinanceCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* ── 기존 대출 ── */}
       <div>
         <p className="mb-3 text-sm font-bold text-slate-700">기존 대출</p>
@@ -139,7 +142,7 @@ export default function RefinanceCalc() {
             error={state.feeRate?.error}
           />
           <InputField
-            label="기타 비용 (선택)"
+            label="기타 비용 (없으면 0 입력)"
             name="otherCost"
             suffix="만원"
             placeholder="예: 50"

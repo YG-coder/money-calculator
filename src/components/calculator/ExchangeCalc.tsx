@@ -1,6 +1,7 @@
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
+import { withParticle } from "@/lib/korean";
+import { useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
 import { readNum, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW } from "@/lib/loan";
@@ -52,7 +53,7 @@ export default function ExchangeCalc() {
   const currency = findCurrency(code)!;
   const isBuy = direction === "buy";
 
-  const outcome = useMemo(() => {
+  const outcome = (() => {
     // 스프레드 입력 방식에 따라 쓰지 않는 필드는 제외한다.
     if (
       hasFieldErrorIn(state, [
@@ -81,7 +82,7 @@ export default function ExchangeCalc() {
       preferentialPercent: readNum(state, "preferential"),
       foreignAmount: amount,
     });
-  }, [state, code, direction, spreadMode]);
+  })();
 
   const result = outcome?.status === "ok" ? outcome.value : null;
   const blockedReason =
@@ -116,7 +117,7 @@ export default function ExchangeCalc() {
         </select>
         {currency.quoteUnit === 100 && (
           <p className="mt-1.5 text-xs leading-relaxed text-amber-700">
-            {currency.name}는 <strong>100{currency.code} 단위</strong>로
+            {withParticle(currency.name, "은/는")} <strong>100{currency.code} 단위</strong>로
             고시됩니다. 아래 환율은 은행 고시표에 적힌 값(=100{currency.code}당
             원화)을 그대로 입력하세요.
           </p>
@@ -291,7 +292,7 @@ export default function ExchangeCalc() {
           달라집니다.
         </p>
         <p>
-          ※ {HUNDRED_UNIT_CODES.join(" · ")}는 100단위로 고시됩니다. 이 통화들은
+          ※ {withParticle(HUNDRED_UNIT_CODES.join(" · "), "은/는")} 100단위로 고시됩니다. 이 통화들은
           고시표의 값을 그대로 입력해야 하며, 1단위 환율로 환산해 넣으면 결과가
           100배 어긋납니다.
         </p>

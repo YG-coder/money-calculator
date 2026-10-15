@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useMemo, useState } from "react";
 import { hasFieldError } from "@/lib/calcInput";
@@ -120,7 +120,7 @@ export default function FixedVariableCalc() {
                   ? "border-brand-600 bg-brand-600 text-white shadow-sm"
                   : "border-slate-200 bg-white text-slate-600 hover:border-brand-300"
               }`}
-            >
+             aria-pressed={repayment === t}>
               {label}
             </button>
           ))}

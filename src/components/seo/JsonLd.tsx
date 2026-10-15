@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 /**
  * JSON-LD 구조화 데이터 컴포넌트
  * 계산기 페이지의 WebApplication 스키마 + BreadcrumbList
@@ -23,7 +24,7 @@ export function WebAppJsonLd({ name, description, url }: WebAppJsonLdProps) {
     provider: {
       "@type": "Organization",
       name: "머니계산기",
-      url: "https://머니계산기.kr",
+      url: SITE.url,
     },
   };
   return (

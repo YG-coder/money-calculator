@@ -1,4 +1,5 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
@@ -20,7 +21,7 @@ const FIELDS = [
   {
     key: "wolseDeposit",
     kind: "money" as const,
-    defaultValue: "0",
+    defaultValue: "",
   },
   {
     key: "wolseMonthly",
@@ -46,6 +47,7 @@ export default function JeonseVsWolseCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
+    if (hasMissingInput(state, ["jeonseDeposit", "wolseDeposit", "wolseMonthly", "investRate"])) return null;
     if (hasFieldError(state)) return null;
     const jd = readNum(state, "jeonseDeposit");
     const wd = readNum(state, "wolseDeposit");
@@ -58,6 +60,7 @@ export default function JeonseVsWolseCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* 전세 조건 */}
       <div>
         <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">

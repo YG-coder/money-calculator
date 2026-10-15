@@ -1,0 +1,10 @@
+{
+  "name": "머니계산기",
+  "url": "https://xn--989a00a04hutjwmi.kr",
+  "displayUrl": "https://머니계산기.kr",
+  "forbiddenHosts": [
+    "fincalc.kr"
+  ],
+  "externalJsonLdOrigins": [],
+  "imageOrigins": []
+}

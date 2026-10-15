@@ -254,3 +254,8 @@ export function readWon(state: CalcState, key: string): number {
 export function isFilled(state: CalcState, key: string): boolean {
   return readRaw(state, key) !== "";
 }
+
+/** 적용되는 기존 금액은 빈칸을 0으로 추정하지 않는다. */
+export function hasMissingInput(state: CalcState, keys: readonly string[]): boolean {
+ return keys.some(key => !isFilled(state, key));
+}

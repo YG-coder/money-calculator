@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useMemo, useState } from "react";
 import { hasFieldError } from "@/lib/calcInput";
@@ -81,7 +81,7 @@ export default function AmortizationCalc() {
                     ? "border-brand-600 bg-brand-600 text-white shadow-sm"
                     : "border-slate-200 bg-white text-slate-600 hover:border-brand-300"
                 }`}
-              >
+               aria-pressed={repaymentType === t}>
                 {t === "equal_payment" ? "원리금균등" : "원금균등"}
               </button>
             ),

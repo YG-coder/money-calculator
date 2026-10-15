@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 // src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
@@ -6,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { OG_IMAGE } from "@/lib/metadata";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://머니계산기.kr"),
+  metadataBase: new URL(SITE.url),
 
   title: {
     default: "머니계산기 | 무료 금융·부동산 계산기",
@@ -37,14 +38,14 @@ export const metadata: Metadata = {
     },
   },
 
-  authors: [{ name: "머니계산기", url: "https://머니계산기.kr" }],
+  authors: [{ name: "머니계산기", url: SITE.url }],
   creator: "머니계산기",
   publisher: "머니계산기",
 
   openGraph: {
     title: "머니계산기 | 무료 금융·부동산 계산기",
     description: "대출이자·원리금·취득세·월세 vs 전세 계산기를 무료로 이용하세요.",
-    url: "https://머니계산기.kr",
+    url: SITE.url,
     siteName: "머니계산기",
     locale: "ko_KR",
     type: "website",
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
 
   robots: { index: true, follow: true },
 
-  alternates: { canonical: "https://머니계산기.kr" },
+  alternates: { canonical: SITE.url },
 
   category: "finance",
 };

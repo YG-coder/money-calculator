@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, readWon, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
+import { hasMissingInput, readNum, readWon, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import {
   calcDsr,
@@ -116,19 +116,29 @@ export default function DsrCalc() {
       "creditLineLimit",
       "creditInstallmentBalance",
       "creditRate",
-      "jeonseInterest",
-      "amount",
+      ...(jeonse === "oneHouseMetro" ? ["jeonseInterest"] : []),
+      ...(mode === "check" ? ["amount"] : []),
       "rate",
       ...(loanKind === "mortgage" ? ["months"] : []),
       ...(loanKind === "credit" && creditKind === "installment"
         ? ["installmentAnnual"]
         : []),
     ],
-    [loanKind, creditKind],
+    [loanKind, creditKind, jeonse, mode],
   );
+
+  const requiredInputsFilled = !hasMissingInput(state, [
+    "income", "existingDebt", "creditBalance", "creditLineLimit", "creditInstallmentBalance", "rate",
+    ...(mode === "check" ? ["amount"] : []),
+    ...(loanKind === "mortgage" ? ["months"] : []),
+    ...(loanKind === "credit" && creditKind === "installment" ? ["installmentAnnual"] : []),
+    ...(jeonse === "oneHouseMetro" ? ["jeonseInterest"] : []),
+    ...(readWon(state, "creditBalance") + readWon(state, "creditLineLimit") + readWon(state, "creditInstallmentBalance") > 0 ? ["creditRate"] : []),
+  ]);
 
   const checkResult = useMemo(() => {
     if (hasFieldErrorIn(state, activeErrorKeys)) return null;
+    if (!requiredInputsFilled) return null;
     if (mode !== "check") return null;
     const income = readWon(state, "income");
     const amount = readWon(state, "amount");
@@ -141,10 +151,11 @@ export default function DsrCalc() {
       newLoan,
       limitPercent,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled]);
 
   const estimateResult = useMemo(() => {
     if (hasFieldErrorIn(state, activeErrorKeys)) return null;
+    if (!requiredInputsFilled) return null;
     if (mode !== "estimate") return null;
     const income = readWon(state, "income");
     if (!income || !rateFilled) return null;
@@ -156,7 +167,7 @@ export default function DsrCalc() {
       limitPercent,
       newLoan,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled]);
 
   // 정책 레이어가 값을 돌려주지 않는 조건(미선택·미지원·유예 만료)은
   // 임의 대체값 없이 사유를 그대로 화면에 노출한다.
@@ -169,6 +180,7 @@ export default function DsrCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">기존 대출·한도·연간 상환액을 입력하세요. 해당 부채가 없으면 각 칸에 0을 직접 입력해야 합니다.</p>
       {/* ── 모드 ── */}
       <ToggleGroup<Mode>
         label="계산 모드"

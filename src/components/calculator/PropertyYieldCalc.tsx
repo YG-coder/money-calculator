@@ -1,8 +1,10 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
+import { withParticle } from "@/lib/korean";
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readNum, hasFieldError } from "@/lib/calcInput";
+import { readNum, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcPropertyYield } from "@/lib/realEstate";
 import InputField from "@/components/calculator/InputField";
@@ -19,7 +21,7 @@ const FIELDS = [
   {
     key: "deposit",
     kind: "money" as const,
-    defaultValue: "0",
+    defaultValue: "",
   },
   {
     key: "monthlyRent",
@@ -31,7 +33,7 @@ const FIELDS = [
   {
     key: "loanAmount",
     kind: "money" as const,
-    defaultValue: "0",
+    defaultValue: "",
   },
   {
     key: "loanRate",
@@ -43,14 +45,14 @@ const FIELDS = [
   {
     key: "monthlyCost",
     kind: "money" as const,
-    defaultValue: "0",
+    defaultValue: "",
   },
   {
     // 취득세·중개보수·등기비용 등 매입 시점의 일회성 비용.
-    // 기본 0 — 비워 두면 이 필드가 없던 때와 결과가 완전히 같다.
+    // 비용이 없으면 사용자가 0을 명시한다.
     key: "extraCost",
     kind: "money" as const,
-    defaultValue: "0",
+    defaultValue: "",
   },
 ];
 
@@ -63,7 +65,9 @@ export default function PropertyYieldCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
   const result = useMemo(() => {
-    if (hasFieldError(state)) return null;
+    if (hasMissingInput(state, ["purchasePrice", "deposit", "monthlyRent", "loanAmount", "monthlyCost", "extraCost"])) return null;
+    if (hasFieldErrorIn(state, ["purchasePrice", "deposit", "monthlyRent", "loanAmount", "monthlyCost", "extraCost", ...(readNum(state, "loanAmount") > 0 ? ["loanRate"] : [])])) return null;
+    if (readNum(state, "loanAmount") > 0 && hasMissingInput(state, ["loanRate"])) return null;
     const price = readNum(state, "purchasePrice");
     const rent = readNum(state, "monthlyRent");
 
@@ -84,6 +88,7 @@ export default function PropertyYieldCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* 부동산 조건 */}
       <div>
         <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
@@ -139,7 +144,7 @@ export default function PropertyYieldCalc() {
             error={state.monthlyCost?.error}
           />
           <InputField
-            label="취득 부대비용 (선택)"
+            label="취득 부대비용 (없으면 0 입력)"
             name="extraCost"
             suffix="만원"
             placeholder="예: 2,000"
@@ -154,7 +159,7 @@ export default function PropertyYieldCalc() {
       {/* 대출 조건 */}
       <div>
         <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
-          대출 조건 (선택)
+          대출 조건 (없으면 0 입력)
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputField
@@ -257,7 +262,7 @@ export default function PropertyYieldCalc() {
           {result.extraCostWon > 0 && !result.isInvestedNegative && (
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-600">
               <p className="font-bold text-slate-800">
-                취득 부대비용 {formatKRW(result.extraCostWon)}을 실투자금에
+                취득 부대비용 {withParticle(formatKRW(result.extraCostWon), "을/를")} 실투자금에
                 포함했습니다
               </p>
               <p className="mt-1.5">

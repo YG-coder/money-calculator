@@ -1,4 +1,5 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
@@ -47,6 +48,7 @@ export default function MovingCostCalc() {
   const blocked = hasFieldError(state);
 
   const result = useMemo(() => {
+    if (hasMissingInput(state, FIELDS.map(field => field.key))) return null;
     if (blocked) return null;
     if (!isFilled(state, "newDeposit")) return null;
 
@@ -63,11 +65,12 @@ export default function MovingCostCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <p className="text-sm font-bold text-slate-800">입력 기준</p>
         <p className="mt-1 text-sm leading-relaxed text-slate-600">
           <strong>새 보증금</strong>만 필수입니다. 나머지는 선택 항목이며{" "}
-          <strong>비워 두면 0원</strong>으로 계산합니다. 해당 없는 항목은 그대로
+          <strong>없으면 0 입력원</strong>으로 계산합니다. 해당 없는 항목은 그대로
           비워 두세요.
         </p>
       </div>
@@ -83,7 +86,7 @@ export default function MovingCostCalc() {
       />
 
       <InputField
-        label="기존 보증금 회수 예상액 (선택)"
+        label="기존 보증금 회수 예상액 (없으면 0 입력)"
         name="returnedDeposit"
         value={state.returnedDeposit?.value ?? ""}
         onChange={(v) => setValue("returnedDeposit", v)}
@@ -94,7 +97,7 @@ export default function MovingCostCalc() {
 
       <div>
         <p className="mb-3 text-sm font-semibold text-slate-600">
-          이사 부대비용 (선택)
+          이사 부대비용 (없으면 0 입력)
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {COST_FIELDS.map((f) => (

@@ -1,4 +1,5 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
 import { useMemo, useState } from "react";
 import { hasFieldError } from "@/lib/calcInput";
@@ -39,7 +40,7 @@ const FIELDS = [
           : undefined,
   },
   {
-    // 월 추가 납입액 — 선택 입력(비워두면 0)
+    // 월 추가 납입액 — 선택 입력(없으면 0 입력)
     key: "monthly",
     kind: "money" as const,
     defaultValue: "",
@@ -62,6 +63,7 @@ export default function CompoundSavingsCalc() {
   const [showYearly, setShowYearly] = useState(false);
 
   const result = useMemo(() => {
+    if (hasMissingInput(state, ["principal", "monthly", "rate", "years"])) return null;
     if (hasFieldError(state)) return null;
     const principal = won("principal");
     const rate = num("rate");
@@ -83,6 +85,7 @@ export default function CompoundSavingsCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       <InputField
         label="초기 원금"
         name="principal"
@@ -117,7 +120,7 @@ export default function CompoundSavingsCalc() {
       />
 
       <InputField
-        label="월 추가 납입액 (선택)"
+        label="월 추가 납입액 (없으면 0 입력)"
         name="monthly"
         suffix="만원"
         placeholder="예: 20 (없으면 비워두세요)"

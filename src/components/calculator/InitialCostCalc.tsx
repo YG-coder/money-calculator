@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon, hasRejectedInput, hasFieldErrorIn } from "@/lib/calcInput";
+import { hasMissingInput, readWon, hasRejectedInput, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import type { OwnershipType } from "@/lib/realEstate";
 import type { FirstHomeReduction } from "@/lib/policy/acquisitionTax";
@@ -105,7 +105,12 @@ export default function InitialCostCalc() {
   // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
   // 화면에 보이는 입력만 본다. 중개보수 직접 입력·등기비용 직접 입력·
   // 시가표준액은 각 선택을 고른 경우에만 쓴다.
-  const rejected = hasFieldErrorIn(state, [
+  const rejected = hasMissingInput(state, [
+    "price", "other", "loan", "deposit",
+    ...(isMetroArea === false ? ["officialPrice"] : []),
+    ...(brokerageMode === "amount" ? ["brokerageManual"] : []),
+    ...(regMode === "amount" ? ["registration"] : []),
+  ]) || hasFieldErrorIn(state, [
     "price",
     "other",
     "loan",
@@ -124,6 +129,7 @@ export default function InitialCostCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">선택한 방식에 필요한 금액을 모두 입력하세요. 기타비용·대출·보증금이 없으면 0을 직접 입력하세요.</p>
       <InputField
         label="매매가"
         name="price"

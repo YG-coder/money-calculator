@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import { withParticle } from "@/lib/korean";
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
 import {
@@ -168,7 +169,7 @@ export default function EmergencyFundCalc() {
                 sub={
                   need.shortfallWon === 0
                     ? "보유자금으로 이미 채워집니다"
-                    : `보유 ${formatUnit(need.availableWon ?? 0)}을 뺀 금액`
+                    : `보유 ${withParticle(formatUnit(need.availableWon ?? 0), "을/를")} 뺀 금액`
                 }
                 highlight={need.shortfallWon > 0}
               />

@@ -1,4 +1,5 @@
-"use client";
+'use client'
+import { hasMissingInput } from "@/lib/calcInput";
 
 import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
@@ -66,6 +67,7 @@ export default function MonthlySurplusCalc() {
   const hasInputError = hasFieldError(state);
 
   const result = useMemo(() => {
+    if (hasMissingInput(state, FIELDS.map(field => field.key))) return null;
     if (hasInputError) return null;
     if (!isFilled(state, "income")) return null;
 
@@ -86,6 +88,7 @@ export default function MonthlySurplusCalc() {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* 입력 기준 — 이중 차감 방지 */}
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <p className="text-sm font-bold text-slate-800">입력 기준</p>

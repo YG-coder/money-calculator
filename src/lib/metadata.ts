@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const SITE_NAME = "머니계산기";
@@ -9,7 +10,7 @@ export const SITE_NAME = "머니계산기";
  * 일관되게 이해되는 편집 주체 명칭을 사용한다.
  */
 export const SITE_AUTHOR = "머니계산기 편집팀";
-export const BASE_URL = "https://머니계산기.kr";
+export const BASE_URL = SITE.url;
 
 /**
  * 공용 Open Graph 대표 이미지 (`public/og-default.png`, 1200×630).
@@ -45,6 +46,7 @@ export function buildMetadata({
     "대출이자 계산기, 원리금균등·원금균등 상환 계산기, 전세대출 계산기, 중도상환 계산기를 무료로 제공합니다.";
 
   return {
+    ...rest,
     metadataBase: new URL(BASE_URL),
 
     title:
@@ -64,15 +66,17 @@ export function buildMetadata({
       type: "website",
       locale: "ko_KR",
       url: canonical,
-      images: [OG_IMAGE],
+      ...rest.openGraph,
+      images: rest.openGraph?.images ?? [OG_IMAGE],
     },
 
     twitter: {
-      card: "summary_large_image",
       title:
         typeof title === "string" ? title : `${SITE_NAME} | 무료 금융 계산기`,
       description: finalDescription,
-      images: [OG_IMAGE.url],
+      ...rest.twitter,
+      card: "summary_large_image",
+      images: rest.twitter?.images ?? [OG_IMAGE.url],
     },
 
     robots: {
@@ -84,6 +88,5 @@ export function buildMetadata({
       canonical,
     },
 
-    ...rest,
   };
 }

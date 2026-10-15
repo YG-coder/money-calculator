@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
-import { readWon, hasFieldErrorIn } from "@/lib/calcInput";
+import { hasMissingInput, readWon, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
 import { calcLtv, type RoomDeductionChoice } from "@/lib/ltv";
 import {
@@ -56,7 +56,7 @@ export default function LtvCalc() {
 
   // 거부된 입력(허용되지 않은 문자)이 있으면 결과를 내지 않는다.
   // 방공제 금액은 '직접 입력'을 고른 경우에만 쓴다.
-  const rejected = hasFieldErrorIn(state, [
+  const rejected = hasMissingInput(state, ["price", "senior", ...(roomMode === "amount" ? ["room"] : [])]) || hasFieldErrorIn(state, [
     "price",
     "senior",
     ...(roomMode === "amount" ? ["room"] : []),
@@ -108,11 +108,11 @@ export default function LtvCalc() {
       />
 
       <InputField
-        label="선순위 채권 (선택)"
+        label="선순위 채권 (없으면 0 입력)"
         name="senior"
         suffix="만원"
         placeholder="예: 0"
-        hint="기존 근저당 등 선순위 채권액. 없으면 비워두세요."
+        hint="기존 근저당 등 선순위 채권액. 없으면 0을 직접 입력하세요."
         value={state.senior?.value ?? ""}
         onChange={(v) => setValue("senior", v)}
         error={state.senior?.error}

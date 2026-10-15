@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
@@ -200,7 +200,7 @@ export default function AcquisitionTaxCalc() {
                     ? "border-brand-400 bg-brand-50 text-brand-700"
                     : "border-slate-200 text-slate-600"
                 }`}
-              >
+               aria-pressed={isMetroArea === opt.value}>
                 {opt.label}
               </button>
             ))}

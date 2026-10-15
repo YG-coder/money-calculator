@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import { withParticle } from "@/lib/korean";
 import { useMemo } from "react";
 import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
@@ -88,7 +89,7 @@ export default function InflationCalc() {
           <ResultCard
             label={`${num("years")}년 후 현재 금액의 구매력`}
             value={formatKRW(result.futurePurchasingPower)}
-            sub={`지금의 ${formatKRW(won("amount"))}이 그때는 이만큼의 가치 · 구매력 ${result.lossRate.toFixed(1)}% 감소`}
+            sub={`지금의 ${withParticle(formatKRW(won("amount")), "이/가")} 그때는 이만큼의 가치 · 구매력 ${result.lossRate.toFixed(1)}% 감소`}
             highlight
           />
 
