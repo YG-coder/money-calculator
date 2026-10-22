@@ -1,6 +1,5 @@
 // src/app/finance/installment-savings/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
@@ -82,105 +81,103 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="적금 이자 계산기"
-        description="월 납입액·금리·기간을 입력하면 총 납입 원금, 세전·세후 예상 이자와 만기 수령액을 바로 확인할 수 있습니다."
-        icon="🪙"
-        slug="finance/installment-savings"
-        breadcrumb={crumbs}
-        calculator={<InstallmentSavingsCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              적금 이자 계산기란?
-            </h2>
-            <p>
-              적금 이자 계산기는 매달 일정 금액을 납입하는 정액적립식 적금의 만기
-              이자와 수령액을 미리 계산하는 도구입니다. 월 납입액, 연 금리, 납입
-              기간을 입력하면 총 납입 원금, 세전·세후 예상 이자, 만기 수령액을
-              보여 줍니다. 목돈을 한 번에 넣는{" "}
-              <Link
-                href="/finance/deposit"
-                className="font-semibold text-brand-600 underline underline-offset-2"
-              >
-                예금
-              </Link>
-              과 달리, 적금은 매달 돈을 나눠 넣기 때문에 이자 계산 방식이 다릅니다.
+    <CalcShell
+      title="적금 이자 계산기"
+      description="월 납입액·금리·기간을 입력하면 총 납입 원금, 세전·세후 예상 이자와 만기 수령액을 바로 확인할 수 있습니다."
+      icon="🪙"
+      slug="finance/installment-savings"
+      breadcrumb={crumbs}
+      calculator={<InstallmentSavingsCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            적금 이자 계산기란?
+          </h2>
+          <p>
+            적금 이자 계산기는 매달 일정 금액을 납입하는 정액적립식 적금의 만기
+            이자와 수령액을 미리 계산하는 도구입니다. 월 납입액, 연 금리, 납입
+            기간을 입력하면 총 납입 원금, 세전·세후 예상 이자, 만기 수령액을
+            보여 줍니다. 목돈을 한 번에 넣는{" "}
+            <Link
+              href="/finance/deposit"
+              className="font-semibold text-brand-600 underline underline-offset-2"
+            >
+              예금
+            </Link>
+            과 달리, 적금은 매달 돈을 나눠 넣기 때문에 이자 계산 방식이 다릅니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            적금 이자가 생각보다 적은 이유
+          </h2>
+          <p>
+            흔히 월 50만 원씩 12개월을 연 4%로 넣으면 ‘총 600만 원 × 4% = 24만
+            원’의 이자를 기대합니다. 하지만 실제 세전 이자는 약 13만 원입니다.
+            첫 달에 넣은 50만 원은 12개월 내내 이자를 받지만, 마지막 달에 넣은
+            50만 원은 한 달치 이자만 받기 때문입니다. 모든 납입금이 처음부터 1년
+            내내 예치되는 것이 아니라는 점이 핵심입니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">적금 이자 계산 공식</h2>
+          <div className="rounded bg-slate-100 p-4">
+            <strong>세전 이자 = 월 납입액 × (연이율 ÷ 12) × n(n+1) ÷ 2</strong>
+            <br />
+            (n = 납입 개월 수)
+          </div>
+          <p>
+            이 공식은 각 회차 납입금의 예치 기간을 첫 회 n개월부터 마지막 회
+            1개월까지 합산한 것입니다. 여기에 일반과세라면 이자소득세 15.4%를
+            적용해 세후 이자를 구합니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            계산 결과는 ‘표준 정액적립식 예상치’
+          </h2>
+          <p>
+            이 계산기는 월 단위 표준 정액적립식을 기준으로 한 예상치입니다. 실제
+            금융기관은 납입일과 만기일 사이의 실제 경과 일수, 선납·지연납입,
+            중도해지 여부에 따라 이자를 다르게 산정합니다. 따라서 결과는 대략적인
+            규모를 가늠하는 용도로 보고, 정확한 만기 금액은 가입 상품의 약관과
+            금융기관 안내로 확인하는 것이 좋습니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">계산 시 주의사항</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              결과는 표준 정액적립식 예상치이며, 실제 지급액은 납입일·일수 처리에
+              따라 달라질 수 있습니다.
+            </li>
+            <li>
+              표시 금리가 기본금리인지, 자동이체·급여이체 등 우대 조건을 채워야
+              받는 우대금리 포함인지 확인하세요.
+            </li>
+            <li>
+              세금은 일반 세율을 적용한 예상치입니다. 비과세는 자격·상품 조건이
+              필요합니다.
+            </li>
+            <li>
+              매달 납입 한도가 있는 상품인지, 자동이체 날짜에 따라 이자가 달라질 수
+              있는지도 함께 확인하세요.
+            </li>
+          </ul>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">예금·적금·복리 함께 보기</p>
+            <p className="mt-2">
+              이미 목돈이 있다면 예금, 매달 저축하는 중이라면 적금, 이자를 다시
+              굴리는 장기 효과가 궁금하다면 복리 계산기를 함께 이용하면 내 상황에
+              맞는 저축 방식을 고르기 쉽습니다.
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">
-              적금 이자가 생각보다 적은 이유
-            </h2>
-            <p>
-              흔히 월 50만 원씩 12개월을 연 4%로 넣으면 ‘총 600만 원 × 4% = 24만
-              원’의 이자를 기대합니다. 하지만 실제 세전 이자는 약 13만 원입니다.
-              첫 달에 넣은 50만 원은 12개월 내내 이자를 받지만, 마지막 달에 넣은
-              50만 원은 한 달치 이자만 받기 때문입니다. 모든 납입금이 처음부터 1년
-              내내 예치되는 것이 아니라는 점이 핵심입니다.
-            </p>
-
-            <h2 className="text-xl font-bold text-slate-900">적금 이자 계산 공식</h2>
-            <div className="rounded bg-slate-100 p-4">
-              <strong>세전 이자 = 월 납입액 × (연이율 ÷ 12) × n(n+1) ÷ 2</strong>
-              <br />
-              (n = 납입 개월 수)
-            </div>
-            <p>
-              이 공식은 각 회차 납입금의 예치 기간을 첫 회 n개월부터 마지막 회
-              1개월까지 합산한 것입니다. 여기에 일반과세라면 이자소득세 15.4%를
-              적용해 세후 이자를 구합니다.
-            </p>
-
-            <h2 className="text-xl font-bold text-slate-900">
-              계산 결과는 ‘표준 정액적립식 예상치’
-            </h2>
-            <p>
-              이 계산기는 월 단위 표준 정액적립식을 기준으로 한 예상치입니다. 실제
-              금융기관은 납입일과 만기일 사이의 실제 경과 일수, 선납·지연납입,
-              중도해지 여부에 따라 이자를 다르게 산정합니다. 따라서 결과는 대략적인
-              규모를 가늠하는 용도로 보고, 정확한 만기 금액은 가입 상품의 약관과
-              금융기관 안내로 확인하는 것이 좋습니다.
-            </p>
-
-            <h2 className="text-xl font-bold text-slate-900">계산 시 주의사항</h2>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>
-                결과는 표준 정액적립식 예상치이며, 실제 지급액은 납입일·일수 처리에
-                따라 달라질 수 있습니다.
-              </li>
-              <li>
-                표시 금리가 기본금리인지, 자동이체·급여이체 등 우대 조건을 채워야
-                받는 우대금리 포함인지 확인하세요.
-              </li>
-              <li>
-                세금은 일반 세율을 적용한 예상치입니다. 비과세는 자격·상품 조건이
-                필요합니다.
-              </li>
-              <li>
-                매달 납입 한도가 있는 상품인지, 자동이체 날짜에 따라 이자가 달라질 수
-                있는지도 함께 확인하세요.
-              </li>
-            </ul>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">예금·적금·복리 함께 보기</p>
-              <p className="mt-2">
-                이미 목돈이 있다면 예금, 매달 저축하는 중이라면 적금, 이자를 다시
-                굴리는 장기 효과가 궁금하다면 복리 계산기를 함께 이용하면 내 상황에
-                맞는 저축 방식을 고르기 쉽습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
-          { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
-          { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "💸" },
-        ]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
+        { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
+        { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "💸" },
+      ]}
+    />
   );
 }

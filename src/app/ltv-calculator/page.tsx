@@ -1,6 +1,5 @@
 // src/app/ltv-calculator/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import LtvCalc from "@/components/calculator/LtvCalc";
@@ -77,120 +76,118 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="LTV 계산기"
-        description="주택 가격과 지역·보유 상황으로 담보 기준 대출 한도를 계산하세요."
-        icon="📏"
-        slug="ltv-calculator"
-        calculator={<LtvCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">LTV란?</h2>
-            <p>
-              LTV(Loan To Value, 담보인정비율)는 주택 가격 대비 대출 가능 금액의 비율입니다.
-              같은 소득이라도 주택 가격·지역·주택 보유 상황에 따라 받을 수 있는 금액이
-              달라집니다. LTV가 <strong>담보 기준 한도</strong>라면, DSR은{" "}
-              <strong>소득 기준 한도</strong>입니다. 두 기준을 모두 충족해야 하며, 실제
-                  승인 한도는 금융회사 심사·담보평가·상품별 한도 등에 따라 두 계산
-                  결과보다 낮을 수 있습니다.
-            </p>
+    <CalcShell
+      title="LTV 계산기"
+      description="주택 가격과 지역·보유 상황으로 담보 기준 대출 한도를 계산하세요."
+      icon="📏"
+      slug="ltv-calculator"
+      calculator={<LtvCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">LTV란?</h2>
+          <p>
+            LTV(Loan To Value, 담보인정비율)는 주택 가격 대비 대출 가능 금액의 비율입니다.
+            같은 소득이라도 주택 가격·지역·주택 보유 상황에 따라 받을 수 있는 금액이
+            달라집니다. LTV가 <strong>담보 기준 한도</strong>라면, DSR은{" "}
+            <strong>소득 기준 한도</strong>입니다. 두 기준을 모두 충족해야 하며, 실제
+                승인 한도는 금융회사 심사·담보평가·상품별 한도 등에 따라 두 계산
+                결과보다 낮을 수 있습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">계산 공식</h2>
-            <p>
-              LTV는 대출금액만이 아니라 선순위채권과 임차보증금·최우선변제금을 모두 분자에
-              놓고 계산합니다. 이를 대출금액에 대해 정리하면 다음과 같습니다.
-            </p>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>담보인정액 = 주택 가격 × 적용 LTV</li>
-              <li>차감 후 = 담보인정액 − 선순위채권 − 방공제</li>
-              <li>
-                담보 기준 한도 = <strong>차감 후와 절대한도 중 낮은 값</strong> (최소 0)
-              </li>
-            </ul>
-            <p>
-              절대한도는 차감을 마친 <strong>실행 대출액</strong>에 걸립니다. 차감 전
-              담보인정액에 먼저 씌우는 것이 아닙니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">계산 공식</h2>
+          <p>
+            LTV는 대출금액만이 아니라 선순위채권과 임차보증금·최우선변제금을 모두 분자에
+            놓고 계산합니다. 이를 대출금액에 대해 정리하면 다음과 같습니다.
+          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>담보인정액 = 주택 가격 × 적용 LTV</li>
+            <li>차감 후 = 담보인정액 − 선순위채권 − 방공제</li>
+            <li>
+              담보 기준 한도 = <strong>차감 후와 절대한도 중 낮은 값</strong> (최소 0)
+            </li>
+          </ul>
+          <p>
+            절대한도는 차감을 마친 <strong>실행 대출액</strong>에 걸립니다. 차감 전
+            담보인정액에 먼저 씌우는 것이 아닙니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">지역·보유 상황별 LTV</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-slate-50">
-                    <th className="border border-slate-200 p-3 text-left">구분</th>
-                    <th className="border border-slate-200 p-3">규제지역</th>
-                    <th className="border border-slate-200 p-3">수도권 비규제</th>
-                    <th className="border border-slate-200 p-3">비수도권</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
-                      무주택 (처분조건부 1주택 포함)
-                    </td>
-                    <td className="border border-slate-200 p-3">40%</td>
-                    <td className="border border-slate-200 p-3">70%</td>
-                    <td className="border border-slate-200 p-3">70%</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
-                      생애최초
-                    </td>
-                    <td className="border border-slate-200 p-3">70%</td>
-                    <td className="border border-slate-200 p-3">70%</td>
-                    <td className="border border-slate-200 p-3">80%</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
-                      유주택 (1주택 비처분·다주택)
-                    </td>
-                    <td className="border border-slate-200 p-3">0%</td>
-                    <td className="border border-slate-200 p-3">0%</td>
-                    <td className="border border-slate-200 p-3">60%</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
-                      주택가격 구간별 절대한도
-                    </td>
-                    <td className="border border-slate-200 p-3">적용</td>
-                    <td className="border border-slate-200 p-3">적용</td>
-                    <td className="border border-slate-200 p-3">미적용</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <h2 className="text-xl font-bold text-slate-900">지역·보유 상황별 LTV</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="border border-slate-200 p-3 text-left">구분</th>
+                  <th className="border border-slate-200 p-3">규제지역</th>
+                  <th className="border border-slate-200 p-3">수도권 비규제</th>
+                  <th className="border border-slate-200 p-3">비수도권</th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
+                    무주택 (처분조건부 1주택 포함)
+                  </td>
+                  <td className="border border-slate-200 p-3">40%</td>
+                  <td className="border border-slate-200 p-3">70%</td>
+                  <td className="border border-slate-200 p-3">70%</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
+                    생애최초
+                  </td>
+                  <td className="border border-slate-200 p-3">70%</td>
+                  <td className="border border-slate-200 p-3">70%</td>
+                  <td className="border border-slate-200 p-3">80%</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
+                    유주택 (1주택 비처분·다주택)
+                  </td>
+                  <td className="border border-slate-200 p-3">0%</td>
+                  <td className="border border-slate-200 p-3">0%</td>
+                  <td className="border border-slate-200 p-3">60%</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left font-semibold text-slate-800">
+                    주택가격 구간별 절대한도
+                  </td>
+                  <td className="border border-slate-200 p-3">적용</td>
+                  <td className="border border-slate-200 p-3">적용</td>
+                  <td className="border border-slate-200 p-3">미적용</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <h2 className="text-xl font-bold text-slate-900">방공제</h2>
-            <p>
-              방공제는 소액임차인의 최우선변제금만큼 담보 여력에서 미리 빼두는 것입니다.
-              지역별 법정 금액은 주택임대차보호법 시행령으로 정해져 있지만{" "}
-              <strong>몇 건을 공제할지는 주택 유형과 금융회사 내규에 따라 다릅니다</strong>.
-              그래서 이 계산기는 건수를 자동으로 정하지 않고 금액을 직접 입력받습니다.
+          <h2 className="text-xl font-bold text-slate-900">방공제</h2>
+          <p>
+            방공제는 소액임차인의 최우선변제금만큼 담보 여력에서 미리 빼두는 것입니다.
+            지역별 법정 금액은 주택임대차보호법 시행령으로 정해져 있지만{" "}
+            <strong>몇 건을 공제할지는 주택 유형과 금융회사 내규에 따라 다릅니다</strong>.
+            그래서 이 계산기는 건수를 자동으로 정하지 않고 금액을 직접 입력받습니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">이 계산기가 반영하지 않는 것</p>
+            <p className="mt-2">
+              DSR·DTI, 서민·실수요자 우대, 정책대출(디딤돌·보금자리론), 생활안정자금 목적
+              대출, 후순위·추가담보대출, 전세대출, 비주택 담보는 규제 체계가 달라 반영하지
+              않습니다. 해당하는 경우 금융회사에 직접 확인하세요.
             </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">이 계산기가 반영하지 않는 것</p>
-              <p className="mt-2">
-                DSR·DTI, 서민·실수요자 우대, 정책대출(디딤돌·보금자리론), 생활안정자금 목적
-                대출, 후순위·추가담보대출, 전세대출, 비주택 담보는 규제 체계가 달라 반영하지
-                않습니다. 해당하는 경우 금융회사에 직접 확인하세요.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "DSR 계산기 (소득 기준 한도)", href: "/dsr-calculator", icon: "📉" },
-          { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
-          { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
-          { label: "전세대출 계산기", href: "/jeonse-loan-calculator", icon: "🏠" },
-        ]}
-        relatedGuides={[
-          { label: "대출 이자 계산 방법 완벽 정리", href: "/blog/loan-interest-calculation" },
-        ]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "DSR 계산기 (소득 기준 한도)", href: "/dsr-calculator", icon: "📉" },
+        { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
+        { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
+        { label: "전세대출 계산기", href: "/jeonse-loan-calculator", icon: "🏠" },
+      ]}
+      relatedGuides={[
+        { label: "대출 이자 계산 방법 완벽 정리", href: "/blog/loan-interest-calculation" },
+      ]}
+    />
   );
 }

@@ -1,6 +1,5 @@
 // src/app/real-estate/acquisition-tax-calculator/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import AcquisitionTaxCalc from "@/components/calculator/AcquisitionTaxCalc";
@@ -101,116 +100,114 @@ export default function Page() {
   ];
 
   return (
-      <Suspense>
-        <CalcShell
-            title="취득세 계산기"
-            description="주택 취득가액과 보유 주택 수를 입력하면 취득세·농어촌특별세·지방교육세 합계를 즉시 계산합니다."
-            icon="🏠"
-            slug="real-estate/acquisition-tax-calculator"
-            breadcrumb={crumbs}
-            calculator={<AcquisitionTaxCalc />}
-            guide={
-              <>
-                <h2 className="text-xl font-bold text-slate-900">취득세 계산기란?</h2>
-                <p>
-                  취득세 계산기는 아파트, 단독주택, 연립·다세대주택 등 주택을 유상
-                  취득할 때 예상되는 취득세, 농어촌특별세, 지방교육세를 미리 계산하는
-                  도구입니다.
-                </p>
+      <CalcShell
+          title="취득세 계산기"
+          description="주택 취득가액과 보유 주택 수를 입력하면 취득세·농어촌특별세·지방교육세 합계를 즉시 계산합니다."
+          icon="🏠"
+          slug="real-estate/acquisition-tax-calculator"
+          breadcrumb={crumbs}
+          calculator={<AcquisitionTaxCalc />}
+          guide={
+            <>
+              <h2 className="text-xl font-bold text-slate-900">취득세 계산기란?</h2>
+              <p>
+                취득세 계산기는 아파트, 단독주택, 연립·다세대주택 등 주택을 유상
+                취득할 때 예상되는 취득세, 농어촌특별세, 지방교육세를 미리 계산하는
+                도구입니다.
+              </p>
 
-                <h2 className="text-xl font-bold text-slate-900">취득세 계산 공식</h2>
-                <div className="rounded bg-slate-100 p-4">
-                  <strong>취득세 = 취득가액 × 취득세율</strong>
-                  <br />
-                  <strong>총 납부세액 = 취득세 + 농어촌특별세 + 지방교육세</strong>
-                </div>
+              <h2 className="text-xl font-bold text-slate-900">취득세 계산 공식</h2>
+              <div className="rounded bg-slate-100 p-4">
+                <strong>취득세 = 취득가액 × 취득세율</strong>
+                <br />
+                <strong>총 납부세액 = 취득세 + 농어촌특별세 + 지방교육세</strong>
+              </div>
 
-                <h2 className="text-xl font-bold text-slate-900">취득세율 예시</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse text-sm">
-                    <thead>
-                    <tr className="bg-slate-50">
-                      <th className="border border-slate-200 p-3">주택 수</th>
-                      <th className="border border-slate-200 p-3">조정대상지역</th>
-                      <th className="border border-slate-200 p-3">그 외 지역</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td className="border border-slate-200 p-3">1주택</td>
-                      <td className="border border-slate-200 p-3">1~3% (구간별)</td>
-                      <td className="border border-slate-200 p-3">1~3% (구간별)</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-slate-200 p-3">2주택</td>
-                      <td className="border border-slate-200 p-3">8%</td>
-                      <td className="border border-slate-200 p-3">1~3% (구간별)</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-slate-200 p-3">3주택</td>
-                      <td className="border border-slate-200 p-3">12%</td>
-                      <td className="border border-slate-200 p-3">8%</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-slate-200 p-3">4주택 이상</td>
-                      <td className="border border-slate-200 p-3">12%</td>
-                      <td className="border border-slate-200 p-3">12%</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <h2 className="text-xl font-bold text-slate-900">취득세율 예시</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                  <tr className="bg-slate-50">
+                    <th className="border border-slate-200 p-3">주택 수</th>
+                    <th className="border border-slate-200 p-3">조정대상지역</th>
+                    <th className="border border-slate-200 p-3">그 외 지역</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td className="border border-slate-200 p-3">1주택</td>
+                    <td className="border border-slate-200 p-3">1~3% (구간별)</td>
+                    <td className="border border-slate-200 p-3">1~3% (구간별)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-200 p-3">2주택</td>
+                    <td className="border border-slate-200 p-3">8%</td>
+                    <td className="border border-slate-200 p-3">1~3% (구간별)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-200 p-3">3주택</td>
+                    <td className="border border-slate-200 p-3">12%</td>
+                    <td className="border border-slate-200 p-3">8%</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-200 p-3">4주택 이상</td>
+                    <td className="border border-slate-200 p-3">12%</td>
+                    <td className="border border-slate-200 p-3">12%</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
 
-                <h2 className="text-xl font-bold text-slate-900">실제 계산 예시</h2>
-                <p>
-                  예를 들어 5억 원 주택을 1주택 조건으로 취득하면 취득세 500만 원과
-                  지방교육세 50만 원을 합쳐 약 550만 원 수준이 될 수 있습니다.
-                </p>
+              <h2 className="text-xl font-bold text-slate-900">실제 계산 예시</h2>
+              <p>
+                예를 들어 5억 원 주택을 1주택 조건으로 취득하면 취득세 500만 원과
+                지방교육세 50만 원을 합쳐 약 550만 원 수준이 될 수 있습니다.
+              </p>
 
-                <h2 className="text-xl font-bold text-slate-900">취득세 계산 시 확인할 항목</h2>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>취득가액이 6억 이하, 6억 초과~9억 이하, 9억 초과 중 어디에 해당하는지</li>
-                  <li>현재 보유 주택 수가 몇 채인지</li>
-                  <li>취득 주택이 조정대상지역에 있는지</li>
-                  <li>생애 최초 주택 구입 감면 대상인지</li>
-                  <li>일시적 2주택, 상속, 증여 등 특수 조건이 있는지</li>
-                </ul>
+              <h2 className="text-xl font-bold text-slate-900">취득세 계산 시 확인할 항목</h2>
+              <ul className="list-disc space-y-2 pl-5">
+                <li>취득가액이 6억 이하, 6억 초과~9억 이하, 9억 초과 중 어디에 해당하는지</li>
+                <li>현재 보유 주택 수가 몇 채인지</li>
+                <li>취득 주택이 조정대상지역에 있는지</li>
+                <li>생애 최초 주택 구입 감면 대상인지</li>
+                <li>일시적 2주택, 상속, 증여 등 특수 조건이 있는지</li>
+              </ul>
 
-                <h2 className="text-xl font-bold text-slate-900">주의사항</h2>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>취득세율과 감면 제도는 정책 변경에 따라 달라질 수 있습니다.</li>
-                  <li>실제 납부 금액은 관할 지자체 판단에 따라 달라질 수 있습니다.</li>
-                  <li>법인 취득, 증여, 상속, 농지 등은 일반 주택 매매와 계산 방식이 다를 수 있습니다.</li>
-                  <li>계산 결과는 참고용이며 신고 전 관할 시·군·구청 또는 세무 전문가 확인이 필요합니다.</li>
-                </ul>
-              </>
-            }
-            examples={EXAMPLES}
-            faq={FAQ}
-            relatedCalcs={[
-          { label: "실투자금 계산기 (총 필요자금)", href: "/real-estate/initial-cost-calculator", icon: "💰" },
-              {
-                label: "월세 vs 전세 계산기",
-                href: "/real-estate/jeonse-vs-wolse-calculator",
-                icon: "⚖️",
-              },
-              {
-                label: "부동산 수익률 계산기",
-                href: "/real-estate/property-yield-calculator",
-                icon: "📈",
-              },
-              {
-                label: "재건축 분담금 계산기",
-                href: "/real-estate/reconstruction-contribution-calculator",
-                icon: "🏗️",
-              },
-            ]}
-            relatedGuides={[
-              {
-                label: "취득세 완벽 가이드 — 1·2·3주택 세율",
-                href: "/blog/acquisition-tax-guide",
-              },
-            ]}
-        />
-      </Suspense>
+              <h2 className="text-xl font-bold text-slate-900">주의사항</h2>
+              <ul className="list-disc space-y-2 pl-5">
+                <li>취득세율과 감면 제도는 정책 변경에 따라 달라질 수 있습니다.</li>
+                <li>실제 납부 금액은 관할 지자체 판단에 따라 달라질 수 있습니다.</li>
+                <li>법인 취득, 증여, 상속, 농지 등은 일반 주택 매매와 계산 방식이 다를 수 있습니다.</li>
+                <li>계산 결과는 참고용이며 신고 전 관할 시·군·구청 또는 세무 전문가 확인이 필요합니다.</li>
+              </ul>
+            </>
+          }
+          examples={EXAMPLES}
+          faq={FAQ}
+          relatedCalcs={[
+        { label: "실투자금 계산기 (총 필요자금)", href: "/real-estate/initial-cost-calculator", icon: "💰" },
+            {
+              label: "월세 vs 전세 계산기",
+              href: "/real-estate/jeonse-vs-wolse-calculator",
+              icon: "⚖️",
+            },
+            {
+              label: "부동산 수익률 계산기",
+              href: "/real-estate/property-yield-calculator",
+              icon: "📈",
+            },
+            {
+              label: "재건축 분담금 계산기",
+              href: "/real-estate/reconstruction-contribution-calculator",
+              icon: "🏗️",
+            },
+          ]}
+          relatedGuides={[
+            {
+              label: "취득세 완벽 가이드 — 1·2·3주택 세율",
+              href: "/blog/acquisition-tax-guide",
+            },
+          ]}
+      />
   );
 }

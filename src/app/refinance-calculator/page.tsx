@@ -1,6 +1,5 @@
 // src/app/refinance-calculator/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import RefinanceCalc from "@/components/calculator/RefinanceCalc";
@@ -67,99 +66,97 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="대환대출 계산기"
-        description="대출을 갈아탈 때 총이자 절감액과 손익분기를 확인하세요. 중도상환수수료 반영."
-        icon="🔄"
-        slug="refinance-calculator"
-        breadcrumb={[
-          { name: "홈", url: BASE_URL },
-          { name: "대출 계산기", url: `${BASE_URL}/loan` },
-          { name: "대환대출 계산기", url: `${BASE_URL}/refinance-calculator` },
-        ]}
-        calculator={
-          <>
-            <RefinanceCalc />
-            <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
-              <p className="mb-2 text-sm font-bold text-slate-800">
-                ⚠️ 손익분기만 보지 마세요
-              </p>
-              <p className="text-sm text-slate-600">
-                기간을 늘려 갈아타면 월 상환액이 줄어 손익분기가 짧게 나올 수
-                있지만, 총이자는 오히려 늘 수 있습니다. 순절감액(총이자 기준)을 함께
-                확인하세요.
-              </p>
-            </div>
-          </>
-        }
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              대환대출이란?
-            </h2>
-            <p>
-              대환대출은 기존 대출을 갚고 조건이 더 나은 새 대출로 갈아타는
-              것입니다. 보통 금리를 낮추기 위해 이용하지만, 기존 대출을 중간에
-              상환하면 <strong>중도상환수수료</strong>가 발생하기 때문에, 절감되는
-              이자와 수수료를 함께 따져봐야 실제 이득 여부를 알 수 있습니다.
+    <CalcShell
+      title="대환대출 계산기"
+      description="대출을 갈아탈 때 총이자 절감액과 손익분기를 확인하세요. 중도상환수수료 반영."
+      icon="🔄"
+      slug="refinance-calculator"
+      breadcrumb={[
+        { name: "홈", url: BASE_URL },
+        { name: "대출 계산기", url: `${BASE_URL}/loan` },
+        { name: "대환대출 계산기", url: `${BASE_URL}/refinance-calculator` },
+      ]}
+      calculator={
+        <>
+          <RefinanceCalc />
+          <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
+            <p className="mb-2 text-sm font-bold text-slate-800">
+              ⚠️ 손익분기만 보지 마세요
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">
-              두 가지 관점으로 봐야 합니다
-            </h2>
-            <p>
-              대환의 효과는 <strong>월 상환액</strong>과 <strong>총이자</strong>
-              두 관점에서 달라질 수 있습니다. 금리만 낮추고 기간을 그대로 두면 둘 다
-              줄어듭니다. 하지만 기간을 늘리면 월 상환액은 줄어도 총이자는 늘어날 수
-              있습니다. 그래서 이 계산기는 판단을 내리지 않고, 두 관점의 숫자를
-              모두 보여줍니다.
+            <p className="text-sm text-slate-600">
+              기간을 늘려 갈아타면 월 상환액이 줄어 손익분기가 짧게 나올 수
+              있지만, 총이자는 오히려 늘 수 있습니다. 순절감액(총이자 기준)을 함께
+              확인하세요.
             </p>
+          </div>
+        </>
+      }
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            대환대출이란?
+          </h2>
+          <p>
+            대환대출은 기존 대출을 갚고 조건이 더 나은 새 대출로 갈아타는
+            것입니다. 보통 금리를 낮추기 위해 이용하지만, 기존 대출을 중간에
+            상환하면 <strong>중도상환수수료</strong>가 발생하기 때문에, 절감되는
+            이자와 수수료를 함께 따져봐야 실제 이득 여부를 알 수 있습니다.
+          </p>
 
-            <ul className="list-disc space-y-2 pl-5">
-              <li>이자 절감액 = 기존 총이자 − 새 총이자</li>
-              <li>전환비용 = 중도상환수수료(남은 원금 × 요율) + 기타 비용</li>
-              <li>순절감액 = 이자 절감액 − 전환비용</li>
-              <li>손익분기 = 전환비용 ÷ 월 상환액 절감</li>
-            </ul>
+          <h2 className="text-xl font-bold text-slate-900">
+            두 가지 관점으로 봐야 합니다
+          </h2>
+          <p>
+            대환의 효과는 <strong>월 상환액</strong>과 <strong>총이자</strong>
+            두 관점에서 달라질 수 있습니다. 금리만 낮추고 기간을 그대로 두면 둘 다
+            줄어듭니다. 하지만 기간을 늘리면 월 상환액은 줄어도 총이자는 늘어날 수
+            있습니다. 그래서 이 계산기는 판단을 내리지 않고, 두 관점의 숫자를
+            모두 보여줍니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              중도상환수수료와 손익분기
-            </h2>
-            <p>
-              중도상환수수료는 대출을 미리 갚을 때 내는 비용으로, 보통 남은 원금에
-              일정 요율을 곱해 계산합니다(대출 실행 후 경과 기간에 따라 낮아지는
-              경우가 많습니다). 손익분기는 이 수수료를 월 상환액 절감으로 회수하는
-              데 걸리는 기간이며, 남은 상환 기간이 손익분기보다 충분히 길수록 전환의
-              여지가 커집니다. 다만 최종 판단은 총이자 관점의 순절감액과 함께
-              내리는 것이 안전합니다.
+          <ul className="list-disc space-y-2 pl-5">
+            <li>이자 절감액 = 기존 총이자 − 새 총이자</li>
+            <li>전환비용 = 중도상환수수료(남은 원금 × 요율) + 기타 비용</li>
+            <li>순절감액 = 이자 절감액 − 전환비용</li>
+            <li>손익분기 = 전환비용 ÷ 월 상환액 절감</li>
+          </ul>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            중도상환수수료와 손익분기
+          </h2>
+          <p>
+            중도상환수수료는 대출을 미리 갚을 때 내는 비용으로, 보통 남은 원금에
+            일정 요율을 곱해 계산합니다(대출 실행 후 경과 기간에 따라 낮아지는
+            경우가 많습니다). 손익분기는 이 수수료를 월 상환액 절감으로 회수하는
+            데 걸리는 기간이며, 남은 상환 기간이 손익분기보다 충분히 길수록 전환의
+            여지가 커집니다. 다만 최종 판단은 총이자 관점의 순절감액과 함께
+            내리는 것이 안전합니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">함께 확인하면 좋은 것</p>
+            <p className="mt-2">
+              갈아탄 뒤의 실제 월 상환 스케줄은 원리금상환 계산기에서, 갈아타지
+              않고 일부만 미리 갚는 경우는 중도상환 계산기에서 비교해 볼 수
+              있습니다.
             </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">함께 확인하면 좋은 것</p>
-              <p className="mt-2">
-                갈아탄 뒤의 실제 월 상환 스케줄은 원리금상환 계산기에서, 갈아타지
-                않고 일부만 미리 갚는 경우는 중도상환 계산기에서 비교해 볼 수
-                있습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "중도상환 계산기", href: "/prepayment-calculator", icon: "💸" },
-          { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
-          { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
-          { label: "DSR 계산기", href: "/dsr-calculator", icon: "📐" },
-        ]}
-        relatedGuides={[
-          {
-            label: "대출 이자 계산 방법 완벽 정리",
-            href: "/blog/loan-interest-calculation",
-          },
-        ]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "중도상환 계산기", href: "/prepayment-calculator", icon: "💸" },
+        { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
+        { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
+        { label: "DSR 계산기", href: "/dsr-calculator", icon: "📐" },
+      ]}
+      relatedGuides={[
+        {
+          label: "대출 이자 계산 방법 완벽 정리",
+          href: "/blog/loan-interest-calculation",
+        },
+      ]}
+    />
   );
 }

@@ -1,6 +1,5 @@
 // src/app/funds/monthly-surplus/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import MonthlySurplusCalc from "@/components/calculator/MonthlySurplusCalc";
@@ -82,117 +81,115 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="월 잉여자금 계산기"
-        description="월 소득과 7개 지출 항목을 입력하면 매달 남는 금액과 연간 환산 금액을 계산합니다."
-        icon="🧮"
-        slug="funds/monthly-surplus"
-        breadcrumb={crumbs}
-        calculator={<MonthlySurplusCalc />}
-        examples={EXAMPLES}
-        faq={FAQ}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              계산식
-            </h2>
-            <p>
-              이 계산기는 사칙연산만 사용합니다. 세율·요율 같은 제도 수치를 쓰지
-              않으므로 제도가 바뀌어도 결과가 달라지지 않습니다.
-            </p>
+    <CalcShell
+      title="월 잉여자금 계산기"
+      description="월 소득과 7개 지출 항목을 입력하면 매달 남는 금액과 연간 환산 금액을 계산합니다."
+      icon="🧮"
+      slug="funds/monthly-surplus"
+      breadcrumb={crumbs}
+      calculator={<MonthlySurplusCalc />}
+      examples={EXAMPLES}
+      faq={FAQ}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            계산식
+          </h2>
+          <p>
+            이 계산기는 사칙연산만 사용합니다. 세율·요율 같은 제도 수치를 쓰지
+            않으므로 제도가 바뀌어도 결과가 달라지지 않습니다.
+          </p>
 
-            <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full min-w-[420px] text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold">항목</th>
-                    <th className="px-4 py-3 text-left font-semibold">
-                      계산식
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      월 총지출
-                    </td>
-                    <td className="px-4 py-3">7개 항목의 합</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      월 잉여자금
-                    </td>
-                    <td className="px-4 py-3">월 소득 − 월 총지출</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      연간 환산
-                    </td>
-                    <td className="px-4 py-3">월 잉여자금 × 12</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      소득 대비 지출
-                    </td>
-                    <td className="px-4 py-3">
-                      월 총지출 ÷ 월 소득 × 100 (소득이 0이면 표시하지 않음)
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold">항목</th>
+                  <th className="px-4 py-3 text-left font-semibold">
+                    계산식
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    월 총지출
+                  </td>
+                  <td className="px-4 py-3">7개 항목의 합</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    월 잉여자금
+                  </td>
+                  <td className="px-4 py-3">월 소득 − 월 총지출</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    연간 환산
+                  </td>
+                  <td className="px-4 py-3">월 잉여자금 × 12</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    소득 대비 지출
+                  </td>
+                  <td className="px-4 py-3">
+                    월 총지출 ÷ 월 소득 × 100 (소득이 0이면 표시하지 않음)
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              같은 금액을 두 번 빼지 않으려면
-            </h2>
-            <p>
-              가장 흔한 오차는 이미 공제된 금액을 지출에 또 넣는 것입니다.
-              기준은 항목의 이름이 아니라{" "}
-              <strong>입력한 소득에서 그 금액이 이미 빠졌는지</strong>입니다.
-              급여명세서에서 공제 항목으로 잡혀 실수령액이 줄어든 금액이라면
-              지출에 넣지 않고, 통장에서 따로 빠져나가는 금액이라면 지출에
-              넣습니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            같은 금액을 두 번 빼지 않으려면
+          </h2>
+          <p>
+            가장 흔한 오차는 이미 공제된 금액을 지출에 또 넣는 것입니다.
+            기준은 항목의 이름이 아니라{" "}
+            <strong>입력한 소득에서 그 금액이 이미 빠졌는지</strong>입니다.
+            급여명세서에서 공제 항목으로 잡혀 실수령액이 줄어든 금액이라면
+            지출에 넣지 않고, 통장에서 따로 빠져나가는 금액이라면 지출에
+            넣습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              이 계산기가 하지 않는 것
-            </h2>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>
-                지출 수준이나 잉여자금 규모를 좋다·나쁘다로 평가하지 않습니다.
-                적정 저축률이나 소비 비율도 제시하지 않습니다.
-              </li>
-              <li>
-                7개 지출 항목은 입력 편의를 위한 자체 구분이며, 공식 통계의 지출
-                분류가 아닙니다.
-              </li>
-              <li>
-                통계에서 쓰는 <strong>처분가능소득</strong>은 세금·사회보험료에
-                더해 다른 가구로의 이전지출까지 뺀 개념이라, 이 계산기에 넣는
-                실수령액과 같지 않습니다. 두 값을 같은 것으로 보지 마세요.
-              </li>
-              <li>
-                결과를 대출 한도 계산으로 자동 전달하지 않습니다. 대출 규제의
-                소득 기준과 계산 방식이 다르기 때문입니다.
-              </li>
-            </ul>
-          </>
-        }
-        relatedCalcs={[
-          { label: "비상자금 계산기", href: "/funds/emergency-fund", icon: "🛟" },
-          { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
-          { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
-          { label: "DSR 계산기", href: "/dsr-calculator", icon: "📊" },
-          {
-            label: "원리금상환 계산기",
-            href: "/amortization-calculator",
-            icon: "🏦",
-          },
-          { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          <h2 className="text-xl font-bold text-slate-900">
+            이 계산기가 하지 않는 것
+          </h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              지출 수준이나 잉여자금 규모를 좋다·나쁘다로 평가하지 않습니다.
+              적정 저축률이나 소비 비율도 제시하지 않습니다.
+            </li>
+            <li>
+              7개 지출 항목은 입력 편의를 위한 자체 구분이며, 공식 통계의 지출
+              분류가 아닙니다.
+            </li>
+            <li>
+              통계에서 쓰는 <strong>처분가능소득</strong>은 세금·사회보험료에
+              더해 다른 가구로의 이전지출까지 뺀 개념이라, 이 계산기에 넣는
+              실수령액과 같지 않습니다. 두 값을 같은 것으로 보지 마세요.
+            </li>
+            <li>
+              결과를 대출 한도 계산으로 자동 전달하지 않습니다. 대출 규제의
+              소득 기준과 계산 방식이 다르기 때문입니다.
+            </li>
+          </ul>
+        </>
+      }
+      relatedCalcs={[
+        { label: "비상자금 계산기", href: "/funds/emergency-fund", icon: "🛟" },
+        { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
+        { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
+        { label: "DSR 계산기", href: "/dsr-calculator", icon: "📊" },
+        {
+          label: "원리금상환 계산기",
+          href: "/amortization-calculator",
+          icon: "🏦",
+        },
+        { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }

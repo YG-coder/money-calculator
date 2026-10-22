@@ -1,6 +1,5 @@
 // src/app/real-estate/initial-cost-calculator/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import InitialCostCalc from "@/components/calculator/InitialCostCalc";
@@ -91,106 +90,104 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="부동산 실투자금 계산기"
-        description="매매가에 취득세·중개보수·등기비용을 더해 실제로 필요한 현금을 계산하세요."
-        icon="💰"
-        slug="real-estate/initial-cost-calculator"
-        breadcrumb={crumbs}
-        calculator={<InitialCostCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              매매가만 보면 자금이 모자랍니다
-            </h2>
-            <p>
-              집을 살 때 나가는 돈은 매매가만이 아닙니다. 취득세와 부가세목, 중개보수와
-              그 부가가치세, 등기·법무 비용이 더해집니다. 이 계산기는 그것을 모두 합쳐
-              <strong>총 필요자금</strong>을 구하고, 대출금과 승계 보증금을 빼서 실제로
-              준비해야 할 <strong>실투자금</strong>을 보여줍니다.
+    <CalcShell
+      title="부동산 실투자금 계산기"
+      description="매매가에 취득세·중개보수·등기비용을 더해 실제로 필요한 현금을 계산하세요."
+      icon="💰"
+      slug="real-estate/initial-cost-calculator"
+      breadcrumb={crumbs}
+      calculator={<InitialCostCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            매매가만 보면 자금이 모자랍니다
+          </h2>
+          <p>
+            집을 살 때 나가는 돈은 매매가만이 아닙니다. 취득세와 부가세목, 중개보수와
+            그 부가가치세, 등기·법무 비용이 더해집니다. 이 계산기는 그것을 모두 합쳐
+            <strong>총 필요자금</strong>을 구하고, 대출금과 승계 보증금을 빼서 실제로
+            준비해야 할 <strong>실투자금</strong>을 보여줍니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">계산 구조</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>총 부대비용 = 취득세 합계 + 중개보수(+부가세) + 등기·법무 + 기타</li>
+            <li>총 필요자금 = 매매가 + 총 부대비용</li>
+            <li>실투자금 = 총 필요자금 − 대출금 − 승계 임대보증금</li>
+          </ul>
+
+          <h2 className="text-xl font-bold text-slate-900">중개보수 상한요율</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="border border-slate-200 p-3 text-left">거래금액</th>
+                  <th className="border border-slate-200 p-3">상한요율</th>
+                  <th className="border border-slate-200 p-3">한도액</th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">5천만원 미만</td>
+                  <td className="border border-slate-200 p-3">0.6%</td>
+                  <td className="border border-slate-200 p-3">25만원</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">5천만원 ~ 2억원 미만</td>
+                  <td className="border border-slate-200 p-3">0.5%</td>
+                  <td className="border border-slate-200 p-3">80만원</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">2억원 ~ 9억원 미만</td>
+                  <td className="border border-slate-200 p-3">0.4%</td>
+                  <td className="border border-slate-200 p-3">—</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">9억원 ~ 12억원 미만</td>
+                  <td className="border border-slate-200 p-3">0.5%</td>
+                  <td className="border border-slate-200 p-3">—</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">12억원 ~ 15억원 미만</td>
+                  <td className="border border-slate-200 p-3">0.6%</td>
+                  <td className="border border-slate-200 p-3">—</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-200 p-3 text-left">15억원 이상</td>
+                  <td className="border border-slate-200 p-3">0.7%</td>
+                  <td className="border border-slate-200 p-3">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            주택 중개보수는 국토교통부령이 정한 범위 안에서 시·도 조례로 정합니다. 위 표는
+            국토교통부 상한이며, 조례가 이와 일치함을 확인한 지역은 서울특별시·경기도입니다.
+            부가가치세는 별도입니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">이 계산기가 반영하지 않는 것</p>
+            <p className="mt-2">
+              임대차 중개보수, 오피스텔·상가·토지 중개보수, 간이과세 중개사의 부가가치세,
+              등기 비용 자동 산정, 무상취득(증여·상속)은 반영하지 않습니다. 서울·경기 외
+              지역의 조례 요율차도 확인하지 못해 국토교통부 상한으로 계산합니다.
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">계산 구조</h2>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>총 부대비용 = 취득세 합계 + 중개보수(+부가세) + 등기·법무 + 기타</li>
-              <li>총 필요자금 = 매매가 + 총 부대비용</li>
-              <li>실투자금 = 총 필요자금 − 대출금 − 승계 임대보증금</li>
-            </ul>
-
-            <h2 className="text-xl font-bold text-slate-900">중개보수 상한요율</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-slate-50">
-                    <th className="border border-slate-200 p-3 text-left">거래금액</th>
-                    <th className="border border-slate-200 p-3">상한요율</th>
-                    <th className="border border-slate-200 p-3">한도액</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">5천만원 미만</td>
-                    <td className="border border-slate-200 p-3">0.6%</td>
-                    <td className="border border-slate-200 p-3">25만원</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">5천만원 ~ 2억원 미만</td>
-                    <td className="border border-slate-200 p-3">0.5%</td>
-                    <td className="border border-slate-200 p-3">80만원</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">2억원 ~ 9억원 미만</td>
-                    <td className="border border-slate-200 p-3">0.4%</td>
-                    <td className="border border-slate-200 p-3">—</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">9억원 ~ 12억원 미만</td>
-                    <td className="border border-slate-200 p-3">0.5%</td>
-                    <td className="border border-slate-200 p-3">—</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">12억원 ~ 15억원 미만</td>
-                    <td className="border border-slate-200 p-3">0.6%</td>
-                    <td className="border border-slate-200 p-3">—</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-slate-200 p-3 text-left">15억원 이상</td>
-                    <td className="border border-slate-200 p-3">0.7%</td>
-                    <td className="border border-slate-200 p-3">—</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p>
-              주택 중개보수는 국토교통부령이 정한 범위 안에서 시·도 조례로 정합니다. 위 표는
-              국토교통부 상한이며, 조례가 이와 일치함을 확인한 지역은 서울특별시·경기도입니다.
-              부가가치세는 별도입니다.
-            </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">이 계산기가 반영하지 않는 것</p>
-              <p className="mt-2">
-                임대차 중개보수, 오피스텔·상가·토지 중개보수, 간이과세 중개사의 부가가치세,
-                등기 비용 자동 산정, 무상취득(증여·상속)은 반영하지 않습니다. 서울·경기 외
-                지역의 조례 요율차도 확인하지 못해 국토교통부 상한으로 계산합니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏠" },
-          { label: "LTV 계산기 (담보 기준 한도)", href: "/ltv-calculator", icon: "📏" },
-          { label: "DSR 계산기 (소득 기준 한도)", href: "/dsr-calculator", icon: "📐" },
-          { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📈" },
-        ]}
-        relatedGuides={[
-          { label: "취득세 완벽 가이드", href: "/blog/acquisition-tax-guide" },
-          { label: "부동산 수익률 계산 방법", href: "/blog/property-yield-guide" },
-        ]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏠" },
+        { label: "LTV 계산기 (담보 기준 한도)", href: "/ltv-calculator", icon: "📏" },
+        { label: "DSR 계산기 (소득 기준 한도)", href: "/dsr-calculator", icon: "📐" },
+        { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📈" },
+      ]}
+      relatedGuides={[
+        { label: "취득세 완벽 가이드", href: "/blog/acquisition-tax-guide" },
+        { label: "부동산 수익률 계산 방법", href: "/blog/property-yield-guide" },
+      ]}
+    />
   );
 }

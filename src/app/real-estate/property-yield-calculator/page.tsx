@@ -1,7 +1,6 @@
 // src/app/real-estate/property-yield-calculator/page.tsx
 
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
@@ -186,57 +185,55 @@ const FAQ = [
 
 export default function Page() {
     return (
-        <Suspense>
-            <CalcShell
-                title="부동산 수익률 계산기"
-                description="매입가, 보증금, 월세, 대출금, 금리를 입력하면 월 순수익과 연 수익률을 간편하게 계산할 수 있습니다."
-                icon="🏠"
-                slug="real-estate/property-yield-calculator"
-                calculator={<PropertyYieldCalc />}
-                guide={GUIDE}
-                faq={FAQ}
-                examples={EXAMPLES}
-                breadcrumb={[
-                    { name: "홈", url: BASE_URL },
-                    { name: "부동산 계산기", url: `${BASE_URL}/real-estate` },
-                    {
-                        name: "부동산 수익률 계산기",
-                        url: `${BASE_URL}/real-estate/property-yield-calculator`,
-                    },
-                ]}
-                relatedCalcs={[
-                    {
-                        label: "실투자금 계산기",
-                        href: "/real-estate/initial-cost-calculator",
-                        icon: "💰",
-                    },
-                    {
-                        label: "취득세 계산기",
-                        href: "/real-estate/acquisition-tax-calculator",
-                        icon: "🏠",
-                    },
-                    {
-                        label: "월세 vs 전세 계산기",
-                        href: "/real-estate/jeonse-vs-wolse-calculator",
-                        icon: "⚖️",
-                    },
-                    {
-                        label: "대출이자 계산기",
-                        href: "/loan-interest-calculator",
-                        icon: "🏦",
-                    },
-                ]}
-                relatedGuides={[
-                    {
-                        label: "부동산 수익률 계산 방법 완벽 정리",
-                        href: "/blog/property-yield-guide",
-                    },
-                    {
-                        label: "취득세 완벽 가이드",
-                        href: "/blog/acquisition-tax-guide",
-                    },
-                ]}
-            />
-        </Suspense>
+          <CalcShell
+              title="부동산 수익률 계산기"
+              description="매입가, 보증금, 월세, 대출금, 금리를 입력하면 월 순수익과 연 수익률을 간편하게 계산할 수 있습니다."
+              icon="🏠"
+              slug="real-estate/property-yield-calculator"
+              calculator={<PropertyYieldCalc />}
+              guide={GUIDE}
+              faq={FAQ}
+              examples={EXAMPLES}
+              breadcrumb={[
+                  { name: "홈", url: BASE_URL },
+                  { name: "부동산 계산기", url: `${BASE_URL}/real-estate` },
+                  {
+                      name: "부동산 수익률 계산기",
+                      url: `${BASE_URL}/real-estate/property-yield-calculator`,
+                  },
+              ]}
+              relatedCalcs={[
+                  {
+                      label: "실투자금 계산기",
+                      href: "/real-estate/initial-cost-calculator",
+                      icon: "💰",
+                  },
+                  {
+                      label: "취득세 계산기",
+                      href: "/real-estate/acquisition-tax-calculator",
+                      icon: "🏠",
+                  },
+                  {
+                      label: "월세 vs 전세 계산기",
+                      href: "/real-estate/jeonse-vs-wolse-calculator",
+                      icon: "⚖️",
+                  },
+                  {
+                      label: "대출이자 계산기",
+                      href: "/loan-interest-calculator",
+                      icon: "🏦",
+                  },
+              ]}
+              relatedGuides={[
+                  {
+                      label: "부동산 수익률 계산 방법 완벽 정리",
+                      href: "/blog/property-yield-guide",
+                  },
+                  {
+                      label: "취득세 완벽 가이드",
+                      href: "/blog/acquisition-tax-guide",
+                  },
+              ]}
+          />
     );
 }

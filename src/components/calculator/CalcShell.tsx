@@ -1,4 +1,5 @@
 // src/components/calculator/CalcShell.tsx
+import { Suspense } from "react";
 import { WebAppJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { BASE_URL } from "@/lib/metadata";
 import RelatedLinks, { type RelatedItem } from "./RelatedLinks";
@@ -72,7 +73,7 @@ export default function CalcShell({
         {/* ── 브레드크럼 ── */}
         <nav
           aria-label="breadcrumb"
-          className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-slate-400"
+          className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500"
         >
           {crumbs.map((crumb, i) => (
             <span key={crumb.url} className="flex items-center gap-1.5">
@@ -105,9 +106,15 @@ export default function CalcShell({
         </div>
 
         {/* ── 계산기 (메인 컬럼, 풀폭) ── */}
+        {/*
+          계산기 컴포넌트는 useCalcState → useSearchParams 를 쓴다. 정적 생성 페이지에서 이 훅은
+          가장 가까운 Suspense 경계까지 클라이언트 렌더링으로 넘긴다(BAILOUT_TO_CLIENT_SIDE_RENDERING).
+          경계를 페이지 전체에 두면 H1·해설·FAQ 까지 초기 HTML 에서 사라지므로, 경계는 계산기 영역에만 둔다.
+          page.tsx 에서 <CalcShell> 바깥을 다시 <Suspense> 로 감싸지 말 것 — 빌드 검사가 H1 포함을 강제한다.
+        */}
         <div className="mx-auto max-w-3xl">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-            {calculator}
+            <Suspense fallback={<CalculatorFallback title={title} />}>{calculator}</Suspense>
           </div>
         </div>
 
@@ -127,7 +134,7 @@ export default function CalcShell({
                   </div>
                   <div className="p-5 space-y-4">
                     <div>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
                         입력값
                       </p>
                       <div className="grid grid-cols-2 gap-x-6 gap-y-1">
@@ -143,7 +150,7 @@ export default function CalcShell({
                     </div>
                     <div className="border-t border-slate-100" />
                     <div>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">
                         결과
                       </p>
                       <div className="space-y-1.5">
@@ -164,7 +171,7 @@ export default function CalcShell({
                       </div>
                     </div>
                     {ex.note && (
-                      <p className="text-xs text-slate-400 leading-relaxed border-t border-slate-100 pt-3">
+                      <p className="text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-3">
                         💬 {ex.note}
                       </p>
                     )}
@@ -202,7 +209,7 @@ export default function CalcShell({
                                      hover:bg-slate-50 transition-colors list-none">
                     <span>Q. {item.q}</span>
                     <svg
-                      className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180 shrink-0 ml-3"
+                      className="w-4 h-4 text-slate-500 transition-transform group-open:rotate-180 shrink-0 ml-3"
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -224,5 +231,18 @@ export default function CalcShell({
 
       </div>
     </>
+  );
+}
+
+/** 계산기 영역의 서버 렌더링 대체 표시. JavaScript 실행 후 실제 입력 폼으로 바뀐다. */
+function CalculatorFallback({ title }: { title: string }) {
+  return (
+    <div role="status" aria-live="polite" aria-label={`${title} 불러오는 중`} className="space-y-4">
+      <div className="h-5 w-40 rounded bg-slate-100" />
+      <div className="h-11 rounded-xl bg-slate-100" />
+      <div className="h-11 rounded-xl bg-slate-100" />
+      <div className="h-11 rounded-xl bg-slate-100" />
+      <p className="text-sm text-slate-500">계산기를 불러오고 있습니다. 잠시 후 입력란이 표시됩니다.</p>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 // src/app/finance/cma-vs-deposit/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import CmaVsDepositCalc from "@/components/calculator/CmaVsDepositCalc";
@@ -71,88 +70,86 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="CMA vs 예금 계산기"
-        description="예금 금리와 CMA 예상수익률을 넣어 같은 조건에서 세후 수령액을 비교하세요."
-        icon="⚖️"
-        slug="finance/cma-vs-deposit"
-        breadcrumb={crumbs}
-        calculator={
-          <>
-            <CmaVsDepositCalc />
-            <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
-              <p className="mb-2 text-sm font-bold text-slate-800">
-                ⚠️ CMA 수익률은 확정금리가 아닙니다
-              </p>
-              <p className="text-sm text-slate-600">
-                예금 금리는 만기까지 정해져 있지만, CMA 예상수익률은 시장 상황과
-                상품 유형에 따라 달라집니다. 이 비교는 입력한 수익률이 유지된다는
-                가정 위에서만 성립합니다.
-              </p>
-            </div>
-          </>
-        }
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              CMA와 예금은 무엇이 다른가
-            </h2>
-            <p>
-              <strong>예금</strong>은 가입 시점에 금리가 정해져 만기까지 유지되는
-              확정금리 상품입니다. <strong>CMA</strong>는 증권사의 수시입출금
-              계좌로, 하루만 맡겨도 수익이 붙을 수 있지만 수익률이 확정되어 있지
-              않고 시장금리에 따라 바뀝니다. 그래서 &lsquo;정해진 이자&rsquo;와
-              &lsquo;달라질 수 있는 수익&rsquo;이라는 성격 차이가 있습니다.
+    <CalcShell
+      title="CMA vs 예금 계산기"
+      description="예금 금리와 CMA 예상수익률을 넣어 같은 조건에서 세후 수령액을 비교하세요."
+      icon="⚖️"
+      slug="finance/cma-vs-deposit"
+      breadcrumb={crumbs}
+      calculator={
+        <>
+          <CmaVsDepositCalc />
+          <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
+            <p className="mb-2 text-sm font-bold text-slate-800">
+              ⚠️ CMA 수익률은 확정금리가 아닙니다
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">
-              이 계산기의 비교 방식
-            </h2>
-            <p>
-              공정한 비교를 위해 예금과 CMA를 같은 조건으로 맞춥니다. 같은
-              예치금액을 같은 기간 동안 <strong>단리 일시예치</strong>하고, 둘 다
-              <strong>일반과세 15.4%</strong>를 적용합니다. 이렇게 하면 복리 여부
-              같은 변수가 빠지고, 입력한 두 수익률의 차이가 그대로 결과 차이로
-              나타납니다.
+            <p className="text-sm text-slate-600">
+              예금 금리는 만기까지 정해져 있지만, CMA 예상수익률은 시장 상황과
+              상품 유형에 따라 달라집니다. 이 비교는 입력한 수익률이 유지된다는
+              가정 위에서만 성립합니다.
             </p>
+          </div>
+        </>
+      }
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            CMA와 예금은 무엇이 다른가
+          </h2>
+          <p>
+            <strong>예금</strong>은 가입 시점에 금리가 정해져 만기까지 유지되는
+            확정금리 상품입니다. <strong>CMA</strong>는 증권사의 수시입출금
+            계좌로, 하루만 맡겨도 수익이 붙을 수 있지만 수익률이 확정되어 있지
+            않고 시장금리에 따라 바뀝니다. 그래서 &lsquo;정해진 이자&rsquo;와
+            &lsquo;달라질 수 있는 수익&rsquo;이라는 성격 차이가 있습니다.
+          </p>
 
-            <ul className="list-disc space-y-2 pl-5">
-              <li>예금·CMA 세전 이자 = 예치금액 × 수익률 × (기간/12)</li>
-              <li>세후 이자 = 세전 이자 − 이자과세 15.4%</li>
-              <li>수령액 = 예치금액 + 세후 이자</li>
-            </ul>
+          <h2 className="text-xl font-bold text-slate-900">
+            이 계산기의 비교 방식
+          </h2>
+          <p>
+            공정한 비교를 위해 예금과 CMA를 같은 조건으로 맞춥니다. 같은
+            예치금액을 같은 기간 동안 <strong>단리 일시예치</strong>하고, 둘 다
+            <strong>일반과세 15.4%</strong>를 적용합니다. 이렇게 하면 복리 여부
+            같은 변수가 빠지고, 입력한 두 수익률의 차이가 그대로 결과 차이로
+            나타납니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              결과를 볼 때 주의할 점
-            </h2>
-            <p>
-              CMA 쪽 숫자는 &lsquo;입력한 예상수익률이 기간 내내 유지된다면&rsquo;을
-              가정한 값입니다. 실제 CMA 수익률은 RP형·MMF형·MMW형·발행어음형 등 상품
-              유형과 시장 상황에 따라 달라지고, 수익 산정·지급 방식도 상품별로 다를
-              수 있습니다. 그래서 이 계산기는 어느 쪽이 유리한지 판단하지 않고,
-              입력한 조건에서의 수령액 차이만 보여줍니다.
+          <ul className="list-disc space-y-2 pl-5">
+            <li>예금·CMA 세전 이자 = 예치금액 × 수익률 × (기간/12)</li>
+            <li>세후 이자 = 세전 이자 − 이자과세 15.4%</li>
+            <li>수령액 = 예치금액 + 세후 이자</li>
+          </ul>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            결과를 볼 때 주의할 점
+          </h2>
+          <p>
+            CMA 쪽 숫자는 &lsquo;입력한 예상수익률이 기간 내내 유지된다면&rsquo;을
+            가정한 값입니다. 실제 CMA 수익률은 RP형·MMF형·MMW형·발행어음형 등 상품
+            유형과 시장 상황에 따라 달라지고, 수익 산정·지급 방식도 상품별로 다를
+            수 있습니다. 그래서 이 계산기는 어느 쪽이 유리한지 판단하지 않고,
+            입력한 조건에서의 수령액 차이만 보여줍니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">함께 확인하면 좋은 것</p>
+            <p className="mt-2">
+              목돈을 예금에 넣을 때의 이자는 예금 이자 계산기에서, 매달 적립하는
+              적금과의 차이는 예금 vs 적금 계산기에서 확인할 수 있습니다.
             </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">함께 확인하면 좋은 것</p>
-              <p className="mt-2">
-                목돈을 예금에 넣을 때의 이자는 예금 이자 계산기에서, 매달 적립하는
-                적금과의 차이는 예금 vs 적금 계산기에서 확인할 수 있습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
-          { label: "예금 vs 적금 계산기", href: "/finance/deposit-vs-savings", icon: "⚖️" },
-          { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
-          { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
+        { label: "예금 vs 적금 계산기", href: "/finance/deposit-vs-savings", icon: "⚖️" },
+        { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
+        { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }

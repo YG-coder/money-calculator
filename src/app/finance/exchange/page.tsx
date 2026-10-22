@@ -1,6 +1,5 @@
 // src/app/finance/exchange/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import ExchangeCalc from "@/components/calculator/ExchangeCalc";
@@ -86,134 +85,132 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="환전 계산기"
-        description="매매기준율과 수수료율을 입력하면 우대율 적용 전후의 환율과 절약 금액을 확인할 수 있습니다."
-        icon="💱"
-        slug="finance/exchange"
-        breadcrumb={crumbs}
-        calculator={<ExchangeCalc />}
-        examples={EXAMPLES}
-        faq={FAQ}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              고시환율의 세 가지 숫자
-            </h2>
-            <p>
-              은행 고시환율표에는 보통 세 종류의 숫자가 함께 나옵니다.
-              <strong> 매매기준율</strong>은 은행이 수수료를 붙이기 전의 기준
-              환율이고, <strong>현찰 살 때</strong>는 여기에 수수료를 더한 값,
-              <strong> 현찰 파실 때</strong>는 수수료를 뺀 값입니다. 살 때가
-              비싸고 팔 때가 싼 이유가 이것이며, 그 차이가 곧 환전 수수료입니다.
-            </p>
+    <CalcShell
+      title="환전 계산기"
+      description="매매기준율과 수수료율을 입력하면 우대율 적용 전후의 환율과 절약 금액을 확인할 수 있습니다."
+      icon="💱"
+      slug="finance/exchange"
+      breadcrumb={crumbs}
+      calculator={<ExchangeCalc />}
+      examples={EXAMPLES}
+      faq={FAQ}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            고시환율의 세 가지 숫자
+          </h2>
+          <p>
+            은행 고시환율표에는 보통 세 종류의 숫자가 함께 나옵니다.
+            <strong> 매매기준율</strong>은 은행이 수수료를 붙이기 전의 기준
+            환율이고, <strong>현찰 살 때</strong>는 여기에 수수료를 더한 값,
+            <strong> 현찰 파실 때</strong>는 수수료를 뺀 값입니다. 살 때가
+            비싸고 팔 때가 싼 이유가 이것이며, 그 차이가 곧 환전 수수료입니다.
+          </p>
 
-            <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full min-w-[420px] text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold">구분</th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      계산식
-                    </th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      예 (1,200원 · 1.75%)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  <tr>
-                    <td className="px-4 py-3">매매기준율</td>
-                    <td className="px-4 py-3 text-right text-slate-500">
-                      기준
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      1,200원
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3">현찰 살 때</td>
-                    <td className="px-4 py-3 text-right text-slate-500">
-                      기준 × (1 + 수수료율)
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      1,221원
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3">현찰 파실 때</td>
-                    <td className="px-4 py-3 text-right text-slate-500">
-                      기준 × (1 − 수수료율)
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      1,179원
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold">구분</th>
+                  <th className="px-4 py-3 text-right font-semibold">
+                    계산식
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold">
+                    예 (1,200원 · 1.75%)
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="px-4 py-3">매매기준율</td>
+                  <td className="px-4 py-3 text-right text-slate-500">
+                    기준
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold">
+                    1,200원
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">현찰 살 때</td>
+                  <td className="px-4 py-3 text-right text-slate-500">
+                    기준 × (1 + 수수료율)
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold">
+                    1,221원
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">현찰 파실 때</td>
+                  <td className="px-4 py-3 text-right text-slate-500">
+                    기준 × (1 − 수수료율)
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold">
+                    1,179원
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              우대율은 환율이 아니라 수수료를 깎는다
-            </h2>
-            <p>
-              환율 우대율은 <strong>수수료에 적용되는 할인율</strong>입니다. 위
-              예에서 수수료는 21원인데, 우대율 50%를 받으면 수수료가 10.5원으로
-              줄어 적용 환율이 1,210.5원이 됩니다. 우대율 100%를 받으면 수수료가
-              0이 되어 매매기준율 1,200원 그대로 환전합니다. 우대율이 아무리
-              높아도 매매기준율보다 유리해지지는 않습니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            우대율은 환율이 아니라 수수료를 깎는다
+          </h2>
+          <p>
+            환율 우대율은 <strong>수수료에 적용되는 할인율</strong>입니다. 위
+            예에서 수수료는 21원인데, 우대율 50%를 받으면 수수료가 10.5원으로
+            줄어 적용 환율이 1,210.5원이 됩니다. 우대율 100%를 받으면 수수료가
+            0이 되어 매매기준율 1,200원 그대로 환전합니다. 우대율이 아무리
+            높아도 매매기준율보다 유리해지지는 않습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              100단위로 고시되는 통화
-            </h2>
-            <p>
-              일본 엔(JPY), 인도네시아 루피아(IDR), 베트남 동(VND), 캄보디아
-              리엘(KHR)은 <strong>100단위</strong>로 고시됩니다. 엔화 고시환율
-              &lsquo;950원&rsquo;은 1엔이 아니라 100엔 값입니다. 이 계산기는
-              고시표의 값을 그대로 입력받아 단위를 반영하므로 직접 100으로 나눠
-              넣을 필요가 없습니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            100단위로 고시되는 통화
+          </h2>
+          <p>
+            일본 엔(JPY), 인도네시아 루피아(IDR), 베트남 동(VND), 캄보디아
+            리엘(KHR)은 <strong>100단위</strong>로 고시됩니다. 엔화 고시환율
+            &lsquo;950원&rsquo;은 1엔이 아니라 100엔 값입니다. 이 계산기는
+            고시표의 값을 그대로 입력받아 단위를 반영하므로 직접 100으로 나눠
+            넣을 필요가 없습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              이 계산기가 하지 않는 것
-            </h2>
-            <ul className="list-disc space-y-1.5 pl-5">
-              <li>
-                <strong>실시간 환율 연동</strong> — 환율은 사용자가 입력한 값만
-                사용합니다. 기본 환율을 심어두지 않습니다.
-              </li>
-              <li>
-                <strong>은행별 수수료율·우대율 자동 적용</strong> —
-                은행·통화·상품마다 달라 공통값을 두지 않습니다.
-              </li>
-              <li>
-                <strong>송금·카드 결제 환율</strong> — 현찰 환전 기준입니다.
-              </li>
-            </ul>
-            <p>
-              결과는 입력값을 기준으로 한 예상 금액입니다. 실제 환전 금액은 거래
-              시점의 고시환율과 은행 조건에 따라 달라집니다.
-            </p>
-          </>
-        }
-        relatedCalcs={[
-          {
-            label: "실질금리 계산기",
-            href: "/finance/real-interest-rate",
-            icon: "📉",
-          },
-          {
-            label: "인플레이션 계산기",
-            href: "/finance/inflation",
-            icon: "💸",
-          },
-          { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
-          { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          <h2 className="text-xl font-bold text-slate-900">
+            이 계산기가 하지 않는 것
+          </h2>
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>
+              <strong>실시간 환율 연동</strong> — 환율은 사용자가 입력한 값만
+              사용합니다. 기본 환율을 심어두지 않습니다.
+            </li>
+            <li>
+              <strong>은행별 수수료율·우대율 자동 적용</strong> —
+              은행·통화·상품마다 달라 공통값을 두지 않습니다.
+            </li>
+            <li>
+              <strong>송금·카드 결제 환율</strong> — 현찰 환전 기준입니다.
+            </li>
+          </ul>
+          <p>
+            결과는 입력값을 기준으로 한 예상 금액입니다. 실제 환전 금액은 거래
+            시점의 고시환율과 은행 조건에 따라 달라집니다.
+          </p>
+        </>
+      }
+      relatedCalcs={[
+        {
+          label: "실질금리 계산기",
+          href: "/finance/real-interest-rate",
+          icon: "📉",
+        },
+        {
+          label: "인플레이션 계산기",
+          href: "/finance/inflation",
+          icon: "💸",
+        },
+        { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
+        { label: "복리 계산기", href: "/finance/compound", icon: "📈" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }

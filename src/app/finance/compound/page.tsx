@@ -1,6 +1,5 @@
 // src/app/finance/compound/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
@@ -82,97 +81,95 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="복리 계산기"
-        description="초기 원금과 월 추가 납입액, 예상 연이율, 기간을 입력하면 복리로 불어나는 최종 금액과 단리 대비 효과를 확인할 수 있습니다."
-        icon="📈"
-        slug="finance/compound"
-        breadcrumb={crumbs}
-        calculator={<CompoundSavingsCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">복리 계산기란?</h2>
-            <p>
-              복리 계산기는 초기 원금과 매달 추가로 넣는 금액이 복리로 어떻게
-              불어나는지 계산하는 도구입니다. 예상 연이율과 기간을 입력하면 총 납입
-              원금, 누적 이자, 최종 예상 금액과 함께 단리로 계산했을 때와의 차이,
-              연도별 잔액을 보여 줍니다. 목돈을 한 번에 넣는{" "}
-              <Link
-                href="/finance/deposit"
-                className="font-semibold text-brand-600 underline underline-offset-2"
-              >
-                예금
-              </Link>
-              이나 매달 넣는{" "}
-              <Link
-                href="/finance/installment-savings"
-                className="font-semibold text-brand-600 underline underline-offset-2"
-              >
-                적금
-              </Link>
-              의 장기 복리 효과를 가늠할 때 유용합니다.
-            </p>
+    <CalcShell
+      title="복리 계산기"
+      description="초기 원금과 월 추가 납입액, 예상 연이율, 기간을 입력하면 복리로 불어나는 최종 금액과 단리 대비 효과를 확인할 수 있습니다."
+      icon="📈"
+      slug="finance/compound"
+      breadcrumb={crumbs}
+      calculator={<CompoundSavingsCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">복리 계산기란?</h2>
+          <p>
+            복리 계산기는 초기 원금과 매달 추가로 넣는 금액이 복리로 어떻게
+            불어나는지 계산하는 도구입니다. 예상 연이율과 기간을 입력하면 총 납입
+            원금, 누적 이자, 최종 예상 금액과 함께 단리로 계산했을 때와의 차이,
+            연도별 잔액을 보여 줍니다. 목돈을 한 번에 넣는{" "}
+            <Link
+              href="/finance/deposit"
+              className="font-semibold text-brand-600 underline underline-offset-2"
+            >
+              예금
+            </Link>
+            이나 매달 넣는{" "}
+            <Link
+              href="/finance/installment-savings"
+              className="font-semibold text-brand-600 underline underline-offset-2"
+            >
+              적금
+            </Link>
+            의 장기 복리 효과를 가늠할 때 유용합니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">복리의 힘</h2>
-            <p>
-              복리는 이자가 원금에 더해져 그 다음 이자 계산에 포함되는 방식입니다.
-              시간이 짧으면 단리와 큰 차이가 없지만, 기간이 길어질수록 곡선이
-              가팔라집니다. 예를 들어 500만 원에 매달 20만 원씩 10년간 연 5%로
-              불리면, 총 납입 2,900만 원이 세전 약 3,929만 원이 되어 단리 대비 약
-              184만 원이 더 쌓입니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">복리의 힘</h2>
+          <p>
+            복리는 이자가 원금에 더해져 그 다음 이자 계산에 포함되는 방식입니다.
+            시간이 짧으면 단리와 큰 차이가 없지만, 기간이 길어질수록 곡선이
+            가팔라집니다. 예를 들어 500만 원에 매달 20만 원씩 10년간 연 5%로
+            불리면, 총 납입 2,900만 원이 세전 약 3,929만 원이 되어 단리 대비 약
+            184만 원이 더 쌓입니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">복리 계산 공식</h2>
-            <div className="rounded bg-slate-100 p-4">
-              <strong>
-                최종 금액 = 원금 × (1 + 월수익률)<sup>개월</sup> + 월 납입액의 복리
-                합계
-              </strong>
-              <br />
-              (이 계산기는 월복리, 매달 말 추가 납입을 기준으로 합니다.)
-            </div>
+          <h2 className="text-xl font-bold text-slate-900">복리 계산 공식</h2>
+          <div className="rounded bg-slate-100 p-4">
+            <strong>
+              최종 금액 = 원금 × (1 + 월수익률)<sup>개월</sup> + 월 납입액의 복리
+              합계
+            </strong>
+            <br />
+            (이 계산기는 월복리, 매달 말 추가 납입을 기준으로 합니다.)
+          </div>
 
-            <h2 className="text-xl font-bold text-slate-900">72의 법칙</h2>
-            <p>
-              원금이 두 배가 되는 기간은 대략 ‘72 ÷ 연이율’로 어림할 수 있습니다.
-              연 6%라면 약 12년, 연 4%라면 약 18년입니다. 복리 효과를 직관적으로
-              가늠할 때 참고하세요.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">72의 법칙</h2>
+          <p>
+            원금이 두 배가 되는 기간은 대략 ‘72 ÷ 연이율’로 어림할 수 있습니다.
+            연 6%라면 약 12년, 연 4%라면 약 18년입니다. 복리 효과를 직관적으로
+            가늠할 때 참고하세요.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              세전 기준입니다 — 세금 유의
-            </h2>
-            <p>
-              이 계산기의 결과는 세전 기준입니다. 실제 금융상품은 이자를 지급하는
-              시점에 과세하며, 이자 지급 주기와 비과세 적용 여부, 금융기관의 원 단위
-              처리에 따라 세후 수령액이 달라질 수 있습니다. 따라서 누적 이자에서
-              세율을 한 번 차감한 값을 모든 상품에 공통적인 세후 복리 금액으로
-              표시하지 않습니다. 확정금리 예·적금의 세후 금액이 궁금하다면 예금 이자
-              계산기와 적금 이자 계산기를 이용하세요. 입력한 예상 연이율이 그대로
-              유지된다는 가정의 예상치일 뿐, 미래 수익을 보장하지 않습니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            세전 기준입니다 — 세금 유의
+          </h2>
+          <p>
+            이 계산기의 결과는 세전 기준입니다. 실제 금융상품은 이자를 지급하는
+            시점에 과세하며, 이자 지급 주기와 비과세 적용 여부, 금융기관의 원 단위
+            처리에 따라 세후 수령액이 달라질 수 있습니다. 따라서 누적 이자에서
+            세율을 한 번 차감한 값을 모든 상품에 공통적인 세후 복리 금액으로
+            표시하지 않습니다. 확정금리 예·적금의 세후 금액이 궁금하다면 예금 이자
+            계산기와 적금 이자 계산기를 이용하세요. 입력한 예상 연이율이 그대로
+            유지된다는 가정의 예상치일 뿐, 미래 수익을 보장하지 않습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">계산 시 주의사항</h2>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>기간은 정수 연 단위로 입력하세요. 연도별 잔액은 각 연말 기준입니다.</li>
-              <li>월복리·기말 적립 기준의 세전 예상치입니다.</li>
-              <li>
-                실제 세후 수령액은 상품의 이자 지급 시점과 과세 조건(비과세 여부
-                포함)에 따라 달라집니다.
-              </li>
-              <li>가정한 예상 연이율이 유지된다는 전제이며 미래 수익을 보장하지 않습니다.</li>
-            </ul>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
-          { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
-          { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
-        ]}
-      />
-    </Suspense>
+          <h2 className="text-xl font-bold text-slate-900">계산 시 주의사항</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>기간은 정수 연 단위로 입력하세요. 연도별 잔액은 각 연말 기준입니다.</li>
+            <li>월복리·기말 적립 기준의 세전 예상치입니다.</li>
+            <li>
+              실제 세후 수령액은 상품의 이자 지급 시점과 과세 조건(비과세 여부
+              포함)에 따라 달라집니다.
+            </li>
+            <li>가정한 예상 연이율이 유지된다는 전제이며 미래 수익을 보장하지 않습니다.</li>
+          </ul>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
+        { label: "적금 이자 계산기", href: "/finance/installment-savings", icon: "🪙" },
+        { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
+      ]}
+    />
   );
 }

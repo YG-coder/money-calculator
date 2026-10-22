@@ -1,6 +1,5 @@
 // src/app/real-estate/vacancy-impact/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import VacancyImpactCalc from "@/components/calculator/VacancyImpactCalc";
@@ -73,66 +72,64 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="공실률 영향 계산기"
-        description="공실이 임대수입과 순수익을 얼마나 줄이는지 수치로 확인하세요."
-        icon="🏚️"
-        slug="real-estate/vacancy-impact"
-        breadcrumb={crumbs}
-        calculator={<VacancyImpactCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              공실률이 왜 중요한가
-            </h2>
-            <p>
-              임대 수익을 계산할 때 흔히 &lsquo;만실&rsquo;, 즉 1년 내내 세입자가
-              있다고 가정합니다. 하지만 실제로는 세입자가 바뀌는 사이 비는 기간이
-              생깁니다. <strong>공실률</strong>은 1년 중 이렇게 비는 비율이며, 이
-              계산기는 공실이 임대수입과 순수익을 얼마나 줄이는지 보여줍니다.
+    <CalcShell
+      title="공실률 영향 계산기"
+      description="공실이 임대수입과 순수익을 얼마나 줄이는지 수치로 확인하세요."
+      icon="🏚️"
+      slug="real-estate/vacancy-impact"
+      breadcrumb={crumbs}
+      calculator={<VacancyImpactCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            공실률이 왜 중요한가
+          </h2>
+          <p>
+            임대 수익을 계산할 때 흔히 &lsquo;만실&rsquo;, 즉 1년 내내 세입자가
+            있다고 가정합니다. 하지만 실제로는 세입자가 바뀌는 사이 비는 기간이
+            생깁니다. <strong>공실률</strong>은 1년 중 이렇게 비는 비율이며, 이
+            계산기는 공실이 임대수입과 순수익을 얼마나 줄이는지 보여줍니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">계산 방식</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>연 만실 임대수입 = 월세 × 12</li>
+            <li>공실 손실 = 연 만실 임대수입 × 공실률</li>
+            <li>공실 반영 순수익 = (임대수입 − 공실 손실) − 연 운영비</li>
+            <li>연 공실 개월수 = 공실률 × 12 ÷ 100</li>
+          </ul>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            두 가지 감소율을 구분하세요
+          </h2>
+          <p>
+            공실의 영향은 두 가지로 나눠 봐야 합니다.{" "}
+            <strong>임대수입 감소율</strong>은 공실률 그 자체입니다. 반면{" "}
+            <strong>순수익 감소율</strong>은 운영비까지 반영한 값으로, 보통
+            공실률보다 큽니다. 관리비·수선비 같은 운영비는 공실이 나도 그대로
+            나가기 때문입니다. 그래서 &lsquo;10% 공실&rsquo;이 순수익 기준으로는
+            그보다 더 큰 타격이 될 수 있습니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">함께 확인하면 좋은 것</p>
+            <p className="mt-2">
+              공실을 뺀 만실 기준 수익률은 부동산 수익률 계산기에서, 전세를
+              월세로 돌릴 때의 전환율은 전월세 전환율 계산기에서 확인할 수
+              있습니다.
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">계산 방식</h2>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>연 만실 임대수입 = 월세 × 12</li>
-              <li>공실 손실 = 연 만실 임대수입 × 공실률</li>
-              <li>공실 반영 순수익 = (임대수입 − 공실 손실) − 연 운영비</li>
-              <li>연 공실 개월수 = 공실률 × 12 ÷ 100</li>
-            </ul>
-
-            <h2 className="text-xl font-bold text-slate-900">
-              두 가지 감소율을 구분하세요
-            </h2>
-            <p>
-              공실의 영향은 두 가지로 나눠 봐야 합니다.{" "}
-              <strong>임대수입 감소율</strong>은 공실률 그 자체입니다. 반면{" "}
-              <strong>순수익 감소율</strong>은 운영비까지 반영한 값으로, 보통
-              공실률보다 큽니다. 관리비·수선비 같은 운영비는 공실이 나도 그대로
-              나가기 때문입니다. 그래서 &lsquo;10% 공실&rsquo;이 순수익 기준으로는
-              그보다 더 큰 타격이 될 수 있습니다.
-            </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">함께 확인하면 좋은 것</p>
-              <p className="mt-2">
-                공실을 뺀 만실 기준 수익률은 부동산 수익률 계산기에서, 전세를
-                월세로 돌릴 때의 전환율은 전월세 전환율 계산기에서 확인할 수
-                있습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📈" },
-          { label: "전월세 전환율 계산기", href: "/real-estate/jeonse-wolse-conversion", icon: "🔁" },
-          { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator", icon: "⚖️" },
-          { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏛️" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📈" },
+        { label: "전월세 전환율 계산기", href: "/real-estate/jeonse-wolse-conversion", icon: "🔁" },
+        { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator", icon: "⚖️" },
+        { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏛️" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }

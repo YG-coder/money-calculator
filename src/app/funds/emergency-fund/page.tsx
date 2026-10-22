@@ -1,6 +1,5 @@
 // src/app/funds/emergency-fund/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import EmergencyFundCalc from "@/components/calculator/EmergencyFundCalc";
@@ -79,142 +78,140 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="비상자금 계산기"
-        description="대비하고 싶은 기간의 필요 금액과, 지금 가진 돈으로 감당할 수 있는 기간을 계산합니다."
-        icon="🛟"
-        slug="funds/emergency-fund"
-        breadcrumb={crumbs}
-        calculator={<EmergencyFundCalc />}
-        examples={EXAMPLES}
-        faq={FAQ}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">계산식</h2>
-            <p>
-              두 모드는 같은 식을 서로 반대 방향으로 푼 것입니다. 사칙연산만
-              사용하며 세율·요율 같은 제도 수치를 쓰지 않습니다.
-            </p>
+    <CalcShell
+      title="비상자금 계산기"
+      description="대비하고 싶은 기간의 필요 금액과, 지금 가진 돈으로 감당할 수 있는 기간을 계산합니다."
+      icon="🛟"
+      slug="funds/emergency-fund"
+      breadcrumb={crumbs}
+      calculator={<EmergencyFundCalc />}
+      examples={EXAMPLES}
+      faq={FAQ}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">계산식</h2>
+          <p>
+            두 모드는 같은 식을 서로 반대 방향으로 푼 것입니다. 사칙연산만
+            사용하며 세율·요율 같은 제도 수치를 쓰지 않습니다.
+          </p>
 
-            <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full min-w-[420px] text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold">모드</th>
-                    <th className="px-4 py-3 text-left font-semibold">계산식</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      필요 금액 구하기
-                    </td>
-                    <td className="px-4 py-3">
-                      월 필수지출 × 대비 기간 = 전체 필요자금
-                      <br />
-                      전체 필요자금 − 보유자금 = 추가로 필요한 금액
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-slate-800">
-                      버틸 기간 구하기
-                    </td>
-                    <td className="px-4 py-3">
-                      보유자금 ÷ 월 필수지출 = 감당 가능한 기간
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div className="my-4 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold">모드</th>
+                  <th className="px-4 py-3 text-left font-semibold">계산식</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    필요 금액 구하기
+                  </td>
+                  <td className="px-4 py-3">
+                    월 필수지출 × 대비 기간 = 전체 필요자금
+                    <br />
+                    전체 필요자금 − 보유자금 = 추가로 필요한 금액
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    버틸 기간 구하기
+                  </td>
+                  <td className="px-4 py-3">
+                    보유자금 ÷ 월 필수지출 = 감당 가능한 기간
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              숫자를 어떻게 처리하나
-            </h2>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>
-                금액은 <strong>만원 단위</strong>로 입력받아 원 단위로
-                계산하고, 결과는 원 단위로 표시합니다.
-              </li>
-              <li>
-                감당 가능한 기간은 <strong>소수 첫째 자리까지 내림</strong>합니다.
-                올림하면 실제보다 오래 버틸 수 있다고 오해할 수 있습니다.
-              </li>
-              <li>
-                추가로 필요한 금액은 <strong>0원 아래로 내려가지 않습니다.</strong>{" "}
-                보유자금이 더 많으면 0원으로 표시합니다.
-              </li>
-              <li>
-                보유자금을 <strong>비워 둔 것과 0원을 입력한 것은 다릅니다.</strong>{" "}
-                비워 두면 전체 필요자금만 계산하고, 0원을 넣으면 가진 돈이 없다는
-                뜻으로 보아 추가 필요액을 전액으로 계산합니다.
-              </li>
-              <li>
-                월 필수지출이 0원이면 나눗셈이 성립하지 않으므로 감당 기간을
-                계산하지 않고 그 이유를 표시합니다.
-              </li>
-            </ul>
+          <h2 className="text-xl font-bold text-slate-900">
+            숫자를 어떻게 처리하나
+          </h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              금액은 <strong>만원 단위</strong>로 입력받아 원 단위로
+              계산하고, 결과는 원 단위로 표시합니다.
+            </li>
+            <li>
+              감당 가능한 기간은 <strong>소수 첫째 자리까지 내림</strong>합니다.
+              올림하면 실제보다 오래 버틸 수 있다고 오해할 수 있습니다.
+            </li>
+            <li>
+              추가로 필요한 금액은 <strong>0원 아래로 내려가지 않습니다.</strong>{" "}
+              보유자금이 더 많으면 0원으로 표시합니다.
+            </li>
+            <li>
+              보유자금을 <strong>비워 둔 것과 0원을 입력한 것은 다릅니다.</strong>{" "}
+              비워 두면 전체 필요자금만 계산하고, 0원을 넣으면 가진 돈이 없다는
+              뜻으로 보아 추가 필요액을 전액으로 계산합니다.
+            </li>
+            <li>
+              월 필수지출이 0원이면 나눗셈이 성립하지 않으므로 감당 기간을
+              계산하지 않고 그 이유를 표시합니다.
+            </li>
+          </ul>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              이 계산기가 하지 않는 것
-            </h2>
-            <ul className="list-disc space-y-1 pl-5">
-              <li>
-                적정 개월 수, 적정 금액, 재무 상태 평가를 제시하지 않습니다.
-              </li>
-              <li>
-                수리비·의료비처럼 사건별로 발생하는 지출은 계산에 포함하지
-                않습니다.
-              </li>
-              <li>
-                이자·물가 변동, 실업급여·정부지원금을 반영하지 않습니다.
-              </li>
-              <li>
-                월 잉여자금 계산기의 지출 항목과 이 계산기의 월 필수지출은 정의가
-                다릅니다. 월 잉여자금은 지금 쓰는 전체 지출이고, 여기서는 소득이
-                없어도 계속 나가는 금액만 봅니다. 그래서 두 계산기는 숫자를
-                자동으로 주고받지 않습니다.
-              </li>
-            </ul>
+          <h2 className="text-xl font-bold text-slate-900">
+            이 계산기가 하지 않는 것
+          </h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              적정 개월 수, 적정 금액, 재무 상태 평가를 제시하지 않습니다.
+            </li>
+            <li>
+              수리비·의료비처럼 사건별로 발생하는 지출은 계산에 포함하지
+              않습니다.
+            </li>
+            <li>
+              이자·물가 변동, 실업급여·정부지원금을 반영하지 않습니다.
+            </li>
+            <li>
+              월 잉여자금 계산기의 지출 항목과 이 계산기의 월 필수지출은 정의가
+              다릅니다. 월 잉여자금은 지금 쓰는 전체 지출이고, 여기서는 소득이
+              없어도 계속 나가는 금액만 봅니다. 그래서 두 계산기는 숫자를
+              자동으로 주고받지 않습니다.
+            </li>
+          </ul>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              비상자금이라는 개념
-            </h2>
-            <p>
-              미국 소비자금융보호국(CFPB)은 비상자금을{" "}
-              <em>
-                예상하지 못한 지출이나 재정적 비상 상황에 대비해 따로 떼어 둔 현금
-              </em>
-              으로 설명하고, 흔한 예로 차량 수리, 주택 수리, 의료비,{" "}
-              <strong>소득 상실</strong>을 듭니다. 필요한 금액은 사람마다 다르므로
-              과거에 겪은 예상 밖 지출을 떠올려 목표를 정하라고 안내하며, 특정
-              금액이나 개월 수를 제시하지는 않습니다.
-            </p>
-            <p>
-              이 계산기는 그 용도 가운데 <strong>소득 상실 대비</strong> 한 가지를
-              계산합니다. 위 자료는 <strong>개념을 설명하는 근거</strong>일 뿐이며,
-              이 페이지의 계산식은 자체적으로 구성한 것입니다. CFPB 의 공식 산식이
-              아닙니다. 또한 해외 기관의 금융교육 자료이므로 한국의 법적·정책적
-              기준도 아닙니다.
-            </p>
-            <p className="text-sm text-slate-500">
-              출처: Consumer Financial Protection Bureau, “An essential guide to
-              building an emergency fund” (금융교육 자료, 2026-09-16 확인)
-            </p>
-          </>
-        }
-        relatedCalcs={[
-          {
-            label: "월 잉여자금 계산기",
-            href: "/funds/monthly-surplus",
-            icon: "🧮",
-          },
-          { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
-          { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
-          { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          <h2 className="text-xl font-bold text-slate-900">
+            비상자금이라는 개념
+          </h2>
+          <p>
+            미국 소비자금융보호국(CFPB)은 비상자금을{" "}
+            <em>
+              예상하지 못한 지출이나 재정적 비상 상황에 대비해 따로 떼어 둔 현금
+            </em>
+            으로 설명하고, 흔한 예로 차량 수리, 주택 수리, 의료비,{" "}
+            <strong>소득 상실</strong>을 듭니다. 필요한 금액은 사람마다 다르므로
+            과거에 겪은 예상 밖 지출을 떠올려 목표를 정하라고 안내하며, 특정
+            금액이나 개월 수를 제시하지는 않습니다.
+          </p>
+          <p>
+            이 계산기는 그 용도 가운데 <strong>소득 상실 대비</strong> 한 가지를
+            계산합니다. 위 자료는 <strong>개념을 설명하는 근거</strong>일 뿐이며,
+            이 페이지의 계산식은 자체적으로 구성한 것입니다. CFPB 의 공식 산식이
+            아닙니다. 또한 해외 기관의 금융교육 자료이므로 한국의 법적·정책적
+            기준도 아닙니다.
+          </p>
+          <p className="text-sm text-slate-500">
+            출처: Consumer Financial Protection Bureau, “An essential guide to
+            building an emergency fund” (금융교육 자료, 2026-09-16 확인)
+          </p>
+        </>
+      }
+      relatedCalcs={[
+        {
+          label: "월 잉여자금 계산기",
+          href: "/funds/monthly-surplus",
+          icon: "🧮",
+        },
+        { label: "이사자금 계산기", href: "/funds/moving-cost", icon: "📦" },
+        { label: "목표 저축 계산기", href: "/funds/goal-savings", icon: "🎯" },
+        { label: "예금 이자 계산기", href: "/finance/deposit", icon: "🏦" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }

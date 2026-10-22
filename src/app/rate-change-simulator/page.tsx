@@ -1,6 +1,5 @@
 // src/app/rate-change-simulator/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import RateSimulatorCalc from "@/components/calculator/RateSimulatorCalc";
@@ -67,75 +66,73 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="금리변동 시뮬레이터"
-        description="금리가 오르면 월 상환액과 총이자가 얼마나 늘어나는지 시나리오별로 확인하세요."
-        icon="📈"
-        slug="rate-change-simulator"
-        breadcrumb={[
-          { name: "홈", url: BASE_URL },
-          { name: "대출 계산기", url: `${BASE_URL}/loan` },
-          { name: "금리변동 시뮬레이터", url: `${BASE_URL}/rate-change-simulator` },
-        ]}
-        calculator={<RateSimulatorCalc />}
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              금리변동 시뮬레이터란?
-            </h2>
-            <p>
-              변동금리 대출은 시장금리에 따라 적용 금리가 오르내립니다. 이
-              계산기는 <strong>금리를 예측하지 않고</strong>, &lsquo;만약 금리가
-              일정 폭만큼 오른다면 월 상환액과 총이자가 얼마나 늘어날까&rsquo;를
-              시나리오별로 보여줍니다. 미래를 맞히는 도구가 아니라, 금리 변동에
-              대한 부담을 미리 가늠해 보는 도구입니다.
-            </p>
+    <CalcShell
+      title="금리변동 시뮬레이터"
+      description="금리가 오르면 월 상환액과 총이자가 얼마나 늘어나는지 시나리오별로 확인하세요."
+      icon="📈"
+      slug="rate-change-simulator"
+      breadcrumb={[
+        { name: "홈", url: BASE_URL },
+        { name: "대출 계산기", url: `${BASE_URL}/loan` },
+        { name: "금리변동 시뮬레이터", url: `${BASE_URL}/rate-change-simulator` },
+      ]}
+      calculator={<RateSimulatorCalc />}
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            금리변동 시뮬레이터란?
+          </h2>
+          <p>
+            변동금리 대출은 시장금리에 따라 적용 금리가 오르내립니다. 이
+            계산기는 <strong>금리를 예측하지 않고</strong>, &lsquo;만약 금리가
+            일정 폭만큼 오른다면 월 상환액과 총이자가 얼마나 늘어날까&rsquo;를
+            시나리오별로 보여줍니다. 미래를 맞히는 도구가 아니라, 금리 변동에
+            대한 부담을 미리 가늠해 보는 도구입니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              월 상환액과 총이자를 함께 봐야 합니다
-            </h2>
-            <p>
-              금리가 오르면 두 가지가 함께 늘어납니다. <strong>월 상환액</strong>
-              은 매달 체감하는 부담이고, <strong>총이자</strong>는 남은 기간
-              전체에 걸쳐 누적되는 부담입니다. 기간이 길수록 같은 금리 상승이라도
-              총이자 증가폭이 훨씬 커지므로, 두 값을 함께 확인하는 것이
-              좋습니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            월 상환액과 총이자를 함께 봐야 합니다
+          </h2>
+          <p>
+            금리가 오르면 두 가지가 함께 늘어납니다. <strong>월 상환액</strong>
+            은 매달 체감하는 부담이고, <strong>총이자</strong>는 남은 기간
+            전체에 걸쳐 누적되는 부담입니다. 기간이 길수록 같은 금리 상승이라도
+            총이자 증가폭이 훨씬 커지므로, 두 값을 함께 확인하는 것이
+            좋습니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">계산 방식</h2>
-            <p>
-              각 시나리오는 현재 금리에 변동 폭(%p)을 더한 금리로 원리금균등 또는
-              원금균등 상환을 계산합니다. &lsquo;현재 대비&rsquo; 값은 현재 금리
-              기준과의 차이입니다. 직접 입력란에 원하는 상승 폭을 넣으면 해당
-              시나리오도 표에 추가됩니다.
-            </p>
+          <h2 className="text-xl font-bold text-slate-900">계산 방식</h2>
+          <p>
+            각 시나리오는 현재 금리에 변동 폭(%p)을 더한 금리로 원리금균등 또는
+            원금균등 상환을 계산합니다. &lsquo;현재 대비&rsquo; 값은 현재 금리
+            기준과의 차이입니다. 직접 입력란에 원하는 상승 폭을 넣으면 해당
+            시나리오도 표에 추가됩니다.
+          </p>
 
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">함께 확인하면 좋은 것</p>
-              <p className="mt-2">
-                현재 조건의 상세 상환 스케줄은 원리금상환 계산기에서, 더 낮은
-                금리로 갈아탈 때의 절감액은 대환대출 계산기에서 확인할 수
-                있습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
-          { label: "대환대출 계산기", href: "/refinance-calculator", icon: "🔄" },
-          { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
-          { label: "DSR 계산기", href: "/dsr-calculator", icon: "📐" },
-        ]}
-        relatedGuides={[
-          {
-            label: "대출 이자 계산 방법 완벽 정리",
-            href: "/blog/loan-interest-calculation",
-          },
-        ]}
-      />
-    </Suspense>
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">함께 확인하면 좋은 것</p>
+            <p className="mt-2">
+              현재 조건의 상세 상환 스케줄은 원리금상환 계산기에서, 더 낮은
+              금리로 갈아탈 때의 절감액은 대환대출 계산기에서 확인할 수
+              있습니다.
+            </p>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "원리금상환 계산기", href: "/amortization-calculator", icon: "📊" },
+        { label: "대환대출 계산기", href: "/refinance-calculator", icon: "🔄" },
+        { label: "대출이자 계산기", href: "/loan-interest-calculator", icon: "🏦" },
+        { label: "DSR 계산기", href: "/dsr-calculator", icon: "📐" },
+      ]}
+      relatedGuides={[
+        {
+          label: "대출 이자 계산 방법 완벽 정리",
+          href: "/blog/loan-interest-calculation",
+        },
+      ]}
+    />
   );
 }

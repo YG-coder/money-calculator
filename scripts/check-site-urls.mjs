@@ -18,7 +18,24 @@ for (const value of urls) {
   const name = decodeURIComponent(url.pathname.slice(1)).replace(/\/$/, '') || 'index';
   const file = join(root, `${name}.html`); assert(existsSync(file), `published HTML missing: ${value}`);
   const html = readFileSync(file, 'utf8'); inspectCopy(html, value, config.copyIdentifierAllowlist ?? []);
+  inspectInitialHtml(html, value);
   const result = inspectHtml(html, config, value); [...result.images, ...result.twitter].forEach(v => images.add(v));
+}
+/**
+ * 초기 서버 HTML 에 본문이 실려야 한다. 계산기 컴포넌트의 useSearchParams 가 페이지 전체를 감싼 Suspense 까지
+ * 클라이언트 렌더링으로 넘기면(BAILOUT_TO_CLIENT_SIDE_RENDERING) H1·해설·FAQ 가 초기 HTML 에서 사라진다.
+ * 2026-10-19 점검에서 계산기 30개 페이지가 이 상태였다. 경계는 CalcShell 안의 계산기 영역에만 둔다.
+ */
+function inspectInitialHtml(html, expected) {
+  const h1 = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map(m => m[1].replace(/<[^>]+>/g, '').trim()).filter(Boolean);
+  assert.equal(h1.length, 1, `${expected}: initial HTML must contain exactly one non-empty <h1> (found ${h1.length})`);
+  // 계산기 영역만 지연되는 것은 정상이다(마커는 계산기 박스 안에만 나온다). 지연 구간이 H1 앞에서 시작하거나
+  // 지연 구간 뒤에 해설·FAQ(h2)가 하나도 없으면 페이지 전체가 클라이언트로 넘어간 것이다.
+  const bailout = html.indexOf('BAILOUT_TO_CLIENT_SIDE_RENDERING');
+  if (bailout !== -1) {
+    assert(html.search(/<h1\b/i) < bailout, `${expected}: <h1> is inside the client-side rendering boundary (Suspense wraps the whole page)`);
+    assert(/<h2\b/i.test(html.slice(bailout)), `${expected}: guide/FAQ content after the calculator is missing from the initial HTML`);
+  }
 }
 // Also check indexable generated routes omitted from sitemap (e.g. salary detail pages).
 let indexablePages = 0;
@@ -32,6 +49,7 @@ function scanHtml(directory, prefix = '') {
    const path = relative === 'index.html' ? '/' : `/${relative.slice(0,-5)}`;
    const expected = new URL(path,config.url).href;
    const checked = inspectHtml(html,config,expected);
+   inspectInitialHtml(html,expected);
    inspectCopy(html,expected,config.copyIdentifierAllowlist ?? []);
    [...checked.images,...checked.twitter].forEach(value=>images.add(value));
    indexablePages++;
@@ -59,4 +77,4 @@ function scan(dir) {
   }
 }
 scan('src');
-console.log(`[site URLs] ${urls.length} sitemap pages / ${indexablePages} indexable pages: canonical/origin, OG/Twitter images, large cards, robots, JSON-LD and image assets verified`);
+console.log(`[site URLs] ${urls.length} sitemap pages / ${indexablePages} indexable pages: canonical/origin, OG/Twitter images, large cards, robots, JSON-LD, image assets and server-rendered H1 verified`);

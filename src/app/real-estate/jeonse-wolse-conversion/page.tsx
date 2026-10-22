@@ -1,6 +1,5 @@
 // src/app/real-estate/jeonse-wolse-conversion/page.tsx
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { buildMetadata, BASE_URL } from "@/lib/metadata";
 import CalcShell, { type CalcExample } from "@/components/calculator/CalcShell";
 import JeonseWolseConversionCalc from "@/components/calculator/JeonseWolseConversionCalc";
@@ -112,81 +111,79 @@ const FAQ = [
 
 export default function Page() {
   return (
-    <Suspense>
-      <CalcShell
-        title="전월세 전환율 계산기"
-        description="전세를 월세로 돌릴 때의 전환율을 계산하고 법정 상한과 비교하세요."
-        icon="🔁"
-        slug="real-estate/jeonse-wolse-conversion"
-        breadcrumb={crumbs}
-        calculator={
-          <>
-            <JeonseWolseConversionCalc />
-            <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
-              <p className="mb-2 text-sm font-bold text-slate-800">
-                ⚠️ 기존 임대차의 보증금→월세 전환 기준
-              </p>
-              <p className="text-sm text-slate-600">
-                법정 상한(연 10%와 기준금리 + 2% 중 낮은 값)은 기존 임대차에서 보증금을
-                월세로 전환하는 경우에 적용되는 기준입니다. 기준금리가 바뀌면 상한도
-                달라지니 계약 시점 기준을 확인하세요.
-              </p>
-            </div>
-          </>
-        }
-        guide={
-          <>
-            <h2 className="text-xl font-bold text-slate-900">
-              전월세 전환율이란?
-            </h2>
-            <p>
-              전월세 전환율은 전세 보증금의 일부를 월세로 돌릴 때, 그 보증금에 대해
-              연 몇 %의 이율로 월세를 매기는지를 나타내는 값입니다. 전환율이 높을수록
-              같은 보증금을 줄이는 대가로 내야 하는 월세가 커집니다.
+    <CalcShell
+      title="전월세 전환율 계산기"
+      description="전세를 월세로 돌릴 때의 전환율을 계산하고 법정 상한과 비교하세요."
+      icon="🔁"
+      slug="real-estate/jeonse-wolse-conversion"
+      breadcrumb={crumbs}
+      calculator={
+        <>
+          <JeonseWolseConversionCalc />
+          <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
+            <p className="mb-2 text-sm font-bold text-slate-800">
+              ⚠️ 기존 임대차의 보증금→월세 전환 기준
             </p>
-
-            <h2 className="text-xl font-bold text-slate-900">계산 공식</h2>
-            <ul className="list-disc space-y-2 pl-5">
-              <li>전환율 = (월세 × 12) ÷ (전세 보증금 − 전환 후 보증금) × 100</li>
-              <li>전환 대상 금액 = 전세 보증금 − 전환 후 보증금 (월세로 돌린 금액)</li>
-            </ul>
-            <p>
-              분모는 실제로 월세로 전환한 보증금이고, 분자는 그에 대한 1년치
-              월세입니다. 이 계산기는 &lsquo;월세 vs 전세 계산기&rsquo;(기회비용으로
-              어느 쪽이 유리한지 비교)와 달리, 전환에 적용된 이율 자체를 구합니다.
+            <p className="text-sm text-slate-600">
+              법정 상한(연 10%와 기준금리 + 2% 중 낮은 값)은 기존 임대차에서 보증금을
+              월세로 전환하는 경우에 적용되는 기준입니다. 기준금리가 바뀌면 상한도
+              달라지니 계약 시점 기준을 확인하세요.
             </p>
+          </div>
+        </>
+      }
+      guide={
+        <>
+          <h2 className="text-xl font-bold text-slate-900">
+            전월세 전환율이란?
+          </h2>
+          <p>
+            전월세 전환율은 전세 보증금의 일부를 월세로 돌릴 때, 그 보증금에 대해
+            연 몇 %의 이율로 월세를 매기는지를 나타내는 값입니다. 전환율이 높을수록
+            같은 보증금을 줄이는 대가로 내야 하는 월세가 커집니다.
+          </p>
 
-            <h2 className="text-xl font-bold text-slate-900">
-              법정 상한과의 비교
-            </h2>
-            <p>
-              주택임대차보호법은 전세를 월세로 전환할 때의 이율 상한을{" "}
-              <strong>연 10%와 (한국은행 기준금리 + 연 2%) 중 낮은 값</strong>으로 정하고
-              있습니다(제7조의2 각 호 중 낮은 비율). 이 상한은 기존 임대차에서 보증금을
-              월세로 전환하는 경우에 적용되는 기준입니다. 이 계산기는 계산된 전환율이
-              상한을 넘는지 사실만 보여주고, 위법 여부나 유불리는 판단하지 않습니다.
+          <h2 className="text-xl font-bold text-slate-900">계산 공식</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>전환율 = (월세 × 12) ÷ (전세 보증금 − 전환 후 보증금) × 100</li>
+            <li>전환 대상 금액 = 전세 보증금 − 전환 후 보증금 (월세로 돌린 금액)</li>
+          </ul>
+          <p>
+            분모는 실제로 월세로 전환한 보증금이고, 분자는 그에 대한 1년치
+            월세입니다. 이 계산기는 &lsquo;월세 vs 전세 계산기&rsquo;(기회비용으로
+            어느 쪽이 유리한지 비교)와 달리, 전환에 적용된 이율 자체를 구합니다.
+          </p>
+
+          <h2 className="text-xl font-bold text-slate-900">
+            법정 상한과의 비교
+          </h2>
+          <p>
+            주택임대차보호법은 전세를 월세로 전환할 때의 이율 상한을{" "}
+            <strong>연 10%와 (한국은행 기준금리 + 연 2%) 중 낮은 값</strong>으로 정하고
+            있습니다(제7조의2 각 호 중 낮은 비율). 이 상한은 기존 임대차에서 보증금을
+            월세로 전환하는 경우에 적용되는 기준입니다. 이 계산기는 계산된 전환율이
+            상한을 넘는지 사실만 보여주고, 위법 여부나 유불리는 판단하지 않습니다.
+          </p>
+
+          <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
+            <p className="font-bold">함께 확인하면 좋은 것</p>
+            <p className="mt-2">
+              전세와 월세 중 어느 쪽이 비용 면에서 유리한지는 월세 vs 전세
+              계산기에서, 임대 수익률은 부동산 수익률 계산기에서 확인할 수
+              있습니다.
             </p>
-
-            <div className="rounded-2xl bg-blue-50 p-5 text-blue-900">
-              <p className="font-bold">함께 확인하면 좋은 것</p>
-              <p className="mt-2">
-                전세와 월세 중 어느 쪽이 비용 면에서 유리한지는 월세 vs 전세
-                계산기에서, 임대 수익률은 부동산 수익률 계산기에서 확인할 수
-                있습니다.
-              </p>
-            </div>
-          </>
-        }
-        examples={EXAMPLES}
-        faq={FAQ}
-        relatedCalcs={[
-          { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator", icon: "🏠" },
-          { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📊" },
-          { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏛️" },
-          { label: "전세대출 계산기", href: "/jeonse-loan-calculator", icon: "🏦" },
-        ]}
-        relatedGuides={[]}
-      />
-    </Suspense>
+          </div>
+        </>
+      }
+      examples={EXAMPLES}
+      faq={FAQ}
+      relatedCalcs={[
+        { label: "월세 vs 전세 계산기", href: "/real-estate/jeonse-vs-wolse-calculator", icon: "🏠" },
+        { label: "부동산 수익률 계산기", href: "/real-estate/property-yield-calculator", icon: "📊" },
+        { label: "취득세 계산기", href: "/real-estate/acquisition-tax-calculator", icon: "🏛️" },
+        { label: "전세대출 계산기", href: "/jeonse-loan-calculator", icon: "🏦" },
+      ]}
+      relatedGuides={[]}
+    />
   );
 }
