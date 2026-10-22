@@ -9,6 +9,8 @@ import {
   type CalcState,
   isValidUrlValue,
   readUrlValue,
+  readFieldFromUrl,
+  type UrlFieldDef,
   hasDroppedChars,
   stripFormatting,
   droppedCharsMessage,
@@ -24,6 +26,49 @@ const st = (entries: Record<string, string>): CalcState =>
       { raw, value: raw, error: "" },
     ]),
   );
+
+describe("선택 URL 오류의 유지와 복구", () => {
+  const selection: UrlFieldDef = {
+    defaultValue: "0", kind: "integer", preserveInvalidUrl: true,
+    validate: v => /^\d+$/.test(v) && Number(v) < 4 ? undefined : "선택 오류",
+  };
+  const fields = [{ key: "choice", ...selection }, { key: "income", defaultValue: "" }];
+
+  it.each(["3.5", "abc", "x", "-1", "1e0", "NaN", "Infinity", "0,0", " 0 ", "99", ""])(
+    "다른 입력을 갱신해도 잘못된 값 %j 와 오류를 유지한다", bad => {
+      const state = { choice: readFieldFromUrl(bad, selection), ...st({ income: "5001" }) };
+      const query = buildCalcSearchParams("?income=5000&other=keep", fields, state);
+      expect(query.get("choice")).toBe(bad);
+      expect(query.get("income")).toBe("5001");
+      expect(query.get("other")).toBe("keep");
+      const restored = readFieldFromUrl(query.get("choice"), selection);
+      expect(restored.error).toBe("선택 오류");
+      expect(restored.raw).toBe(bad);
+    },
+  );
+
+  it("잘못된 선택 하나를 고쳐도 다른 선택 오류는 남는다", () => {
+    const keys = [{ key: "rate", ...selection }, { key: "region", ...selection }];
+    const state = { rate: readFieldFromUrl("abc", selection), region: readFieldFromUrl("x", selection) };
+    state.rate = { value: "0", raw: "0", error: "" }; // 기본값과 같은 항목을 명시적으로 다시 선택
+    const query = buildCalcSearchParams("", keys, state);
+    expect(readFieldFromUrl(query.get("rate"), selection).error).toBe("");
+    expect(readFieldFromUrl(query.get("region"), selection).error).toBe("선택 오류");
+  });
+
+  it("URL 키가 없거나 유효한 주소로 이동하면 이전 오류를 이어받지 않는다", () => {
+    expect(readFieldFromUrl(null, selection)).toEqual({ value: "0", raw: "0", error: "" });
+    expect(readFieldFromUrl("3", selection)).toEqual({ value: "3", raw: "3", error: "" });
+  });
+
+  it("일반 숫자 입력은 기존 URL 규칙을 유지한다", () => {
+    const money: UrlFieldDef = { defaultValue: "5000", kind: "money" };
+    expect(readFieldFromUrl("abc", money)).toEqual({ value: "5,000", raw: "5000", error: "" });
+    expect(readFieldFromUrl(" 1,000 ", money)).toEqual({ value: "1,000", raw: "1000", error: "" });
+    expect(readFieldFromUrl("", money)).toEqual({ value: "", raw: "", error: "" });
+    expect(readFieldFromUrl("4.50", { defaultValue: "", kind: "decimal" })).toEqual({ value: "4.50", raw: "4.50", error: "" });
+  });
+});
 
 describe("sanitize — 입력 파싱", () => {
   it("money: 쉼표를 제거한다", () => {

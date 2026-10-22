@@ -23,13 +23,14 @@ import { useSearchParams } from "next/navigation";
 import {
   sanitize,
   toDisplay,
-  readUrlValue,
+  readFieldFromUrl,
   hasDroppedChars,
   droppedCharsMessage,
   buildCalcSearchParams,
   type CalcState,
   type FieldKind,
   type FieldState,
+  type UrlFieldDef,
 } from "@/lib/calcInput";
 
 // 기존 사용처 호환을 위한 re-export (파싱·읽기 유틸의 정본은 @/lib/calcInput)
@@ -48,11 +49,8 @@ export {
   hasFieldErrorIn,
 } from "@/lib/calcInput";
 
-export type FieldDef = {
+export type FieldDef = UrlFieldDef & {
   key: string;
-  defaultValue: string;
-  kind?: FieldKind;
-  validate?: (v: string) => string | undefined;
 };
 
 function getKind(field: FieldDef): FieldKind {
@@ -71,21 +69,7 @@ export function useCalcState(fields: FieldDef[]) {
     const result: CalcState = {};
 
     for (const f of fields) {
-      const kind = getKind(f);
-      // 유효하지 않은 쿼리값(음수·문자·지수표기 등)은 무시하고 기본값을 쓴다
-      const rawFromUrl = readUrlValue(
-        searchParams?.get(f.key),
-        f.defaultValue,
-        kind,
-      );
-      const raw = sanitize(rawFromUrl, kind);
-      const error = f.validate ? (f.validate(raw) ?? "") : "";
-
-      result[f.key] = {
-        value: toDisplay(raw, kind),
-        raw,
-        error,
-      };
+      result[f.key] = readFieldFromUrl(searchParams?.get(f.key), f);
     }
 
     return result;
@@ -120,8 +104,6 @@ export function useCalcState(fields: FieldDef[]) {
       const next = { ...prev };
 
       for (const f of fields) {
-        const kind = getKind(f);
-
         // 거부된 입력을 들고 있는 필드는 URL 동기화로 덮지 않는다.
         //
         // 거부 상태는 raw 가 비어 있는데 화면 값은 남아 있는 상태다.
@@ -135,23 +117,14 @@ export function useCalcState(fields: FieldDef[]) {
 
         if (isRejected && searchParams?.get(f.key) == null) continue;
 
-        const urlRaw = sanitize(
-          readUrlValue(searchParams?.get(f.key), f.defaultValue, kind),
-          kind,
-        );
-        const error = f.validate ? (f.validate(urlRaw) ?? "") : "";
-        const display = toDisplay(urlRaw, kind);
+        const fieldState = readFieldFromUrl(searchParams?.get(f.key), f);
 
         if (
-          prev[f.key]?.raw !== urlRaw ||
-          prev[f.key]?.error !== error ||
-          prev[f.key]?.value !== display
+          prev[f.key]?.raw !== fieldState.raw ||
+          prev[f.key]?.error !== fieldState.error ||
+          prev[f.key]?.value !== fieldState.value
         ) {
-          next[f.key] = {
-            value: display,
-            raw: urlRaw,
-            error,
-          };
+          next[f.key] = fieldState;
           changed = true;
         }
       }

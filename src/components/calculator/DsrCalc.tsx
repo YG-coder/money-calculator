@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
 import { hasMissingInput, readNum, readWon, isFilled, hasFieldErrorIn } from "@/lib/calcInput";
 import { formatKRW, formatUnit } from "@/lib/loan";
@@ -27,9 +27,31 @@ import { CALC_PATH } from "@/lib/handoff";
 
 type Mode = "check" | "estimate";
 type JeonseChoice =
-  "unselected" | "none" | "noHouse" | "oneHouseMetro" | "other";
+  "unselected" | "none" | "noHouse" | "confirmedExempt" | "oneHouseMetro" | "other";
+
+// 선택 조건도 숫자 입력과 함께 저장한다. 새로고침·빠른 연속 입력에서 조건과 금액이 엇갈리지 않게 한다.
+const SELECTIONS = {
+  dsrMode: ["check", "estimate"],
+  dsrLoan: ["mortgage", "credit"],
+  dsrRegion: ["metro", "local"],
+  dsrRate: ["variable", "fixed", "hybrid", "periodic"],
+  dsrRepayment: ["equal_payment", "equal_principal"],
+  dsrCredit: ["lumpSum", "creditLine", "installment"],
+  dsrCreditFixed: ["other", "fixed3to5", "fixed5plus"],
+  dsrJeonse: ["unselected", "none", "noHouse", "confirmedExempt", "oneHouseMetro", "other"],
+  dsrLimit: [40, 50],
+} as const;
+type SelectionKey = keyof typeof SELECTIONS;
+type SelectionValue<K extends SelectionKey> = (typeof SELECTIONS)[K][number];
+const SELECTION_KEYS = Object.keys(SELECTIONS) as SelectionKey[];
 
 const FIELDS = [
+  ...SELECTION_KEYS.map((key) => ({
+    key, kind: "integer" as const, defaultValue: "0",
+    preserveInvalidUrl: true,
+    validate: (v: string) => /^\d+$/.test(v) && Number(v) < SELECTIONS[key].length
+      ? undefined : "선택 조건이 유효하지 않습니다. 해당 조건을 다시 선택해 주세요.",
+  })),
   { key: "income", kind: "money" as const, defaultValue: "" },
   { key: "existingDebt", kind: "money" as const, defaultValue: "" },
   { key: "creditBalance", kind: "money" as const, defaultValue: "" },
@@ -40,6 +62,7 @@ const FIELDS = [
   { key: "amount", kind: "money" as const, defaultValue: "" },
   { key: "rate", kind: "decimal" as const, defaultValue: "" },
   { key: "months", kind: "integer" as const, defaultValue: "" },
+  { key: "fixedMonths", kind: "integer" as const, defaultValue: "" },
   { key: "installmentAnnual", kind: "money" as const, defaultValue: "" },
 ];
 
@@ -49,15 +72,23 @@ const trimPct = (n: number) => Number(n.toFixed(2));
 export default function DsrCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
-  const [mode, setMode] = useState<Mode>("check");
-  const [loanKind, setLoanKind] = useState<NewLoanKind>("mortgage");
-  const [region, setRegion] = useState<Region>("metro");
-  const [rateType, setRateType] = useState<RateType>("variable");
-  const [repayment, setRepayment] = useState<DsrRepayment>("equal_payment");
-  const [creditKind, setCreditKind] = useState<CreditRepaymentKind>("lumpSum");
-  const [fixedTerm, setFixedTerm] = useState<CreditFixedTerm>("other");
-  const [jeonse, setJeonse] = useState<JeonseChoice>("unselected");
-  const [limitPercent, setLimitPercent] = useState<40 | 50>(40);
+  function selection<K extends SelectionKey>(key: K): [SelectionValue<K>, (v: SelectionValue<K>) => void] {
+    const values = SELECTIONS[key] as readonly SelectionValue<K>[];
+    return [values[readNum(state, key)] ?? values[0], (v) => setValue(key, String(values.indexOf(v)))];
+  }
+  const [mode, setMode] = selection("dsrMode");
+  const [loanKind, setLoanKind] = selection("dsrLoan");
+  const [region, setRegion] = selection("dsrRegion");
+  const [rateType, setRateType] = selection("dsrRate");
+  const [repayment, setRepayment] = selection("dsrRepayment");
+  const [creditKind, setCreditKind] = selection("dsrCredit");
+  const [fixedTerm, setFixedTerm] = selection("dsrCreditFixed");
+  const [jeonse, setJeonse] = selection("dsrJeonse");
+  const [limitPercent, setLimitPercent] = selection("dsrLimit");
+  const needsFixedPeriod = loanKind === "mortgage" && (rateType === "hybrid" || rateType === "periodic");
+  // URL의 잘못된 선택값은 상태와 주소에 남겨 해당 선택을 고칠 때까지 차단한다.
+  // 다른 숫자 입력이나 선택의 변경으로 기본값이 저장되어 차단이 풀리면 안 된다.
+  const selectionError = SELECTION_KEYS.map((key) => state[key]?.error).find(Boolean);
 
   // 금리 0%는 유효한 입력이므로 truthy 검사 대신 빈 문자열 여부로 판정
   const rateFilled = isFilled(state, "rate");
@@ -91,6 +122,7 @@ export default function DsrCalc() {
         repayment,
         region,
         rateType,
+        fixedMonths: readNum(state, "fixedMonths"),
       };
     }
     return {
@@ -110,6 +142,8 @@ export default function DsrCalc() {
    */
   const activeErrorKeys = useMemo(
     () => [
+      ...SELECTION_KEYS,
+      ...(needsFixedPeriod ? ["fixedMonths"] : []),
       "income",
       "existingDebt",
       "creditBalance",
@@ -124,10 +158,11 @@ export default function DsrCalc() {
         ? ["installmentAnnual"]
         : []),
     ],
-    [loanKind, creditKind, jeonse, mode],
+    [loanKind, creditKind, jeonse, mode, needsFixedPeriod],
   );
 
   const requiredInputsFilled = !hasMissingInput(state, [
+    ...(needsFixedPeriod ? ["fixedMonths"] : []),
     "income", "existingDebt", "creditBalance", "creditLineLimit", "creditInstallmentBalance", "rate",
     ...(mode === "check" ? ["amount"] : []),
     ...(loanKind === "mortgage" ? ["months"] : []),
@@ -137,6 +172,7 @@ export default function DsrCalc() {
   ]);
 
   const checkResult = useMemo(() => {
+    if (selectionError) return null;
     if (hasFieldErrorIn(state, activeErrorKeys)) return null;
     if (!requiredInputsFilled) return null;
     if (mode !== "check") return null;
@@ -151,9 +187,10 @@ export default function DsrCalc() {
       newLoan,
       limitPercent,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled, selectionError]);
 
   const estimateResult = useMemo(() => {
+    if (selectionError) return null;
     if (hasFieldErrorIn(state, activeErrorKeys)) return null;
     if (!requiredInputsFilled) return null;
     if (mode !== "estimate") return null;
@@ -167,12 +204,12 @@ export default function DsrCalc() {
       limitPercent,
       newLoan,
     });
-  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled]);
+  }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled, selectionError]);
 
   // 정책 레이어가 값을 돌려주지 않는 조건(미선택·미지원·유예 만료)은
   // 임의 대체값 없이 사유를 그대로 화면에 노출한다.
   const active = mode === "check" ? checkResult : estimateResult;
-  const blockedReason = active?.status === "unsupported" ? active.reason : null;
+  const blockedReason = selectionError || (active?.status === "unsupported" ? active.reason : null);
   const checkOk = checkResult?.status === "ok" ? checkResult.value : null;
   const estimateOk =
     estimateResult?.status === "ok" ? estimateResult.value : null;
@@ -191,7 +228,7 @@ export default function DsrCalc() {
           { value: "estimate", label: "추정 가능액" },
         ]}
       />
-      <p className="-mt-3 text-xs text-slate-400">
+      <p className="-mt-3 text-xs text-slate-500">
         {mode === "check"
           ? "입력한 신규 대출 기준으로 현재 DSR과 스트레스 DSR을 확인합니다."
           : "소득과 목표 DSR로 DSR 기준 추정 가능 대출액을 역산합니다."}
@@ -282,19 +319,20 @@ export default function DsrCalc() {
             { value: "unselected", label: "선택 안 함" },
             { value: "none", label: "없음" },
             { value: "noHouse", label: "무주택자" },
-            { value: "oneHouseMetro", label: "1주택·수도권 규제" },
+            { value: "oneHouseMetro", label: "1주택·수도권/규제지역" },
+            { value: "confirmedExempt", label: "금융회사에서 제외 확인" },
             { value: "other", label: "그 밖" },
           ]}
-          hint="전세대출은 주택 보유 여부와 지역에 따라 DSR 반영 방식이 달라 반드시 선택해야 계산됩니다."
+          hint="전세대출은 주택 보유 여부와 지역에 따라 DSR 반영 방식이 달라 반드시 선택해야 계산됩니다. 정책상품·계약일 경과조치에 해당하는지는 금융회사에 확인한 뒤 제외를 선택하세요."
         />
 
         {jeonse === "oneHouseMetro" && (
           <InputField
-            label="전세대출 연간 이자"
+            label="전세대출 DSR 반영 연간 이자"
             name="jeonseInterest"
             suffix="만원"
             placeholder="예: 300"
-            hint="1주택자가 수도권·규제지역에서 받는 전세대출은 이자상환분만 DSR에 반영됩니다."
+            hint="정책상품·경과조치로 제외되지 않는 대출에 대해 금융회사가 확인한 DSR 산정용 연간 이자를 입력하세요. 이 계산기는 전세대출의 스트레스 금리를 별도로 산정하지 않습니다."
             value={state.jeonseInterest?.value ?? ""}
             onChange={(v) => setValue("jeonseInterest", v)}
             error={state.jeonseInterest?.error}
@@ -337,8 +375,10 @@ export default function DsrCalc() {
               options={[
                 { value: "variable", label: "변동형" },
                 { value: "fixed", label: "순수고정형" },
+                { value: "hybrid", label: "혼합형" },
+                { value: "periodic", label: "주기형" },
               ]}
-              hint="혼합형·주기형은 고정기간·변동주기에 따라 적용비율이 달라 현재 간편 계산에서는 지원하지 않습니다."
+              hint="순수고정형은 만기까지 금리가 고정됩니다. 혼합형은 최초 고정기간 이후 변동금리로 바뀌고, 주기형은 일정한 주기마다 금리가 바뀝니다."
             />
           </>
         ) : (
@@ -352,7 +392,7 @@ export default function DsrCalc() {
                 { value: "creditLine", label: "마이너스통장" },
                 { value: "installment", label: "분할상환" },
               ]}
-              hint="일시상환·마이너스통장은 산정만기 5년으로 계산합니다. 분할상환은 실제만기 인정 요건이 확인되지 않아 직접 입력이 필요합니다."
+              hint="일시상환·마이너스통장은 산정만기 5년으로 계산합니다. 분할상환은 상품별 적격 요건을 자동 판단하지 않으므로 금융회사 확인 원리금을 직접 입력해야 합니다."
             />
             <ToggleGroup<CreditFixedTerm>
               label="금리 유형 (고정금리 기간)"
@@ -368,7 +408,7 @@ export default function DsrCalc() {
           </>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <InputField
             label="대출 금리"
             name="rate"
@@ -381,7 +421,7 @@ export default function DsrCalc() {
           />
           {loanKind === "mortgage" ? (
             <InputField
-              label="대출 기간"
+              label="대출 기간 (약정만기)"
               name="months"
               suffix="개월"
               placeholder="예: 360"
@@ -390,11 +430,24 @@ export default function DsrCalc() {
               error={state.months?.error}
             />
           ) : (
-            <div className="flex items-end pb-2 text-xs leading-relaxed text-slate-400">
+            <div className="flex items-end pb-2 text-xs leading-relaxed text-slate-500">
               신용대출은 산정만기 5년이 적용되어 대출 기간을 입력하지 않습니다.
             </div>
           )}
         </div>
+
+        {needsFixedPeriod && (
+          <InputField
+            label={rateType === "hybrid" ? "최초 고정금리 기간" : "금리변동주기"}
+            name="fixedMonths"
+            suffix="개월"
+            placeholder="예: 60"
+            hint="필수 입력. 남은 기간이 아닌 약정 기간을 입력하세요. 5년(60개월) 미만은 변동형 기준, 그 이상은 대출만기 대비 비중으로 구분합니다."
+            value={state.fixedMonths?.value ?? ""}
+            onChange={(v) => setValue("fixedMonths", v)}
+            error={state.fixedMonths?.error}
+          />
+        )}
 
         {mode === "check" && (
           <InputField
@@ -456,7 +509,7 @@ export default function DsrCalc() {
 
       {/* ── 계산 차단 안내 ── */}
       {blockedReason && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-800 duration-300">
+        <div role="status" aria-live="polite" className="animate-in fade-in slide-in-from-bottom-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-800 duration-300">
           <p className="mb-1 font-semibold">이 조건은 계산하지 않습니다</p>
           <p>{blockedReason}</p>
         </div>
@@ -614,7 +667,7 @@ export default function DsrCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 스트레스 DSR 기준일: {DSR_VERIFIED_DATE}. 규제는 수시로 바뀌므로
           실제 적용 기준은 금융위원회·전국은행연합회 공시로 확인하세요.

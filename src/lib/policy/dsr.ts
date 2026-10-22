@@ -1,5 +1,5 @@
 // src/lib/policy/dsr.ts
-// 스트레스 DSR 정책 테이블 — 2026-08-25 기준
+// 스트레스 DSR 정책 테이블 — 2026-10-20 공식 원문 대조
 //
 // ⚠️ 이 파일은 정책값만 담습니다. 계산은 @/lib/dsr 에서 합니다.
 //    값을 수정할 때는 반드시 같은 커밋에서 verifiedAt 과 sources 를 갱신하세요.
@@ -33,6 +33,7 @@ import type { PolicyMeta, PolicyTable } from "@/lib/policy/types";
  *    (넘길 수 없도록 getCreditStressRatePct 는 지역 인자를 받지 않습니다)
  */
 export type MortgageRegion = "metro" | "local";
+export type MortgageRateType = "variable" | "fixed" | "hybrid" | "periodic";
 
 /**
  * 신용대출의 금리유형 축 — **고정금리 기간** 기준.
@@ -122,28 +123,38 @@ export const LOCAL_MORTGAGE_DEFERRAL_UNTIL = "2026-12-31";
 // ─────────────────────────────────────────────
 // 신용대출 금리유형별 스트레스 적용비율
 //
-//   근거: 금융위원회 「스트레스 DSR 제도 시행」 2023-12-27 (1차)
-//         2026년 유지 여부는 금융위원회공고 제2026-362호에서 확인 (1차)
+//   근거: 금융위원회 2026-07-01 변경 시행 행정지도 및 은행연합회 2026-H2 공시.
 // ─────────────────────────────────────────────
 
 const DSR_META: PolicyMeta = {
   id: "dsr-stress",
-  version: "2.0.0",
+  version: "2.1.0",
   effectiveFrom: "2026-07-01", // 현재 반기 스트레스 금리 적용 개시일
   effectiveUntil: "2026-12-31", // 반기 종료 = 재산정 시점
-  verifiedAt: "2026-08-25",
+  verifiedAt: "2026-10-21",
   sources: [
     {
-      name: "금융위원회 「전 금융권 스트레스 DSR 제도 시행」 — 신용대출 게이팅 및 금리유형별 적용비율",
-      publishedAt: "2023-12-27",
+      name: "금융위원회 「스트레스 DSR 제도」 변경 시행 — 2026-07-01~12-31 최종 행정지도",
+      url: "https://better.fsc.go.kr/fsc_new/status/adminMap/OpertnDetail.do?muNo=145&postNo=4215&stNo=11",
     },
     {
-      name: "금융위원회 「스트레스 DSR 3단계 행정지도 변경시행 예고」 (공고 제2026-362호) — 2026년 유지 및 지방 유예",
-      publishedAt: "2026-06-18",
+      name: "은행연합회 스트레스금리 공시 — 2026년 하반기 적용값",
+      url: "https://portal.kfb.or.kr/compare/stress_loan.php",
+      publishedAt: "2026-06-30",
     },
     {
-      name: "10·15 주택시장 안정화 대책 — 수도권·규제지역 주담대 강화 하한 3.0%",
-      publishedAt: "2025-10-15",
+      name: "은행업감독업무시행세칙 (2026-06-30 시행) 별표18 표3·주1 — 신용대출 원리금·한도대출",
+      url: "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2200000108789&chrClsCd=010201",
+      publishedAt: "2026-06-26",
+    },
+    {
+      name: "은행업감독규정 (2026-10-02 시행) 별표6 — 총대출 1억원 초과·은행 DSR 40%",
+      url: "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000285624&chrClsCd=010201",
+      publishedAt: "2026-09-29",
+    },
+    {
+      name: "금융위원회 주택담보대출 리스크관리 기준 (2026-08-31 변경 시행) — 10쪽 전세대출·19쪽 경과조치",
+      url: "https://better.fsc.go.kr/fsc_new/file/displayFile.do?filePath=/2026/08/28&orgFileName=260813_%EC%A3%BC%ED%83%9D%EB%8B%B4%EB%B3%B4%EB%8C%80%EC%B6%9C%EC%97%90%20%EB%8C%80%ED%95%9C%20%EB%A6%AC%EC%8A%A4%ED%81%AC%20%EA%B4%80%EB%A6%AC%20%EA%B8%B0%EC%A4%80%20%ED%96%89%EC%A0%95%EC%A7%80%EB%8F%84.pdf&sysFileName=9150b4d6f5564462ab5cf218254697e9.pdf",
     },
   ],
   supported: [
@@ -151,21 +162,21 @@ const DSR_META: PolicyMeta = {
     "신용대출 금리유형별 적용비율 (5년 이상 고정 0% / 3~5년 고정 60% / 그 밖 100%)",
     "수도권·규제지역 주택담보대출 스트레스 금리",
     "지방 비규제지역 주택담보대출 유예 스트레스 금리",
+    "주택담보대출 혼합형·주기형의 5년·만기 대비 30/50/70% 경계와 공시 적용금리",
     "차주단위 DSR 한도 (은행 40% / 비은행 50%)",
   ],
   unsupported: [
-    "분할상환 신용대출의 실제만기 인정 요건과 세부 원금 산식",
-    "마이너스통장 산정만기의 감독업무시행세칙 원문 대조",
+    "분할상환 신용대출의 상품별 요건 자동 판정 (금융회사 확인값 직접 입력)",
     "기타대출 종류별 세부 산정만기",
     "보증기관(HF·HUG·SGI)별 전세자금대출 취급 차이",
     "스트레스 DSR 4단계 (확정 시행일·수치 확인 불가)",
     "지방 주담대 유예의 2026-12-31 이후 처리",
-    "주택담보대출의 혼합형·주기형 적용비율",
   ],
   note:
-    "8·13 대책은 가계대출 총량 증가율 목표를 조정했으나, 신용대출 스트레스 수치·" +
-    "금리유형별 적용비율·차주별 DSR 한도의 변경은 공식 발표에서 확인되지 않았습니다. " +
-    "(부존재 증명이 아니라 해당 자료 범위에서의 확인 결과입니다)",
+    "2026-10-21에 주담대 금리유형 표를 2026년 하반기 최종 행정지도와 은행연합회 공시로 재대조했습니다. " +
+    "그 밖의 산정 기준은 2026-10-20 대조 범위입니다. " +
+    "신용대출 원리금은 2026년 시행 은행업감독업무시행세칙 별표18에 따라 " +
+    "일시상환 기준 원금/5년과 이자를 합산합니다. 상품별 예외와 경과조치는 자동 판정하지 않습니다.",
   nextReviewHint:
     "2026년 12월 스트레스 금리 반기 발표 / 지방 주담대 유예 2026-12-31 만료 / 차기 가계부채 관리방안 발표",
   // 스트레스 금리는 6월·12월 발표. 12월 발표 전에 확인한다.
@@ -203,6 +214,73 @@ export const CREDIT_STRESS_RATIO_TABLE: PolicyTable<
 
 export const DSR_POLICY_META = DSR_META;
 
+/**
+ * 2026-H2 혼합·주기형 공시표. 값의 단위는 %p.
+ * 금융위 2026-07-01 최종 행정지도 1쪽: 5년 미만은 변동형, 그 이상은
+ * 고정기간/금리변동주기를 약정만기로 나눈 비중으로 구분한다.
+ * 은행연합회 2026-06-30 '실제 적용 스트레스 금리'를 그대로 저장한다.
+ * 특히 지방 주기형 0.23/0.08은 0.225/0.075를 JS toFixed로 재생성하지 않는다.
+ * 다음 반기는 기준금리만 바꾸지 말고 이 표·적용기간·5년 기준도 재대조한다.
+ */
+export const MORTGAGE_PRODUCT_POLICY = {
+  effectiveFrom: "2026-07-01",
+  effectiveUntil: "2026-12-31",
+  minimumFixedMonths: 60,
+  bands: [
+    { minSharePct: 0, label: "30% 미만", metro: { hybrid: 2.4, periodic: 1.2 }, local: { hybrid: 0.45, periodic: 0.23 } },
+    { minSharePct: 30, label: "30% 이상 50% 미만", metro: { hybrid: 1.8, periodic: 0.9 }, local: { hybrid: 0.3, periodic: 0.15 } },
+    { minSharePct: 50, label: "50% 이상 70% 미만", metro: { hybrid: 1.2, periodic: 0.6 }, local: { hybrid: 0.15, periodic: 0.08 } },
+    { minSharePct: 70, label: "70% 이상", metro: { hybrid: 0, periodic: 0 }, local: { hybrid: 0, periodic: 0 } },
+  ],
+} as const;
+
+/** 혼합·주기형의 기간을 추정하지 않는다. 금리형식이 다른 대출의 숨은 값은 무시한다. */
+export function mortgagePeriodError(params: {
+  rateType: MortgageRateType;
+  months?: number;
+  fixedMonths?: number;
+}): string | null {
+  if (params.rateType !== "hybrid" && params.rateType !== "periodic") return null;
+  const { months, fixedMonths } = params;
+  if (!Number.isSafeInteger(months) || !Number.isSafeInteger(fixedMonths) ||
+      months === undefined || fixedMonths === undefined || months <= 0 || fixedMonths <= 0) {
+    return "약정 대출만기와 고정금리 기간·금리변동주기를 각각 1개월 이상의 정수로 입력해 주세요.";
+  }
+  if (fixedMonths > months) {
+    return "고정금리 기간·금리변동주기는 약정 대출만기보다 길 수 없습니다. 계약 조건을 확인해 주세요.";
+  }
+  return null;
+}
+
+export function getMortgageProductStressRatePct(params: {
+  region: MortgageRegion;
+  rateType: MortgageRateType;
+  months?: number;
+  fixedMonths?: number;
+  asOf: string;
+}): number | null {
+  const { region, rateType, months, fixedMonths, asOf } = params;
+  // 일반 반기 값과 상품별 공시표 양쪽이 모두 유효해야 한다.
+  if (!isStressRateEffective(asOf) || asOf < MORTGAGE_PRODUCT_POLICY.effectiveFrom ||
+      asOf > MORTGAGE_PRODUCT_POLICY.effectiveUntil) return null;
+  if (region !== "metro" && region !== "local") return null;
+  if (rateType === "fixed") return 0;
+  if (rateType === "variable") return getMortgageStressRatePct({ region, asOf });
+  if (rateType !== "hybrid" && rateType !== "periodic") return null;
+  if (mortgagePeriodError(params) || months === undefined || fixedMonths === undefined) return null;
+  // 비중이 70% 이상이어도 5년 미만이면 먼저 변동형 규칙을 적용한다.
+  if (fixedMonths < MORTGAGE_PRODUCT_POLICY.minimumFixedMonths) {
+    return getMortgageStressRatePct({ region, asOf });
+  }
+  // 월 정수의 교차 곱으로 경계를 비교한다. 표시용 비율 반올림을 판정에 쓰지 않는다.
+  const numerator = BigInt(fixedMonths) * BigInt(100);
+  const denominator = BigInt(months);
+  const band = MORTGAGE_PRODUCT_POLICY.bands.findLast(
+    (entry) => numerator >= denominator * BigInt(entry.minSharePct),
+  );
+  return band ? band[region][rateType] : null;
+}
+
 // ─────────────────────────────────────────────
 // 산정만기
 // ─────────────────────────────────────────────
@@ -211,9 +289,9 @@ export const DSR_POLICY_META = DSR_META;
  * 신용대출(일시상환·마이너스통장)의 DSR 산정만기(년).
  *
  * ⚠️ "모든 신용대출 5년"이 아닙니다. 요건을 갖춘 분할상환 신용대출은
- *    실제 만기(최장 10년으로 안내된 자료 있음)를 인정받을 수 있으나,
- *    인정 요건과 원금 산식의 1차 원문을 확인하지 못했습니다.
- *    → 분할상환 신용대출은 사용자가 실제 연간 원리금을 직접 입력하게 합니다.
+ *    2026-06-30 시행 세칙 별표18 표3의 약정만기(5~10년)를 적용합니다.
+ *    주3: 거치 없이 월별/분기별 균등분할, 총액의 40% 이상 분할상환.
+ *    → 상품 요건은 자동 판단하지 않고 금융회사 확인 원리금을 직접 입력합니다.
  */
 export const CREDIT_ASSESSMENT_TERM_YEARS = 5;
 
@@ -221,8 +299,8 @@ export const CREDIT_ASSESSMENT_TERM_YEARS = 5;
  * 마이너스통장은 사용잔액이 아니라 **약정한도 전액**을 대출금액으로 봅니다.
  * 사용액이 0원이어도 한도가 유지되면 DSR 에 영향을 줍니다.
  *
- * 근거 등급: 2차 (금융위 안내를 인용한 실무자료).
- *            현행 감독업무시행세칙 원문 대조는 하지 못했습니다.
+ * 근거: 2026-06-30 시행 은행업감독업무시행세칙 별표18 표3 주1.
+ *       한도대출의 원금 및 이자 산정 시 대출총액을 한도금액으로 적용.
  */
 export const CREDIT_LINE_USES_FULL_LIMIT = true;
 
@@ -266,7 +344,14 @@ function roundPct(value: number): number {
  *    계산하지 않는다 — 만료된 금리로 한도를 내면 조용한 오답이 된다.
  */
 export function isStressRateEffective(asOf: string): boolean {
-  return asOf <= STRESS_RATE.effectiveUntil;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return false;
+  const date = new Date(`${asOf}T00:00:00Z`);
+  return (
+    Number.isFinite(date.getTime()) &&
+    date.toISOString().slice(0, 10) === asOf &&
+    asOf >= STRESS_RATE.effectiveFrom &&
+    asOf <= STRESS_RATE.effectiveUntil
+  );
 }
 
 /**

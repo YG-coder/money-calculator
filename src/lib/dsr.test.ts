@@ -57,6 +57,24 @@ const okEstimate = (
   i: Parameters<typeof estimatePrincipalFromDsr>[0],
 ): DsrEstimateResult => unwrap<DsrEstimateResult>(estimatePrincipalFromDsr(i));
 
+it("일시상환 1.5억원·5.5%의 일반 DSR은 63.75%이며 화면 반올림은 63.8%다", () => {
+  const result = okCheck({
+    annualIncome: 60_000_000,
+    existing: NO_EXISTING,
+    newLoan: {
+      kind: "credit", amount: 150_000_000, ratePercent: 5.5,
+      repaymentKind: "lumpSum", fixedTerm: "other",
+    },
+    limitPercent: 40,
+    asOf: "2026-10-20",
+  });
+  expect(result.newAnnualDebtNormal).toBe(38_250_000);
+  expect(result.newAnnualDebtStressed).toBe(40_500_000);
+  expect(result.dsrNormal).toBe(63.75);
+  expect(result.dsrNormal.toFixed(1)).toBe("63.8");
+  expect(result.dsrStressed).toBe(67.5);
+});
+
 describe("정책 레이어 연결 — 단일 출처", () => {
   it("검증일이 정책 메타에서 온다", () => {
     expect(DSR_VERIFIED_DATE).toBe(DSR_POLICY_META.verifiedAt);
@@ -244,6 +262,12 @@ describe("전세자금대출 5상태 — 조용한 0원 금지", () => {
     );
   });
 
+  it("금융회사가 제외를 확인한 전세대출은 0원과 선택 사유를 표시한다", () => {
+    const r = okCheck({ ...base, existing: { ...NO_EXISTING, jeonse: { status: "confirmedExempt" } } });
+    expect(r.breakdown.jeonseAnnualDebt).toBe(0);
+    expect(r.breakdown.jeonseNote).toContain("금융회사가 DSR 제외를 확인");
+  });
+
   it("1주택·수도권 규제지역은 이자만 반영한다", () => {
     const r = okCheck({
       ...base,
@@ -255,6 +279,15 @@ describe("전세자금대출 5상태 — 조용한 0원 금지", () => {
     expect(r.breakdown.jeonseAnnualDebt).toBe(300 * 만원);
     expect(r.existingAnnualDebt).toBe(300 * 만원);
     expect(r.breakdown.jeonseNote).toContain("이자상환분만");
+    expect(r.breakdown.jeonseNote).toContain("전세대출분에는 스트레스 금리를 더하지 않았습니다");
+    const estimated = okEstimate({
+      ...base,
+      existing: {
+        ...NO_EXISTING,
+        jeonse: { status: "oneHouseMetro", annualInterest: 300 * 만원 },
+      },
+    });
+    expect(estimated.breakdown.jeonseNote).toBe(r.breakdown.jeonseNote);
   });
 });
 
@@ -400,6 +433,8 @@ describe("분할상환 신용대출 — 자동 계산하지 않는다", () => {
     if (out.status === "unsupported") {
       expect(out.reason).toContain("최장 10년");
       expect(out.reason).toContain("직접 입력");
+      expect(out.reason).toContain("상품별 요건 충족 여부를 자동으로 판정하지 않습니다");
+      expect(out.reason).not.toContain("공식 원문에서 확인하지 못");
     }
   });
 
@@ -431,6 +466,10 @@ describe("분할상환 신용대출 — 자동 계산하지 않는다", () => {
       },
     });
     expect(out.status).toBe("unsupported");
+    if (out.status === "unsupported") {
+      expect(out.reason).toContain("상품별 요건 충족 여부를 자동으로 판정하지 않아");
+      expect(out.reason).not.toContain("공식 원문에서 확인하지 못");
+    }
   });
 });
 
@@ -544,11 +583,13 @@ describe("연간 원리금 산정", () => {
     );
   });
 
-  it("신용대출은 산정만기 5년 원금균등 — 원금의 1/5 이상", () => {
+  it("일시상환 신용대출은 원금/5와 잔액 전체의 연 이자를 합산한다", () => {
     const p = 5_000 * 만원;
     const annual = calcCreditAnnualDebtService(p, 6);
-    expect(annual).toBeGreaterThan(p / 5);
-    expect(annual).toBeLessThan(p / 5 + p * 0.06);
+    expect(annual).toBe(13_000_000);
+    expect(calcCreditAnnualDebtService(150_000_000, 5.5)).toBe(38_250_000);
+    expect(calcCreditAnnualDebtService(150_000_000, 7)).toBe(40_500_000);
+    expect(calcCreditAnnualDebtService(0, 7)).toBe(0);
   });
 
   it("신용대출 연간 원리금은 원금에 선형이다 (역산 근거)", () => {

@@ -12,11 +12,11 @@
 //   신규 대출 : 주택담보대출 | 신용대출
 //   기존 부채 : 기타 부채(연간 원리금 직접 입력)
 //               + 신용대출·마이너스통장(구조화 입력)
-//               + 전세자금대출(5상태)
+//               + 전세자금대출(제외 확인 포함)
 //
 // 지원하지 않는 것 — 값을 추정하지 않고 계산을 차단한다
-//   · 주담대 혼합형·주기형, 만기일시·거치식
-//   · 적격 분할상환 신용대출의 실제만기 인정 (요건·산식 1차 원문 미확인)
+//   · 주담대 만기일시·거치식
+//   · 적격 분할상환 신용대출의 상품별 적격 분할상환 자동 판정
 //       → 사용자가 실제 연간 원리금을 직접 입력
 //   · 전세자금대출의 '그 밖의 조건'
 //   · 지방 주담대 유예 만료 이후 기준
@@ -29,7 +29,9 @@ import {
 } from "@/lib/loan";
 import {
   DSR_POLICY_META,
-  getMortgageStressRatePct,
+  getMortgageProductStressRatePct,
+  mortgagePeriodError,
+  MORTGAGE_PRODUCT_POLICY,
   getCreditStressRatePct,
   isStressRateEffective,
   STRESS_RATE,
@@ -38,6 +40,7 @@ import {
   LOCAL_MORTGAGE_DEFERRAL_UNTIL,
   DSR_LIMIT,
   type MortgageRegion,
+  type MortgageRateType,
   type CreditFixedTerm,
 } from "@/lib/policy/dsr";
 
@@ -50,7 +53,7 @@ export type { CreditFixedTerm };
 
 /** 주택담보대출 지역 구분. 정책 레이어의 MortgageRegion 과 같은 타입(기존 이름 유지). */
 export type Region = MortgageRegion; // "metro" | "local"
-export type RateType = "variable" | "fixed"; // 변동형 / 순수고정형(만기까지 고정)
+export type RateType = MortgageRateType;
 export type DsrRepayment = "equal_payment" | "equal_principal"; // 원리금균등 / 원금균등
 
 /** 신규 대출 종류 */
@@ -60,15 +63,16 @@ export type NewLoanKind = "mortgage" | "credit";
  * 신용대출 상환 유형.
  *   lumpSum     — 일시상환. 산정만기 5년
  *   creditLine  — 마이너스통장. 약정한도 전액을 원금으로 보고 산정만기 5년
- *   installment — 분할상환. 실제만기 인정 요건·산식 미확인 → 직접 입력
+ *   installment — 분할상환. 상품 요건 자동 판정 미지원 → 금융회사 확인값 직접 입력
  */
 export type CreditRepaymentKind = "lumpSum" | "creditLine" | "installment";
 
-/** 전세자금대출 5상태 — 조용한 0원을 막기 위해 미선택·없음을 별도 상태로 둔다. */
+/** 전세자금대출 상태 — 조용한 0원을 막기 위해 미선택·없음을 별도 상태로 둔다. */
 export type JeonseInput =
   | { status: "unselected" }
   | { status: "none" }
   | { status: "noHouse" }
+  | { status: "confirmedExempt" }
   | { status: "oneHouseMetro"; annualInterest: number }
   | { status: "other" };
 
@@ -103,6 +107,9 @@ export function todayKst(): string {
 export function getEffectiveStressRate(params: {
   region: Region;
   rateType: RateType;
+  /** 혼합·주기형은 약정만기와 고정기간/변동주기(월)가 모두 필요 */
+  months?: number;
+  fixedMonths?: number;
   asOf?: string;
 }): DsrOutcome<number> {
   const asOf = params.asOf ?? todayKst();
@@ -114,19 +121,12 @@ export function getEffectiveStressRate(params: {
     return { status: "unsupported", reason: STRESS_EXPIRED_REASON };
   }
 
-  if (params.rateType === "fixed") return { status: "ok", value: 0 };
-  const pct = getMortgageStressRatePct({ region: params.region, asOf });
+  const periodError = mortgagePeriodError(params);
+  if (periodError) return { status: "unsupported", reason: periodError };
+  const pct = getMortgageProductStressRatePct({ ...params, asOf });
 
   if (pct === null) {
-    // 두 가지 만료가 겹칠 수 있어 사유를 나눈다.
-    //   ① 반기 스트레스 금리 적용 기간 종료 — 지역 무관
-    //   ② 지방 주담대 유예 종료 — 지방만
-    const reason = !isStressRateEffective(asOf)
-      ? STRESS_EXPIRED_REASON
-      : `지방(비규제) 주택담보대출의 스트레스 금리 유예가 ${LOCAL_MORTGAGE_DEFERRAL_UNTIL}자로 종료되어, ` +
-        "현재 적용 기준을 확인하기 전에는 계산하지 않습니다. 금융회사 또는 금융위원회 공시로 확인하세요.";
-
-    return { status: "unsupported", reason };
+    return { status: "unsupported", reason: "해당 지역·금리유형·기준일의 주택담보대출 공시값을 확인할 수 없어 계산하지 않습니다. 금융회사 또는 금융위원회 공시로 확인하세요." };
   }
 
   return { status: "ok", value: pct };
@@ -140,9 +140,8 @@ export function getEffectiveStressRate(params: {
  * (PolicyMeta 의 expired 판정과 런타임 동작을 일치시키기 위한 처리)
  */
 const STRESS_EXPIRED_REASON =
-  `스트레스 금리 적용 기간(${STRESS_RATE.applicableHalf}, ~${STRESS_RATE.effectiveUntil})이 끝났습니다. ` +
-  "스트레스 금리는 6월·12월에 새로 발표되며, 다음 발표값을 확인하기 전에는 계산하지 않습니다. " +
-  "만료된 금리로 계산하면 한도가 실제와 달라집니다. 금융회사 또는 금융위원회 공시로 확인하세요.";
+  `기준일이 스트레스 금리 적용 기간(${STRESS_RATE.effectiveFrom}~${STRESS_RATE.effectiveUntil})에 속하지 않거나 유효하지 않습니다. ` +
+  "6월·12월 반기 발표 및 해당 시점의 공시를 확인하기 전에는 계산하지 않습니다. 금융회사 또는 금융위원회 공시로 확인하세요.";
 
 // ─────────────────────────────────────────────
 // 유효 스트레스 금리(%p) — 신용대출
@@ -205,23 +204,20 @@ export function calcNewLoanAnnualDebtService(
 
 // ─────────────────────────────────────────────
 // 신용대출의 DSR 산정용 연간 원리금
-//   산정만기 5년 기준 원금균등으로 산정한다.
+//   원금은 대출총액/5년, 이자는 원금이 줄지 않는 일시상환 기준이다.
+//   2026-06-30 시행 은행업감독업무시행세칙 별표18 표3·주1.
 //
 //   ⚠️ 마이너스통장은 사용액이 아니라 약정한도 전액이 principal 이다.
 //   ⚠️ 분할상환 신용대출은 이 함수를 쓰지 않는다.
-//      실제만기 인정 요건과 원금 산식의 1차 원문을 확인하지 못했으므로
-//      사용자가 실제 연간 원리금을 직접 입력한다.
+//      상품의 거치·상환비중·약정만기 확인이 필요하므로
+//      금융회사가 확인한 DSR 산정용 연간 원리금을 직접 입력한다.
 // ─────────────────────────────────────────────
 export function calcCreditAnnualDebtService(
   principal: number,
   ratePercent: number,
 ): number {
-  return calcNewLoanAnnualDebtService(
-    principal,
-    ratePercent,
-    CREDIT_ASSESSMENT_TERM_YEARS * 12,
-    "equal_principal",
-  );
+  if (principal <= 0) return 0;
+  return principal / CREDIT_ASSESSMENT_TERM_YEARS + principal * (ratePercent / 100);
 }
 
 // ─────────────────────────────────────────────
@@ -237,7 +233,7 @@ export interface ExistingDebtInput {
    * 기존 적격 분할상환 신용대출 잔액.
    *
    * ⚠️ 게이팅(신용대출 총잔액 1억원) 판정에만 합산하고, 연간 원리금은 계산하지 않는다.
-   *    실제만기 인정 요건·원금 산식의 1차 원문을 확인하지 못했으므로(정책문서 rev.2 §6)
+   *    상품별 인정 만기·실제 이자를 자동 판정하지 않으므로
    *    실제 연간 원리금은 otherAnnualDebt 로 직접 입력받는다.
    */
   creditInstallmentBalance: number;
@@ -309,10 +305,12 @@ export function resolveExistingDebt(
   const jeonseNote =
     jeonse.status === "noHouse"
       ? "무주택자 전세자금대출은 원칙적으로 DSR 산정에서 제외되어 0원으로 반영했습니다."
-      : jeonse.status === "none"
+      : jeonse.status === "confirmedExempt"
+        ? "정책상품·경과조치 등으로 금융회사가 DSR 제외를 확인한 전세대출로 선택하여 0원으로 반영했습니다."
+        : jeonse.status === "none"
         ? null
         : jeonse.status === "oneHouseMetro"
-          ? "1주택자가 수도권·규제지역에서 받는 전세대출은 이자상환분만 반영합니다."
+          ? "1주택자가 수도권·규제지역에서 받는 전세대출은 이자상환분만 반영합니다. 전세대출분에는 스트레스 금리를 더하지 않았습니다. 실제 스트레스 DSR은 금융회사에 확인하세요."
           : null;
 
   const warnings: string[] = [];
@@ -358,6 +356,20 @@ export interface NewMortgageInput {
   repayment: DsrRepayment;
   region: Region;
   rateType: RateType;
+  /** 혼합형: 최초 고정기간, 주기형: 금리변동주기. 잔여기간이 아닌 약정 월수 */
+  fixedMonths?: number;
+}
+
+function mortgageProductNotes(loan: NewMortgageInput, stressPct: number): string[] {
+  if (loan.rateType !== "hybrid" && loan.rateType !== "periodic") return [];
+  const label = loan.rateType === "hybrid" ? "혼합형 고정금리 기간" : "주기형 금리변동주기";
+  const classification = (loan.fixedMonths ?? 0) < MORTGAGE_PRODUCT_POLICY.minimumFixedMonths
+    ? "5년 미만이므로 변동형 기준을 적용했습니다."
+    : "약정 대출만기 대비 비중에 따른 공시값을 적용했습니다.";
+  return [
+    `${label} ${loan.fixedMonths}개월 / 약정 대출만기 ${loan.months}개월. ${classification} ` +
+      `적용 스트레스 금리는 ${stressPct}%p입니다(${MORTGAGE_PRODUCT_POLICY.effectiveFrom}~${MORTGAGE_PRODUCT_POLICY.effectiveUntil}).`,
+  ];
 }
 
 export interface NewCreditInput {
@@ -396,6 +408,8 @@ function resolveNewLoan(
     const stress = getEffectiveStressRate({
       region: loan.region,
       rateType: loan.rateType,
+      months: loan.months,
+      fixedMonths: loan.fixedMonths,
       asOf,
     });
     if (stress.status === "unsupported") return stress;
@@ -418,7 +432,7 @@ function resolveNewLoan(
         ),
         creditGatePassed: null,
         creditTotalWon: null,
-        notes: [],
+        notes: mortgageProductNotes(loan, stress.value),
       },
     };
   }
@@ -453,9 +467,8 @@ function resolveNewLoan(
       return {
         status: "unsupported",
         reason:
-          "분할상환 신용대출은 요건에 따라 실제 만기(최장 10년)를 인정받을 수 있는데, " +
-          "그 인정 요건과 원금 산식을 공식 원문에서 확인하지 못했습니다. " +
-          "일괄 5년으로 계산하면 DSR이 실제보다 높게 나올 수 있어 자동 계산하지 않습니다. " +
+          "분할상환 신용대출은 거치 없이 월별·분기별 균등분할하고 총대출액의 40% 이상을 분할상환하는 요건을 충족하면 원금을 약정만기(5년 이상, 최장 10년)로 나누어 산정합니다. " +
+          "이 계산기는 상품별 요건 충족 여부를 자동으로 판정하지 않습니다. " +
           "금융회사에서 안내받은 DSR 산정용 연간 원리금을 직접 입력해 주세요.",
       };
     }
@@ -558,7 +571,7 @@ export function calcDsr(input: DsrCheckInput): DsrOutcome<DsrCheckResult> {
 
   const dsrOf = (newAnnual: number) =>
     input.annualIncome > 0
-      ? ((b.annualDebt + newAnnual) / input.annualIncome) * 100
+      ? ((b.annualDebt + newAnnual) * 100) / input.annualIncome
       : 0;
 
   const dsrNormal = dsrOf(n.annualNormal);
@@ -597,7 +610,7 @@ export function calcDsr(input: DsrCheckInput): DsrOutcome<DsrCheckResult> {
 //   신규 가용 = 허용 − 기존 (≤0이면 0)
 //   ※ 역산은 반드시 스트레스 금리 기준 (명목 역산은 한도 과대계상)
 //   ※ 주담대는 원리금균등 기준 역산
-//   ※ 신용대출은 산정만기 5년 원금균등 기준 역산이며,
+//   ※ 신용대출은 원금/5년 + 잔액 전체의 연 이자 기준 역산이며,
 //      1억원 경계에서 스트레스 적용 여부가 갈리므로 두 구간을 나눠 계산한다.
 // ─────────────────────────────────────────────
 
@@ -625,7 +638,7 @@ export interface DsrEstimateResult {
   warnings: string[];
 }
 
-/** 원금 1원당 연간 원리금 — 신용대출 산정만기 5년 원금균등 기준(원금에 선형) */
+/** 원금 1원당 연간 원리금 — 신용대출 원금/5년 + 잔액 전체의 연 이자 기준(원금에 선형) */
 function creditUnitAnnualDebt(ratePercent: number): number {
   return calcCreditAnnualDebtService(1, ratePercent);
 }
@@ -654,6 +667,8 @@ export function estimatePrincipalFromDsr(
     const stress = getEffectiveStressRate({
       region: loan.region,
       rateType: loan.rateType,
+      months: loan.months,
+      fixedMonths: loan.fixedMonths,
       asOf: input.asOf,
     });
     if (stress.status === "unsupported") return stress;
@@ -678,7 +693,7 @@ export function estimatePrincipalFromDsr(
           loan.months,
         ),
         cappedAtCreditGate: false,
-        notes: [],
+        notes: mortgageProductNotes(loan, stress.value),
       },
     };
   }
@@ -690,8 +705,8 @@ export function estimatePrincipalFromDsr(
     return {
       status: "unsupported",
       reason:
-        "분할상환 신용대출은 실제만기 인정 요건과 원금 산식을 공식 원문에서 확인하지 못해 " +
-        "추정 가능액을 역산하지 않습니다. 금융회사에 문의하세요.",
+        "분할상환 신용대출의 실제만기 인정 요건은 확인했지만, 이 계산기는 상품별 요건 충족 여부를 자동으로 판정하지 않아 추정 가능액을 역산하지 않습니다. " +
+        "금융회사에 한도를 확인하거나 DSR 확인 모드에서 금융회사가 안내한 연간 원리금을 직접 입력해 주세요.",
     };
   }
 

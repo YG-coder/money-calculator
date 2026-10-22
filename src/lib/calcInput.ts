@@ -12,11 +12,20 @@ export type FieldKind = "money" | "integer" | "decimal";
 
 export type FieldState = {
   value: string; // 화면 표시용 (천 단위 콤마 포함)
-  raw: string; // 계산용 원본 문자열 (콤마 없음)
+  raw: string; // 정상 입력은 계산용 숫자 문자열. URL 선택 오류는 원문을 보존하므로 error를 먼저 확인한다.
   error: string;
 };
 
 export type CalcState = Record<string, FieldState>;
+
+export type UrlFieldDef = {
+  defaultValue: string;
+  kind?: FieldKind;
+  validate?: (v: string) => string | undefined;
+  // 선택 항목처럼 URL 원문을 검증해야 하는 필드만 사용한다.
+  // 오류값을 보존해 다른 필드의 URL 갱신으로 기본값이 저장되지 않게 한다.
+  preserveInvalidUrl?: boolean;
+};
 
 // ─────────────────────────────────────────────
 // 입력 파싱
@@ -110,6 +119,21 @@ export function readUrlValue(
   if (urlValue == null) return fallback;
   if (urlValue === "") return "";
   return isValidUrlValue(urlValue, kind) ? urlValue : fallback;
+}
+
+/** URL에서 필드 상태를 만든다. 초기화와 이후 주소 이동에 같은 규칙을 쓴다. */
+export function readFieldFromUrl(
+  urlValue: string | null | undefined,
+  field: UrlFieldDef,
+): FieldState {
+  if (field.preserveInvalidUrl && urlValue != null) {
+    const error = field.validate?.(urlValue);
+    if (error) return { value: urlValue, raw: urlValue, error };
+  }
+
+  const kind = field.kind ?? "decimal";
+  const raw = sanitize(readUrlValue(urlValue, field.defaultValue, kind), kind);
+  return { value: toDisplay(raw, kind), raw, error: field.validate?.(raw) ?? "" };
 }
 
 /** 계산기 필드만 갱신하고 다른 쿼리값은 유지한다. */

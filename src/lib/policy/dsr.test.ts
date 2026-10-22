@@ -43,7 +43,7 @@ describe("정책 메타데이터", () => {
     const joined = DSR_POLICY_META.unsupported.join(" ");
     expect(joined).toMatch(/분할상환/);
     expect(joined).toMatch(/4단계/);
-    expect(joined).toMatch(/마이너스통장/);
+    expect(joined).toMatch(/보증기관/);
   });
 });
 
@@ -259,5 +259,18 @@ describe("그 밖의 상수", () => {
 
   it("DSR 한도 은행 40 / 비은행 50", () => {
     expect(DSR_LIMIT).toEqual({ bank: 40, nonbank: 50 });
+  });
+});
+
+// 2026-H2 밖의 날짜에 현재 반기 값을 소급·연장 적용하지 않는다.
+describe("2026-H2 적용일 양쪽 경계", () => {
+  it.each(["2026-06-30", "2027-01-01", "2026-02-30", "2026-13-01", "", "2026-7-1"])("%s 차단", (asOf) => {
+    expect(isStressRateEffective(asOf)).toBe(false);
+    expect(getMortgageStressRatePct({ region: "metro", asOf })).toBeNull();
+    expect(getCreditStressRatePct({ fixedTerm: "other", creditTotalWon: 100_000_001, asOf })).toBeNull();
+  });
+  it.each(["2026-07-01", "2026-12-31"])("%s 포함", (asOf) => {
+    expect(isStressRateEffective(asOf)).toBe(true);
+    expect(getMortgageStressRatePct({ region: "local", asOf })).toBe(0.75);
   });
 });
