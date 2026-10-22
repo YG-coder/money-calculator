@@ -355,11 +355,13 @@ export function calcPropertyYield(
 // ⚠️ 시간민감 규제 수치 — 금통위마다 바뀔 수 있음. 검증일자 확인 필수.
 // 주택 월차임 전환율 상한 = min(연 10%, 기준금리 + 연 2%)
 // (주택임대차보호법 제7조의2 각 호 중 낮은 비율, 시행령 제9조 ①②)
+// 한국은행 2026-10-22 통화정책방향 원문(공보 2026-10-15호): 3.00% 유지, 7명 찬성.
+// https://www.bok.or.kr/portal/cmmn/file/fileDown.do?atchFileId=a371bacfa6d14a20948d8d1c8629a246&fileSn=2&menuNo=200761
 export const CONVERSION_RATE_INFO = {
   fixedCapPct: 10, // 시행령 제9조① "연 1할" (대통령령상 고정 비율)
-  baseRatePct: 3.0, // 한국은행 기준금리 (2026-08-27 금통위 0.25%p 인상, 2회 연속)
+  baseRatePct: 3.0, // 한국은행 기준금리 (2026-08-27 금통위 0.25%p 인상 → 2026-10-22 금통위 동결)
   legalAddPct: 2.0, // 시행령 제9조② 대통령령 이율
-  verifiedAt: "2026-08-28", // 다음 금통위: 2026-10-22 (이후 변동 가능)
+  verifiedAt: "2026-10-22", // 다음 금통위: 2026-11-26 (이후 변동 가능)
   source: "한국은행 기준금리 · 주택임대차보호법 제7조의2 · 시행령 제9조",
 };
 

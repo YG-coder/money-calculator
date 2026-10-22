@@ -73,9 +73,10 @@ export const POLICY_REVIEW_ITEMS: PolicyReviewItem[] = [
   {
     id: "base-rate-mpc",
     label: "금통위 기준금리. 전월세 전환 법정 상한이 함께 움직인다",
-    // ⚠️ 2026-10-22 는 2차 출처(일정 안내 자료) 기반이다.
-    //    한국은행 공식 발표에서 1차로 확인되는 것은 "1·2·4·5·7·8·10·11월 개최"까지.
-    reviewBy: "2026-10-22",
+    // 2026-10-22 금통위: 3.00% 동결 확인 (만장일치).
+    // 다음 회의 2026-11-26: 한국은행 공식 2026년 통화정책방향 결정회의 표에서 확인.
+    // https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200761&mtgSe=A
+    reviewBy: "2026-11-26",
     target: "src/lib/realEstate.ts — CONVERSION_RATE_INFO.baseRatePct",
     runtimeGuarded: false,
   },

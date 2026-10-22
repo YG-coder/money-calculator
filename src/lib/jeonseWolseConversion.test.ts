@@ -21,7 +21,7 @@ describe("전월세 전환 법정 상한", () => {
     );
   });
 
-  it("현재 상수(기준금리 3.0%)에서 상한은 5.0%", () => {
+  it("현재 상수(기준금리 3.0%, 2026-10-22 금통위 동결)에서 상한은 5.0%", () => {
     expect(CONVERSION_RATE_INFO.baseRatePct).toBe(3.0);
     expect(getLegalConversionCapPct()).toBeCloseTo(5.0, 10);
   });
