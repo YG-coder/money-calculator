@@ -16,7 +16,7 @@ export default function Page() {
       <h1 className="mb-2 text-3xl font-black text-slate-900">
         머니계산기 소개
       </h1>
-      <p className="mb-8 text-sm text-slate-400">
+      <p className="mb-8 text-sm text-slate-500">
         금융 결정을 숫자로 먼저 확인하는 무료 계산 서비스
       </p>
 

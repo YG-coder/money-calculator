@@ -120,7 +120,7 @@ export default function JeonseWolseConversionCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 법정 상한(주택) = 연 10%와 (한국은행 기준금리 + 연 2%) 중 낮은 값.
           현재 기준금리 {CONVERSION_RATE_INFO.baseRatePct}% 기준 상한{" "}

@@ -106,7 +106,7 @@ export default function SavingsCompareCalc() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {taxType === "general"
             ? "일반과세 15.4% (이자소득세 14% + 지방소득세 1.4%) 적용."
             : "비과세 — 이자소득세를 적용하지 않습니다."}
@@ -157,7 +157,7 @@ export default function SavingsCompareCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           예금은 처음부터 목돈이 있다는 가정이고, 적금은 매달 돈을 모으는
           상품이므로 표면금리만으로 어느 쪽이 유리한지 판단할 수 없습니다. 이

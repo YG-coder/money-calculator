@@ -134,7 +134,7 @@ export default function DepositInterestCalc() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {method === "simple"
             ? "만기일시지급 단리 — 원금에만 이자가 붙습니다."
             : "월복리 — 매달 이자가 원금에 더해져 다음 이자에 포함됩니다."}
@@ -160,7 +160,7 @@ export default function DepositInterestCalc() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {taxType === "general"
             ? "일반과세: 이자소득세 15.4%(소득세 14% + 지방소득세 1.4%)를 적용한 예상치입니다."
             : "비과세는 비과세종합저축 등 법령이 정한 자격·상품 조건을 충족해야 적용됩니다. 누구나 임의로 선택되는 것은 아닙니다."}
@@ -189,7 +189,7 @@ export default function DepositInterestCalc() {
             />
           </div>
 
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             ※ 세금은 일반 세율을 적용한 예상치이며, 실제 금융기관의 원천징수 및 원
             단위 처리에 따라 차이가 날 수 있습니다. 표시 금리가 기본금리인지 우대금리
             포함인지, 중도해지 시 이율이 낮아지는지도 함께 확인하세요.

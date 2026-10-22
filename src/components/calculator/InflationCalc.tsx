@@ -109,7 +109,7 @@ export default function InflationCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 이 계산기는 투자 성과가 아니라, 물가가 오를 때 가지고 있는 현금·저축의
           구매력이 어떻게 변하는지를 보여줍니다. 이자·수익은 반영하지 않은,

@@ -32,7 +32,7 @@ const HOME_FAQ = [
   },
   {
     q: "입력한 값이 저장되나요?",
-    a: "서버로 전송되거나 저장되지 않습니다. 모든 계산은 브라우저에서 처리됩니다. 입력값은 주소창의 쿼리 파라미터에만 담기므로, 링크를 복사하면 같은 조건을 다시 열 수 있습니다.",
+    a: "회원 데이터나 서버 데이터베이스에 저장하는 기능은 없고, 모든 계산은 브라우저에서 처리됩니다. 입력값은 주소창의 쿼리 파라미터에 담기므로 링크를 복사하면 같은 조건을 다시 열 수 있습니다. 그 주소를 새로 열거나 다른 계산기로 이어서 계산하면 입력값이 담긴 주소가 호스팅 서버에 요청되므로, 자세한 처리 범위는 개인정보처리방침을 확인하세요.",
   },
   {
     q: "세율이나 규제 수치는 언제 기준인가요?",
@@ -305,7 +305,7 @@ export default function Page() {
                   {f.q}
                   <span
                     aria-hidden="true"
-                    className="shrink-0 text-slate-400 transition-transform group-open:rotate-45"
+                    className="shrink-0 text-slate-500 transition-transform group-open:rotate-45"
                   >
                     +
                   </span>
@@ -359,12 +359,12 @@ export default function Page() {
             </div>
             <div>
               <dt className="font-bold text-white">
-                입력값은 서버에 저장되지 않습니다
+                입력값은 브라우저에서 계산합니다
               </dt>
               <dd className="mt-1.5 text-sm leading-relaxed text-slate-400">
-                모든 계산은 브라우저에서 처리됩니다. 입력값은 주소창의 쿼리
-                파라미터에만 담겨, 링크를 복사하면 같은 조건을 다시 열 수
-                있습니다.
+                계산은 브라우저에서 처리되고, 입력값을 따로 수집·저장하는 기능은
+                없습니다. 입력값은 주소창의 쿼리 파라미터에 담겨, 링크를 복사하면
+                같은 조건을 다시 열 수 있습니다.
               </dd>
             </div>
           </dl>

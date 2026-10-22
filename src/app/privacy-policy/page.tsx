@@ -16,8 +16,8 @@ export default function PrivacyPolicyPage() {
       <h1 className="mb-1 text-3xl font-black text-slate-900">
         개인정보처리방침
       </h1>
-      <p className="mb-8 text-sm text-slate-400">
-        최종 수정일: 2026년 10월 3일
+      <p className="mb-8 text-sm text-slate-500">
+        최종 수정일: 2026년 10월 21일
       </p>
 
       <div className="space-y-7 rounded-2xl border border-slate-100 bg-white p-8 text-sm leading-relaxed text-slate-600 shadow-sm">
@@ -26,9 +26,11 @@ export default function PrivacyPolicyPage() {
             1. 개인정보 수집 여부
           </h2>
           <p>
-            머니계산기(머니계산기.kr)는 계산기 이용 과정에서 사용자의 개인정보를
-            직접 수집하지 않습니다. 사용자가 입력하는 대출 원금, 금리, 기간 등의
-            수치는 서버에 저장되지 않으며 브라우저 내에서만 처리됩니다.
+            머니계산기(머니계산기.kr)는 계산기 이용에 회원가입이나 이름·연락처
+            입력을 요구하지 않습니다. 대출 원금, 금리, 기간 등의 수치는
+            브라우저 안에서 계산하며, 계산 입력값을 별도의 회원 데이터베이스에
+            저장하는 기능은 없습니다. 주소에 포함된 입력값의 전송과 요청 로그는
+            아래 2항과 3항에서 안내합니다.
           </p>
         </section>
 
@@ -38,11 +40,14 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p>
             본 사이트의 계산 기능은 사용자의 브라우저에서 동작하도록 설계되어
-            있습니다. 따라서 입력된 계산 값은 별도의 회원 데이터나 서버
-            데이터베이스에 저장되지 않습니다. 다만 일부 계산기는 결과 공유를
-            위해 입력값을 URL 쿼리 문자열에 담을 수 있습니다. 해당 URL을
-            공유하면 입력값도 함께 전달될 수 있으므로 민감한 개인정보는 입력하지
-            마세요.
+            있습니다. 입력된 계산 값은 회원 데이터나 서버 데이터베이스로 보내
+            저장하는 기능이 없습니다. 다만 계산기는 결과 공유와 입력 복원을
+            위해 입력값을 페이지 주소의 쿼리 문자열에 담습니다. 입력 중에는
+            브라우저 주소만 바뀌고 새 요청은 발생하지 않지만, 그 주소를 새로
+            열거나 새로고침하거나 다른 계산기로 이어서 계산하면 입력값이 담긴
+            주소가 다른 페이지 주소와 같은 방식으로 호스팅 서버에 요청되며
+            3항의 요청 로그에 포함될 수 있습니다. 해당 주소를 공유하면
+            입력값도 함께 전달되므로 민감한 개인정보는 입력하지 마세요.
           </p>
         </section>
 
@@ -51,8 +56,10 @@ export default function PrivacyPolicyPage() {
             3. 쿠키 및 로그 정보
           </h2>
           <p>
-            호스팅·보안 서비스는 사이트 제공과 장애 대응을 위해 IP 주소, 요청
-            URL, 브라우저 종류, 접속 시간 등의 기술 로그를 처리할 수 있습니다.
+            현재 호스팅 서비스인 Vercel의 요청 로그에는 요청 URL의 경로와
+            쿼리 문자열, 브라우저 정보, 접속 시간 등이 기록됩니다. 따라서 주소에
+            계산 입력값이 포함되어 있으면 해당 값도 요청 로그에 남을 수 있습니다.
+            호스팅·보안 서비스는 IP 주소 등 추가 기술 정보를 처리할 수 있습니다.
             쿠키와 유사 기술의 사용 여부는 적용 중인 호스팅·보안 서비스와 이용자의
             브라우저 설정에 따라 달라질 수 있습니다.
           </p>
@@ -105,7 +112,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
-        <p className="border-t border-slate-100 pt-2 text-xs text-slate-400">
+        <p className="border-t border-slate-100 pt-2 text-xs text-slate-500">
           본 개인정보처리방침은 관련 법령 및 서비스 운영 정책 변경에 따라 수정될
           수 있으며, 변경 사항은 본 페이지를 통해 공지됩니다.
         </p>

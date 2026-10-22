@@ -184,7 +184,7 @@ export default function PrepaymentCalc() {
             isProfit={result.isProfit}
           />
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             ※ 원리금균등상환 기준 계산입니다. 수수료는 대출 계약서 기준으로 다를
             수 있습니다.
           </p>

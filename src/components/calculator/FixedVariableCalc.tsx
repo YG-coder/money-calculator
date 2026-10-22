@@ -190,7 +190,7 @@ export default function FixedVariableCalc() {
                       <span className="font-semibold">
                         {s.delta === 0 ? "현재" : `+${s.delta}%p`}
                       </span>
-                      <span className="ml-1 text-xs text-slate-400">
+                      <span className="ml-1 text-xs text-slate-500">
                         ({trimPct(s.variableRate)}%)
                       </span>
                     </td>
@@ -213,7 +213,7 @@ export default function FixedVariableCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 이 계산기는 어느 쪽이 유리한지 판단하지 않습니다. 미래 변동금리 경로는
           알 수 없으므로, &lsquo;변동금리가 현재 수준으로 유지된다면&rsquo;과

@@ -148,13 +148,13 @@ export default function RateSimulatorCalc() {
                       <span className="font-semibold">
                         {row.isBase ? "현재" : `+${row.delta}%p`}
                       </span>
-                      <span className="ml-1 text-xs text-slate-400">
+                      <span className="ml-1 text-xs text-slate-500">
                         ({row.rate.toFixed(2)}%)
                       </span>
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
                       <div>{formatKRW(row.monthlyPayment)}</div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-slate-500">
                         {row.isBase
                           ? "기준"
                           : `+${formatKRW(row.monthlyDiff)}`}
@@ -162,7 +162,7 @@ export default function RateSimulatorCalc() {
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
                       <div>{formatUnit(row.totalInterest)}</div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-slate-500">
                         {row.isBase
                           ? "기준"
                           : `+${formatUnit(row.interestDiff)}`}
@@ -175,7 +175,7 @@ export default function RateSimulatorCalc() {
           </div>
 
           {repayment === "equal_principal" && (
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               ※ 원금균등의 월 상환액은 첫 달(가장 큰 달) 기준입니다. 이후 매달
               조금씩 줄어듭니다.
             </p>
@@ -184,7 +184,7 @@ export default function RateSimulatorCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 이 계산기는 금리를 예측하지 않습니다. &lsquo;만약 금리가 ○%p
           변한다면&rsquo;을 가정한 시나리오별 상환 부담을 원리금균등·원금균등

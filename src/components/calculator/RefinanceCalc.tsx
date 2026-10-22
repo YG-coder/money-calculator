@@ -236,7 +236,7 @@ export default function RefinanceCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 원리금균등 상환 기준으로 계산한 참고용 추정치입니다. 중도상환수수료는
           남은 원금 전체에 수수료율을 적용합니다.

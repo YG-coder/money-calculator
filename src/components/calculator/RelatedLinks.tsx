@@ -21,7 +21,7 @@ export default function RelatedLinks({ calculators, guides }: RelatedLinksProps)
     <section className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
       {calculators && calculators.length > 0 && (
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
             🔗 관련 계산기
           </h3>
           <ul className="space-y-2">
@@ -50,7 +50,7 @@ export default function RelatedLinks({ calculators, guides }: RelatedLinksProps)
 
       {guides && guides.length > 0 && (
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+          <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
             📖 관련 금융 가이드
           </h3>
           <ul className="space-y-2">

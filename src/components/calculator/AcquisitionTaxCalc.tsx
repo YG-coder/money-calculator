@@ -123,7 +123,7 @@ export default function AcquisitionTaxCalc() {
         <label className="text-sm font-semibold text-slate-600">
           현재 주택 보유 수 (취득 후 기준)
         </label>
-        <p className="text-xs leading-relaxed text-slate-400">
+        <p className="text-xs leading-relaxed text-slate-500">
           비수도권 시가표준액 2억원 이하 주택은 주택 수 산정에서도 제외됩니다.
           해당 주택은 빼고 세어주세요. 정비구역·소규모주택정비 사업시행구역 주택은
           제외 대상이 아닙니다.
@@ -250,7 +250,7 @@ export default function AcquisitionTaxCalc() {
               {opt.label}
             </label>
           ))}
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             300만원은 인구감소지역 또는 법정 요건을 갖춘 소형 비아파트 등에 한합니다.
             자격을 자동 판정하지 않으므로 관할 시·군·구청에서 확인하세요.
           </p>
@@ -267,7 +267,7 @@ export default function AcquisitionTaxCalc() {
           />
           <span>
             일시적 2주택 요건을 확인했습니다
-            <span className="mt-1 block text-xs text-slate-400">
+            <span className="mt-1 block text-xs text-slate-500">
               신규주택 취득 후 3년 내 법정 처분 요건을 충족해야 합니다.
             </span>
           </span>
@@ -341,7 +341,7 @@ export default function AcquisitionTaxCalc() {
             </div>
           )}
 
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             ※ 2026-08-25 현행 법령 기준의 예상액입니다. 생애최초·일시적 2주택 자격과
             시가표준액은 사용자가 확인한 값으로 계산합니다. 상속·증여·법인 취득과 가산세는
             반영하지 않습니다. 정확한 세금은 관할 시·군·구청 또는 세무사에게 확인하세요.

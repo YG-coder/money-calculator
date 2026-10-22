@@ -128,7 +128,7 @@ export default function InstallmentSavingsCalc() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {taxType === "general"
             ? "일반과세: 이자소득세 15.4%(소득세 14% + 지방소득세 1.4%)를 적용한 예상치입니다."
             : "비과세는 비과세종합저축 등 법령이 정한 자격·상품 조건을 충족해야 적용됩니다. 누구나 임의로 선택되는 것은 아닙니다."}

@@ -162,13 +162,13 @@ export default function LtvCalc() {
                     <span className="block font-bold text-slate-700">
                       {(r.amountWon / 10_000).toLocaleString("ko-KR")}만원
                     </span>
-                    <span className="mt-0.5 block leading-snug text-slate-400">
+                    <span className="mt-0.5 block leading-snug text-slate-500">
                       {r.label}
                     </span>
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-slate-500">
                 법정 금액이며 공제 건수는 주택 유형·금융회사 내규에 따라
                 달라집니다. 위 값은 입력 보조용 참고값입니다.
               </p>
@@ -235,7 +235,7 @@ export default function LtvCalc() {
 
           {/* 계산 과정 */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm">
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
               계산 과정
             </p>
             <dl className="space-y-1.5">
@@ -312,6 +312,8 @@ export default function LtvCalc() {
               옮겨진 값은 다음 화면에서 수정할 수 있습니다.
             </p>
             <Link
+              // 화면에 보이기만 해도 미리 가져오기(prefetch) 요청이 입력값 쿼리를 서버로 보낸다. 클릭할 때만 요청한다.
+              prefetch={false}
               href={ltvToInitialCostUrl({
                 housePriceWon: priceWon,
                 limitWon: result.limitWon,

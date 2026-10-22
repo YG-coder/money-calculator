@@ -174,7 +174,7 @@ export default function VacancyImpactCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 입력한 공실률과 운영비를 기준으로 단순 시뮬레이션한 값입니다. 실제
           공실·수선비·세금·중개비 등은 임대 조건과 시장 상황에 따라 달라질 수

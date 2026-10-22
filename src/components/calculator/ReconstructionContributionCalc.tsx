@@ -141,7 +141,7 @@ export default function ReconstructionContributionCalc() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             ※ 본 계산은 단순 추정치입니다. 실제 분담금은 공사비, 일반분양가,
             사업비, 조합원 분양가 등 여러 변수에 따라 달라질 수 있으므로, 정확한
             금액은 조합 발표 자료를 확인하세요.

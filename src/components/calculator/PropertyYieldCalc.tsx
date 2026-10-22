@@ -91,7 +91,7 @@ export default function PropertyYieldCalc() {
       <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* 부동산 조건 */}
       <div>
-        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
           부동산 조건
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -120,7 +120,7 @@ export default function PropertyYieldCalc() {
 
       {/* 임대 수입 */}
       <div>
-        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
           임대 수입·비용
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -158,7 +158,7 @@ export default function PropertyYieldCalc() {
 
       {/* 대출 조건 */}
       <div>
-        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
           대출 조건 (없으면 0 입력)
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -297,7 +297,7 @@ export default function PropertyYieldCalc() {
             않으므로, 수익률 숫자만으로 투자 여부를 판단하면 안 됩니다.
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             ※ 이 계산은 공실, 재산세, 종합부동산세, 양도소득세, 수선비를
             포함하지 않습니다. 취득세·중개보수·등기비용은 &lsquo;취득
             부대비용&rsquo;에 입력한 경우에만 반영됩니다. 실제 투자 판단 시에는

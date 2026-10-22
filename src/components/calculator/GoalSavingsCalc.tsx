@@ -159,7 +159,7 @@ export default function GoalSavingsCalc() {
             </button>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {MODES.find((m) => m.value === mode)?.hint}
         </p>
       </div>
@@ -298,7 +298,7 @@ export default function GoalSavingsCalc() {
             </>
           )}
 
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             ※ 월복리·매월 말 납입·세전 기준의 저축 계획 예상치입니다. 세금(이자소득세)과
             수수료, 중도 인출은 반영하지 않으므로 <strong>실제 금융상품의 세후 수령액과
             다를 수 있습니다.</strong> 상품별 세후 금액은 예금·적금 계산기에서 확인하세요.

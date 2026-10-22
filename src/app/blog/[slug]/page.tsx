@@ -60,13 +60,13 @@ export default async function BlogPostPage({ params }: Props) {
           <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-600">
             {post.category}
           </span>
-          <span className="text-xs text-slate-400">{post.date} 작성</span>
+          <span className="text-xs text-slate-500">{post.date} 작성</span>
           {post.reviewedAt && (
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500">
               {post.reviewedAt.replace(/-/g, ".")} 검토
             </span>
           )}
-          <span className="text-xs text-slate-400">{SITE_AUTHOR}</span>
+          <span className="text-xs text-slate-500">{SITE_AUTHOR}</span>
         </div>
 
         <h1 className="mb-4 text-3xl font-black leading-tight text-slate-900">
@@ -106,7 +106,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* 마무리 면책 */}
         <div className="mt-12 border-t border-slate-100 pt-6">
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             ※ 본 글은 일반적인 금융·세무 정보 전달을 목적으로 작성된 참고 자료이며,
             실제 금리·세율·대출 조건은 금융기관 정책과 개인 상황에 따라 달라질 수
             있습니다. 중요한 의사결정 전에는 반드시 해당 기관 또는 전문가의 확인을

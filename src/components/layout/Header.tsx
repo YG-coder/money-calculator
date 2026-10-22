@@ -239,7 +239,7 @@ export function Header() {
                         className={`block px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
                           pathname === group.baseHref
                             ? "bg-brand-50 text-brand-700"
-                            : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-600"
                         }`}
                       >
                         전체 보기
@@ -370,7 +370,7 @@ export function Header() {
                       <Link
                         href={group.baseHref}
                         aria-current={pathname === group.baseHref ? "page" : undefined}
-                        className="block rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-slate-600"
+                        className="block rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-slate-600"
                       >
                         전체 보기
                       </Link>

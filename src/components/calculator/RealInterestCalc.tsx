@@ -129,7 +129,7 @@ export default function RealInterestCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 실질금리는 명목금리에서 물가상승률을 반영한 값으로, 돈의 구매력이 실제로
           얼마나 늘거나 주는지를 나타냅니다. 이 계산기는 투자 수익이 아니라 예금·현금의

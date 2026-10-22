@@ -63,7 +63,7 @@ export default function JeonseVsWolseCalc() {
       <p className="text-xs text-slate-500">계산에 사용하는 금액을 모두 입력하세요. 해당 금액이 없으면 0을 직접 입력해야 합니다.</p>
       {/* 전세 조건 */}
       <div>
-        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
           전세 조건
         </p>
         <InputField
@@ -80,7 +80,7 @@ export default function JeonseVsWolseCalc() {
 
       {/* 월세 조건 */}
       <div>
-        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
           월세 조건
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -178,7 +178,7 @@ export default function JeonseVsWolseCalc() {
             isProfit={result.jeonseIsBetter}
           />
 
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             ※ 순수 기회비용 기준 계산입니다. 전세보증보험료, 월세 소득공제,
             보증금 반환 리스크 등은 포함되지 않습니다.
           </p>

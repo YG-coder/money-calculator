@@ -108,7 +108,7 @@ export default function SimpleVsCompoundCalc() {
         />
       </div>
 
-      <p className="-mt-2 text-xs text-slate-400">
+      <p className="-mt-2 text-xs text-slate-500">
         단리와 월복리를 같은 원금·금리·기간으로 비교합니다. 추가 납입 없이 원금을
         그대로 둔 경우이며, 복리는 매달 이자를 원금에 더해 굴립니다.
       </p>
@@ -186,7 +186,7 @@ export default function SimpleVsCompoundCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 단리는 원금에만 이자가 붙고, 복리는 이자에도 이자가 붙습니다. 이
           계산기는 같은 원금을 추가 납입 없이 두었을 때의 성장 차이를 월복리 기준으로

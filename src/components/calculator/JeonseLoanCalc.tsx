@@ -202,7 +202,7 @@ export default function JeonseLoanCalc() {
             isProfit={result.interestRatio <= 40 || result.interestRatio === 0}
           />
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             ※ 실제 대출 한도는 소득·신용·보증기관(HUG·HF·SGI)에 따라 다를 수
             있습니다.
           </p>
@@ -210,7 +210,7 @@ export default function JeonseLoanCalc() {
       )}
 
       <div className="border-t border-slate-100 pt-2">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
           계산 예시 — 눌러서 바로 적용
         </p>
 
@@ -233,13 +233,13 @@ export default function JeonseLoanCalc() {
                 <p className="mb-1 text-xs font-bold text-slate-600 group-hover:text-brand-700">
                   {ex.label}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   보증금 {Number(ex.deposit).toLocaleString()}만원 · {ex.rate}%
                 </p>
                 <p className="mt-1.5 text-sm font-black text-slate-800">
                   월 이자 {formatKRW(preview.monthlyInterest)}
                 </p>
-                <p className="mt-0.5 text-xs text-slate-400">
+                <p className="mt-0.5 text-xs text-slate-500">
                   대출 {formatUnit(preview.loanAmount)}
                 </p>
               </button>
@@ -247,7 +247,7 @@ export default function JeonseLoanCalc() {
           })}
         </div>
 
-        <p className="mt-3 text-xs leading-relaxed text-slate-400">
+        <p className="mt-3 text-xs leading-relaxed text-slate-500">
           💡 전세자금대출은 보통 <strong>만기일시상환</strong> 방식으로, 계약
           기간 동안 이자만 납부하고 만기에 보증금을 돌려받아 원금을 상환합니다.
         </p>

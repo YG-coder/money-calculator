@@ -87,7 +87,7 @@ export default function AmortizationCalc() {
             ),
           )}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {repaymentType === "equal_payment"
             ? "매달 동일 금액 납부. 초반에 이자 비중이 높아요."
             : "원금은 동일, 이자는 매달 감소. 초반 납입 부담이 커요."}
@@ -198,7 +198,7 @@ export default function AmortizationCalc() {
             </div>
           )}
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             ※ 표준 월 단위 계산 기준입니다. 실제 은행은 대출 실행일에 따라 첫
             달·마지막 달을 일할계산(실제 경과일수 기준)하는 경우가 있어, 실제
             상환 스케줄과 다를 수 있습니다.

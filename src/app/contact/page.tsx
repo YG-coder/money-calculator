@@ -33,7 +33,7 @@ export default function ContactPage() {
               support@머니계산기.kr
             </a>
 
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-500">
               문의 내용에 따라 확인과 답변에 시간이 걸릴 수 있습니다.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function ContactPage() {
         </div>
 
         {/* 안내 */}
-        <p className="pt-2 text-center text-xs text-slate-400">
+        <p className="pt-2 text-center text-xs text-slate-500">
           문의 내용에 따라 답변이 지연될 수 있습니다.
         </p>
         <nav

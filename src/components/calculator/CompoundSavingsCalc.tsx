@@ -199,7 +199,7 @@ export default function CompoundSavingsCalc() {
             </>
           )}
 
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             ※ 월복리·기말 적립 기준의 세전 예상치입니다. 실제 세후 수령액은 상품의
             이자 지급 시점과 과세 방식, 비과세 적용 여부 및 금융기관의 원 단위 처리에
             따라 달라집니다. 일반과세 상품은 이자 지급 시 통상 15.4%가 원천징수될 수

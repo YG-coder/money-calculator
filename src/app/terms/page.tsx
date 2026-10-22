@@ -14,7 +14,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-3xl font-black text-slate-900">이용약관</h1>
-      <p className="mb-8 text-sm text-slate-400">
+      <p className="mb-8 text-sm text-slate-500">
         최종 수정일: 2026년 10월 3일
       </p>
 
@@ -133,7 +133,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <p className="border-t border-slate-100 pt-2 text-xs text-slate-400">
+        <p className="border-t border-slate-100 pt-2 text-xs text-slate-500">
           본 약관은 머니계산기(머니계산기.kr) 서비스 이용에 적용됩니다.
         </p>
         <nav

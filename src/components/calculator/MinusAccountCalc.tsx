@@ -129,7 +129,7 @@ export default function MinusAccountCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 이자는 한도가 아니라 실제 사용금액을 기준으로, 일할(단리)로 계산한
           참고용 추정치입니다.

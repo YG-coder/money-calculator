@@ -91,7 +91,7 @@ export default function CmaVsDepositCalc() {
         />
       </div>
 
-      <p className="-mt-2 text-xs text-slate-400">
+      <p className="-mt-2 text-xs text-slate-500">
         두 값 모두 단리 일시예치·일반과세(15.4%) 기준으로 비교합니다. CMA
         예상수익률은 확정금리가 아니라 &lsquo;입력한 수익률이 유지된다면&rsquo;을
         가정한 값입니다.
@@ -153,7 +153,7 @@ export default function CmaVsDepositCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ CMA 예상수익률은 확정금리가 아닙니다. CMA는 RP형·MMF형·MMW형·발행어음형
           등 상품 유형과 증권사·시장 상황에 따라 실제 수익률과 산정·지급 방식이

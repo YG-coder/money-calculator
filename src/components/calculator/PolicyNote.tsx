@@ -24,7 +24,7 @@ export default function PolicyNote({
     : [];
 
   return (
-    <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+    <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
       {extra?.map((line, i) => (
         <p key={`extra-${i}`}>※ {line}</p>
       ))}

@@ -279,7 +279,7 @@ export default function ExchangeCalc() {
       )}
 
       {/* ── 고지 ── */}
-      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-400">
+      <div className="space-y-2 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
         <p>
           ※ 이 계산기는 <strong>실시간 환율을 연동하지 않습니다.</strong>{" "}
           매매기준율과 수수료율은 사용자가 입력한 값을 그대로 사용하며, 임의의

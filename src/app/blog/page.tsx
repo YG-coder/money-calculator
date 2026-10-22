@@ -35,7 +35,7 @@ export default function Page() {
               <span className="text-xs font-bold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
                 {post.category}
               </span>
-              <span className="text-xs text-slate-400">{post.date}</span>
+              <span className="text-xs text-slate-500">{post.date}</span>
             </div>
 
             <h2

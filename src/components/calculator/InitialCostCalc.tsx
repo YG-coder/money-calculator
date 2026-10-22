@@ -207,7 +207,7 @@ export default function InitialCostCalc() {
               {opt.label}
             </label>
           ))}
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-slate-500">
             취득가액 12억원 이하에 적용됩니다. 자격을 자동 판정하지 않으므로
             관할 시·군·구청에서 확인하세요.
           </p>
@@ -420,7 +420,7 @@ export default function InitialCostCalc() {
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm">
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
               부대비용 내역
             </p>
             <dl className="space-y-1.5">
@@ -486,6 +486,8 @@ export default function InitialCostCalc() {
               입력하면 수익률이 계산되며, 옮겨진 값은 수정할 수 있습니다.
             </p>
             <Link
+              // 화면에 보이기만 해도 미리 가져오기(prefetch) 요청이 입력값 쿼리를 서버로 보낸다. 클릭할 때만 요청한다.
+              prefetch={false}
               href={initialCostToYieldUrl({
                 purchasePriceWon: priceWon,
                 loanWon,

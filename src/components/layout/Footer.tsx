@@ -86,10 +86,10 @@ export function Footer() {
             <p className="text-sm leading-relaxed">
               복잡한 금융 계산을 쉽고 빠르게.
               <br />
-              입력값은 서버에 전송되지 않습니다.
+              계산은 브라우저에서 처리되며 입력값을 따로 저장하지 않습니다.
             </p>
             <div className="mt-4 text-sm">
-              <p className="mb-1 text-slate-500">운영 문의</p>
+              <p className="mb-1 text-slate-400">운영 문의</p>
               <a
                 href="mailto:support@머니계산기.kr"
                 className="text-slate-300 transition-colors hover:text-white"
@@ -195,7 +195,7 @@ export function Footer() {
             © {new Date().getFullYear()} 머니계산기 (머니계산기.kr). All rights
             reserved.
           </p>
-          <p className="text-center text-slate-500">
+          <p className="text-center text-slate-400">
             본 계산 결과는 참고용이며 실제 금융 상품과 차이가 있을 수 있습니다.
           </p>
         </div>

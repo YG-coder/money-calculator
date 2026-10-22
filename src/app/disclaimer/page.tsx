@@ -14,7 +14,7 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-2 text-3xl font-black text-slate-900">면책 고지</h1>
-      <p className="mb-8 text-sm text-slate-400">
+      <p className="mb-8 text-sm text-slate-500">
         Disclaimer · 최종 갱신: 2026년 10월 3일
       </p>
 
@@ -255,7 +255,7 @@ export default function Page() {
               support@머니계산기.kr
             </a>
           </p>
-          <p className="mt-3 text-xs text-slate-400">
+          <p className="mt-3 text-xs text-slate-500">
             관련 페이지:{" "}
             <Link
               href="/about"
