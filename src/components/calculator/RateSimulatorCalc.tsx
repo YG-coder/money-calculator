@@ -3,12 +3,8 @@
 import { useMemo, useState } from "react";
 import { useCalcState } from "@/hooks/useCalcState";
 import { hasFieldError } from "@/lib/calcInput";
-import {
-  calcRateScenarios,
-  formatKRW,
-  formatUnit,
-  type RepaymentType,
-} from "@/lib/loan";
+import type { RepaymentType } from "@/lib/loan";
+import { calcRateScenariosExact } from "@/lib/rateCompareExact";
 import InputField from "@/components/calculator/InputField";
 
 const FIELDS = [
@@ -18,39 +14,24 @@ const FIELDS = [
   { key: "customDelta", kind: "decimal" as const, defaultValue: "" },
 ];
 
-const BASE_DELTAS = [0, 0.25, 0.5, 1.0];
-
 export default function RateSimulatorCalc() {
   const { state, setValue } = useCalcState(FIELDS);
   const [repayment, setRepayment] = useState<RepaymentType>("equal_payment");
 
-  // 현재 렌더의 state.raw를 직접 읽는다 (getWon/getNum의 ref는 한 박자 늦어 stale)
-  const won = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n * 10_000;
-  };
-  const num = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n;
-  };
-
-  // 금리 0%는 유효한 입력이므로 truthy 검사 대신 빈 문자열 여부로 판정
-  const rateFilled = (state.rate?.raw ?? "") !== "";
-
-  const rows = useMemo(() => {
+  // 현재 렌더의 state.raw를 직접 읽는다(getWon/getNum의 ref는 한 박자 늦다).
+  // 입력 문자열을 Number로 바꾸지 않고 정확값으로 계산한다. 시나리오 구성(기본 0·0.25·0.5·1%p + 0보다 큰 직접 입력),
+  // 중복 제거·정렬, 결과 없음 조건(원금·기간 0, 금리 빈칸 — 0%는 정상 입력)은 기존과 같다.
+  const result = useMemo(() => {
     if (hasFieldError(state)) return null;
-    const principal = won("principal");
-    const months = num("months");
-    if (!principal || !rateFilled || !months) return null;
-
-    const custom = num("customDelta");
-    const deltas = Array.from(
-      new Set(custom > 0 ? [...BASE_DELTAS, custom] : BASE_DELTAS),
-    ).sort((a, b) => a - b);
-
-    return calcRateScenarios(principal, num("rate"), months, repayment, deltas);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return calcRateScenariosExact(
+      state.principal?.raw ?? "",
+      state.rate?.raw ?? "",
+      state.months?.raw ?? "",
+      state.customDelta?.raw ?? "",
+      repayment,
+    );
   }, [state, repayment]);
+  const rows = result?.status === "ok" ? result.rows : null;
 
   return (
     <div className="space-y-5">
@@ -124,9 +105,25 @@ export default function RateSimulatorCalc() {
         error={state.customDelta?.error}
       />
 
+      {result?.status === "too-large" && (
+        <p
+          data-calc-notice
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          총 납입액이 계산 범위(2^1024원, 약 1.8×10^308원)를 넘어 결과를 표시하지
+          않습니다. 대출 금액·금리·기간을 줄여 다시 입력해주세요.
+        </p>
+      )}
+
       {rows && (
         <div className="animate-in fade-in slide-in-from-bottom-2 space-y-3 pt-2 duration-300">
-          <div className="overflow-x-auto">
+          {/* 좁은 화면에서 표가 가로로 스크롤되므로 키보드로도 이 영역에 초점을 두고 화살표로 스크롤할 수 있게 한다(기본 Tab 순서). */}
+          <div
+            className="overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="금리 시나리오별 상환 부담"
+          >
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-slate-50">
@@ -146,26 +143,22 @@ export default function RateSimulatorCalc() {
                   <tr key={i} className={row.isBase ? "bg-brand-50" : ""}>
                     <td className="border border-slate-200 p-3">
                       <span className="font-semibold">
-                        {row.isBase ? "현재" : `+${row.delta}%p`}
+                        {row.label}
                       </span>
                       <span className="ml-1 text-xs text-slate-500">
-                        ({row.rate.toFixed(2)}%)
+                        ({row.rate}%)
                       </span>
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
-                      <div>{formatKRW(row.monthlyPayment)}</div>
+                      <div>{row.monthlyPayment}</div>
                       <div className="text-xs text-slate-500">
-                        {row.isBase
-                          ? "기준"
-                          : `+${formatKRW(row.monthlyDiff)}`}
+                        {row.monthlyDiff}
                       </div>
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
-                      <div>{formatUnit(row.totalInterest)}</div>
+                      <div>{row.totalInterest}</div>
                       <div className="text-xs text-slate-500">
-                        {row.isBase
-                          ? "기준"
-                          : `+${formatUnit(row.interestDiff)}`}
+                        {row.interestDiff}
                       </div>
                     </td>
                   </tr>

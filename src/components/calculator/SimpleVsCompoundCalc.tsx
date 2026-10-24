@@ -3,8 +3,7 @@
 import { useMemo } from "react";
 import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
-import { formatKRW, formatUnit } from "@/lib/loan";
-import { calcCompoundInterest } from "@/lib/finance";
+import { calcSimpleVsCompoundExact } from "@/lib/simpleVsCompoundExact";
 import InputField from "@/components/calculator/InputField";
 import ResultCard from "@/components/calculator/ResultCard";
 
@@ -17,58 +16,16 @@ const FIELDS = [
 export default function SimpleVsCompoundCalc() {
   const { state, setValue } = useCalcState(FIELDS);
 
-  // 현재 렌더의 state.raw를 직접 읽는다 (getWon/getNum의 ref는 한 박자 늦어 stale)
-  const won = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n * 10_000;
-  };
-  const num = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n;
-  };
-  const filled = (key: string) => (state[key]?.raw ?? "") !== "";
-
+  // 현재 렌더의 state.raw를 직접 읽는다(getWon/getNum의 ref는 한 박자 늦다).
+  // 월복리(연 12회)·추가납입 0을 입력 문자열 그대로 정확값으로 계산한다. 카드·문구·연차표가 같은 정확값을 쓴다.
+  // 결과 없음 조건(원금 0, 기간 1년 미만, 이자율 빈칸)은 기존과 같다.
   const result = useMemo(() => {
     if (hasFieldError(state)) return null;
-    const principal = won("principal");
-    const years = num("years");
-    const rate = num("rate");
-    if (!principal || years < 1 || rate < 0 || !filled("rate")) return null;
-
-    // 단리·복리 비교는 calcCompoundInterest가 내부에서 이미 계산한다
-    // (simpleFinalAmount / compoundAdvantage). 추가납입 없이(월복리) 순수 비교.
-    const c = calcCompoundInterest({
-      principal,
-      annualRate: rate,
-      years,
-      compoundsPerYear: 12,
-      contribution: 0,
-    });
-
-    const simpleInterest = c.simpleFinalAmount - principal;
-    const compoundInterest = c.finalAmount - principal;
-
-    // 연차별 단리/복리 격차 (yearly = 복리 잔액, 단리는 P×(1+r×t)로 산출)
-    const step = Math.max(1, Math.ceil(c.yearly.length / 8));
-    const rows = c.yearly
-      .filter((_, i) => (i + 1) % step === 0 || i === c.yearly.length - 1)
-      .map((p) => {
-        const simple = principal * (1 + (rate / 100) * p.year);
-        return { year: p.year, simple, compound: p.balance, diff: p.balance - simple };
-      });
-
-    return {
-      principal,
-      simpleFinal: c.simpleFinalAmount,
-      compoundFinal: c.finalAmount,
-      simpleInterest,
-      compoundInterest,
-      advantage: c.compoundAdvantage,
-      advantageRate: c.simpleFinalAmount > 0 ? (c.compoundAdvantage / c.simpleFinalAmount) * 100 : 0,
-      interestMultiple: simpleInterest > 0 ? compoundInterest / simpleInterest : null,
-      rows,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return calcSimpleVsCompoundExact(
+      state.principal?.raw ?? "",
+      state.rate?.raw ?? "",
+      state.years?.raw ?? "",
+    );
   }, [state]);
 
   return (
@@ -113,34 +70,44 @@ export default function SimpleVsCompoundCalc() {
         그대로 둔 경우이며, 복리는 매달 이자를 원금에 더해 굴립니다.
       </p>
 
-      {result && (
+      {result?.status === "too-large" && (
+        <p
+          data-calc-notice
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          복리 최종액이 계산 범위(2^1024원, 약 1.8×10^308원)를 넘어 결과를 표시하지
+          않습니다. 원금·이자율·기간을 줄여 다시 입력해주세요.
+        </p>
+      )}
+
+      {result?.status === "ok" && (
         <div className="animate-in fade-in slide-in-from-bottom-2 space-y-4 pt-2 duration-300">
-          {/* 단리 vs 복리 최종액 */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* 단리 vs 복리 최종액 — 정확한 긴 금액이 좁은 화면에서 카드 밖으로 나가지 않게 줄바꿈만 허용한다 */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 [&>*]:min-w-0 [&_p]:[overflow-wrap:anywhere]">
             <ResultCard
               label="단리 최종액"
-              value={formatKRW(result.simpleFinal)}
-              sub={`이자 ${formatKRW(result.simpleInterest)}`}
+              value={result.simpleFinal}
+              sub={`이자 ${result.simpleInterest}`}
             />
             <ResultCard
               label="복리 최종액 (월복리)"
-              value={formatKRW(result.compoundFinal)}
-              sub={`이자 ${formatKRW(result.compoundInterest)}`}
+              value={result.compoundFinal}
+              sub={`이자 ${result.compoundInterest}`}
               highlight
             />
           </div>
 
           {/* 차이 (중립) */}
-          <div className="rounded-2xl border border-brand-200 bg-brand-50 p-4 text-center text-sm text-slate-700">
-            {result.advantage > 0 ? (
+          <div className="rounded-2xl border border-brand-200 bg-brand-50 p-4 text-center text-sm text-slate-700 [overflow-wrap:anywhere]">
+            {result.advantagePositive ? (
               <p>
                 같은 조건에서 복리가 단리보다{" "}
                 <strong className="text-brand-700">
-                  {formatKRW(result.advantage)}
+                  {result.advantage}
                 </strong>{" "}
-                많습니다 (최종액 기준 +{result.advantageRate.toFixed(2)}%
+                많습니다 (최종액 기준 +{result.advantageRate}%
                 {result.interestMultiple
-                  ? ` · 복리 이자가 단리의 ${result.interestMultiple.toFixed(2)}배`
+                  ? ` · 복리 이자가 단리의 ${result.interestMultiple}배`
                   : ""}
                 ).
               </p>
@@ -151,7 +118,13 @@ export default function SimpleVsCompoundCalc() {
 
           {/* 연차별 격차 */}
           {result.rows.length > 1 && (
-            <div className="overflow-x-auto">
+            // 표가 가로로 스크롤될 때 키보드로도 이 영역에 초점을 두고 화살표로 스크롤할 수 있게 한다(기본 Tab 순서).
+            <div
+              className="overflow-x-auto"
+              tabIndex={0}
+              role="region"
+              aria-label="연차별 단리·복리 비교"
+            >
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr className="bg-slate-50">
@@ -168,13 +141,13 @@ export default function SimpleVsCompoundCalc() {
                         {r.year}년
                       </td>
                       <td className="border border-slate-200 p-3 text-right">
-                        {formatUnit(r.simple)}
+                        {r.simple}
                       </td>
                       <td className="border border-slate-200 p-3 text-right">
-                        {formatUnit(r.compound)}
+                        {r.compound}
                       </td>
                       <td className="border border-slate-200 p-3 text-right text-brand-700">
-                        +{formatUnit(r.diff)}
+                        {r.diff}
                       </td>
                     </tr>
                   ))}

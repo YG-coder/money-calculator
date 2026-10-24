@@ -3,12 +3,8 @@
 import { useMemo, useState } from "react";
 import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
-import {
-  calcFixedVsVariable,
-  formatKRW,
-  formatUnit,
-  type RepaymentType,
-} from "@/lib/loan";
+import type { RepaymentType } from "@/lib/loan";
+import { calcFixedVsVariableExact } from "@/lib/rateCompareExact";
 import InputField from "@/components/calculator/InputField";
 import ResultCard from "@/components/calculator/ResultCard";
 
@@ -19,42 +15,24 @@ const FIELDS = [
   { key: "variableRate", kind: "decimal" as const, defaultValue: "" },
 ];
 
-const DELTAS = [0, 0.5, 1.0, 1.5];
-
-const trimPct = (n: number) => Number(n.toFixed(2));
-
 export default function FixedVariableCalc() {
   const { state, setValue } = useCalcState(FIELDS);
   const [repayment, setRepayment] = useState<RepaymentType>("equal_payment");
 
-  // 현재 렌더의 state.raw를 직접 읽는다 (getWon/getNum의 ref는 한 박자 늦어 stale)
-  const won = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n * 10_000;
-  };
-  const num = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n;
-  };
-  const filled = (key: string) => (state[key]?.raw ?? "") !== "";
-
-  const result = useMemo(() => {
+  // 현재 렌더의 state.raw를 직접 읽는다(getWon/getNum의 ref는 한 박자 늦다).
+  // 입력 문자열을 Number로 바꾸지 않고 정확값으로 계산한다. 카드·손익분기 문장·시나리오 표가 같은 정확값을 쓰고,
+  // 고정 대비 차액·많음/적음/동일·손익분기 방향도 정확값으로 정한다. 결과 없음 조건(원금·기간 0, 금리 빈칸)은 기존과 같다.
+  const computed = useMemo(() => {
     if (hasFieldError(state)) return null;
-    const principal = won("principal");
-    const months = num("months");
-    if (!principal || !months || !filled("fixedRate") || !filled("variableRate"))
-      return null;
-
-    return calcFixedVsVariable(
-      principal,
-      months,
+    return calcFixedVsVariableExact(
+      state.principal?.raw ?? "",
+      state.months?.raw ?? "",
+      state.fixedRate?.raw ?? "",
+      state.variableRate?.raw ?? "",
       repayment,
-      num("fixedRate"),
-      num("variableRate"),
-      DELTAS,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, repayment]);
+  const result = computed?.status === "ok" ? computed : null;
 
   return (
     <div className="space-y-5">
@@ -127,36 +105,46 @@ export default function FixedVariableCalc() {
         </div>
       </div>
 
+      {computed?.status === "too-large" && (
+        <p
+          data-calc-notice
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          총 납입액이 계산 범위(2^1024원, 약 1.8×10^308원)를 넘어 결과를 표시하지
+          않습니다. 대출 금액·금리·기간을 줄여 다시 입력해주세요.
+        </p>
+      )}
+
       {result && (
         <div className="animate-in fade-in slide-in-from-bottom-2 space-y-4 pt-2 duration-300">
-          {/* 고정 vs 변동(현재 유지) */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* 고정 vs 변동(현재 유지) — 정확한 긴 금액이 좁은 화면에서 카드 밖으로 나가지 않게 줄바꿈만 허용한다 */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 [&>*]:min-w-0 [&_p]:[overflow-wrap:anywhere]">
             <ResultCard
               label="고정금리"
-              value={formatUnit(result.fixedTotalInterest)}
-              sub={`총이자 · 월 ${formatKRW(result.fixedMonthly)}`}
+              value={result.fixedTotalInterest}
+              sub={`총이자 · 월 ${result.fixedMonthly}`}
             />
             <ResultCard
               label="변동금리 (현재 유지 가정)"
-              value={formatUnit(result.variableTotalInterestNow)}
-              sub={`총이자 · 월 ${formatKRW(result.variableMonthlyNow)}`}
+              value={result.variableTotalInterestNow}
+              sub={`총이자 · 월 ${result.variableMonthlyNow}`}
             />
           </div>
 
           {/* break-even */}
-          <div className="rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-slate-700">
-            {result.breakEvenDelta > 0 ? (
+          <div className="rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-slate-700 [overflow-wrap:anywhere]">
+            {result.breakEven.direction === "up" ? (
               <p>
-                변동금리가 평균 <strong>{trimPct(result.fixedRate)}%</strong>
-                (지금보다 약 <strong>{trimPct(result.breakEvenDelta)}%p</strong>{" "}
+                변동금리가 평균 <strong>{result.breakEven.fixedRate}%</strong>
+                (지금보다 약 <strong>{result.breakEven.delta}%p</strong>{" "}
                 이상) 수준으로 오르면, 변동의 총이자가 고정과 같아지거나 커집니다.
                 그 아래로 유지되면 변동의 총이자가 더 적습니다.
               </p>
-            ) : result.breakEvenDelta < 0 ? (
+            ) : result.breakEven.direction === "down" ? (
               <p>
-                현재 변동금리({trimPct(result.variableRate)}%)가 이미
-                고정금리({trimPct(result.fixedRate)}%)보다 높습니다. 변동금리가
-                평균 <strong>{trimPct(-result.breakEvenDelta)}%p</strong> 이상
+                현재 변동금리({result.breakEven.variableRate}%)가 이미
+                고정금리({result.breakEven.fixedRate}%)보다 높습니다. 변동금리가
+                평균 <strong>{result.breakEven.delta}%p</strong> 이상
                 내려가야 총이자가 고정보다 적어집니다.
               </p>
             ) : (
@@ -167,8 +155,13 @@ export default function FixedVariableCalc() {
             )}
           </div>
 
-          {/* 시나리오 표 */}
-          <div className="overflow-x-auto">
+          {/* 시나리오 표 — 좁은 화면에서 가로로 스크롤되므로 키보드로도 초점을 두고 화살표로 스크롤할 수 있게 한다(기본 Tab 순서). */}
+          <div
+            className="overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="변동금리 시나리오별 총이자"
+          >
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="bg-slate-50">
@@ -185,24 +178,20 @@ export default function FixedVariableCalc() {
               </thead>
               <tbody>
                 {result.scenarios.map((s, i) => (
-                  <tr key={i} className={s.delta === 0 ? "bg-brand-50" : ""}>
+                  <tr key={i} className={s.isCurrent ? "bg-brand-50" : ""}>
                     <td className="border border-slate-200 p-3">
                       <span className="font-semibold">
-                        {s.delta === 0 ? "현재" : `+${s.delta}%p`}
+                        {s.label}
                       </span>
                       <span className="ml-1 text-xs text-slate-500">
-                        ({trimPct(s.variableRate)}%)
+                        ({s.rate}%)
                       </span>
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
-                      {formatUnit(s.variableTotalInterest)}
+                      {s.totalInterest}
                     </td>
                     <td className="border border-slate-200 p-3 text-right">
-                      {s.vsFixed < 0
-                        ? `${formatUnit(-s.vsFixed)} 적음`
-                        : s.vsFixed > 0
-                          ? `${formatUnit(s.vsFixed)} 많음`
-                          : "동일"}
+                      {s.vsFixed}
                     </td>
                   </tr>
                 ))}

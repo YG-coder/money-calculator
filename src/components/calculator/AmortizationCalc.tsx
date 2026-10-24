@@ -3,12 +3,11 @@
 import { useMemo, useState } from "react";
 import { hasFieldError } from "@/lib/calcInput";
 import { useCalcState } from "@/hooks/useCalcState";
+import type { RepaymentType } from "@/lib/loan";
 import {
-  calcAmortization,
-  formatKRW,
-  formatUnit,
-  type RepaymentType,
-} from "@/lib/loan";
+  calcAmortizationExact,
+  MAX_AMORTIZATION_MONTHS,
+} from "@/lib/amortizationExact";
 import InputField from "@/components/calculator/InputField";
 import ResultCard from "@/components/calculator/ResultCard";
 import SavingBanner from "@/components/calculator/SavingBanner";
@@ -25,15 +24,20 @@ const FIELDS = [
     key: "rate",
     kind: "decimal" as const,
     defaultValue: "",
+    // 0 이하 판정은 Number 대신 raw 숫자로 한다(아주 작은 양수가 Number에서 0으로 사라지지 않게). "."은 기존처럼 오류 없이 결과만 없다.
     validate: (v: string) =>
-      !v || Number(v) <= 0 ? "이자율을 입력해주세요" : undefined,
+      !v || (v !== "." && !/[1-9]/.test(v)) ? "이자율을 입력해주세요" : undefined,
   },
   {
     key: "months",
     kind: "integer" as const,
     defaultValue: "",
     validate: (v: string) =>
-      !v || Number(v) <= 0 ? "기간을 입력해주세요" : undefined,
+      !v || Number(v) <= 0
+        ? "기간을 입력해주세요"
+        : Number(v) > MAX_AMORTIZATION_MONTHS
+          ? "1,200개월(100년) 이하로 입력해주세요"
+          : undefined,
   },
 ];
 
@@ -43,27 +47,16 @@ export default function AmortizationCalc() {
     useState<RepaymentType>("equal_payment");
   const [showSchedule, setShowSchedule] = useState(false);
 
-  // 반응성: getWon/getNum은 한 박자 늦는 latestStateRef를 읽으므로,
-  // 현재 렌더의 state.raw를 직접 읽는다 (공식은 동일 — 로직 무변경).
-  const won = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n * 10_000;
-  };
-  const num = (key: string): number => {
-    const n = Number(state[key]?.raw ?? "0");
-    return isNaN(n) ? 0 : n;
-  };
-
+  // 현재 렌더의 state.raw를 직접 읽는다(getWon/getNum의 ref는 한 박자 늦다).
+  // 입력 문자열을 Number로 바꾸지 않고 정확값으로 계산한다(원금·이자율·개월이 0이면 결과 없음 — 기존과 같음).
   const result = useMemo(() => {
     if (hasFieldError(state)) return null;
-    const p = won("principal");
-    const r = num("rate");
-    const m = num("months");
-
-    if (!p || !r || !m) return null;
-
-    return calcAmortization(p, r, m, repaymentType);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return calcAmortizationExact(
+      state.principal?.raw ?? "",
+      state.rate?.raw ?? "",
+      state.months?.raw ?? "",
+      repaymentType,
+    );
   }, [state, repaymentType]);
 
   return (
@@ -126,30 +119,43 @@ export default function AmortizationCalc() {
         onChange={(v) => setValue("months", v)}
       />
 
-      {result && (
+      {result?.status === "too-large" && (
+        <p
+          data-calc-notice
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          총 납입액이 계산 범위(2^1024원, 약 1.8×10^308원)를 넘어 결과를 표시하지
+          않습니다. 원금·이자율·기간을 줄여 다시 입력해주세요.
+        </p>
+      )}
+
+      {result?.status === "ok" && (
         <div className="animate-in fade-in slide-in-from-bottom-2 space-y-4 pt-2 duration-300">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {/* 정확한 긴 금액이 좁은 화면에서 카드 밖으로 나가지 않게 줄바꿈만 허용한다(글자·자릿수는 그대로) */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 [&>*]:min-w-0 [&_p]:[overflow-wrap:anywhere]">
             <ResultCard
               label={
                 repaymentType === "equal_payment" ? "월 납입액" : "첫달 납입액"
               }
-              value={formatKRW(result.monthlyPayment)}
+              value={result.monthlyPayment}
               highlight
             />
             <ResultCard
               label="총 납입액"
-              value={formatUnit(result.totalPayment)}
+              value={result.totalPayment}
             />
             <ResultCard
               label="총 이자"
-              value={formatUnit(result.totalInterest)}
+              value={result.totalInterest}
             />
           </div>
 
-          <SavingBanner
-            message={result.savingMessage}
-            isProfit={result.rateSaving > 0}
-          />
+          <div className="[&_p]:min-w-0 [&_p]:[overflow-wrap:anywhere]">
+            <SavingBanner
+              message={result.savingMessage}
+              isProfit={result.isProfit}
+            />
+          </div>
 
           <button
             onClick={() => setShowSchedule(!showSchedule)}
@@ -159,7 +165,13 @@ export default function AmortizationCalc() {
           </button>
 
           {showSchedule && (
-            <div className="overflow-x-auto rounded-xl border border-slate-100 text-xs">
+            // 좁은 화면에서 표가 가로로 스크롤되므로 키보드로도 이 영역에 초점을 두고 화살표로 스크롤할 수 있게 한다(기본 Tab 순서).
+            <div
+              className="overflow-x-auto rounded-xl border border-slate-100 text-xs"
+              tabIndex={0}
+              role="region"
+              aria-label="월별 상환 스케줄"
+            >
               <table className="w-full">
                 <thead className="sticky top-0 bg-slate-50 text-slate-500">
                   <tr>
@@ -174,22 +186,22 @@ export default function AmortizationCalc() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {result.schedule.map((row) => (
+                  {result.rows.map((row) => (
                     <tr key={row.month} className="hover:bg-slate-50">
                       <td className="px-3 py-2 text-slate-600">
                         {row.month}회
                       </td>
                       <td className="px-3 py-2 text-right font-medium">
-                        {Math.round(row.payment).toLocaleString()}
+                        {row.payment.toLocaleString()}
                       </td>
                       <td className="px-3 py-2 text-right text-brand-700">
-                        {Math.round(row.principal).toLocaleString()}
+                        {row.principal.toLocaleString()}
                       </td>
                       <td className="px-3 py-2 text-right text-orange-500">
-                        {Math.round(row.interest).toLocaleString()}
+                        {row.interest.toLocaleString()}
                       </td>
                       <td className="px-3 py-2 text-right text-slate-500">
-                        {Math.round(row.balance).toLocaleString()}
+                        {row.balance.toLocaleString()}
                       </td>
                     </tr>
                   ))}

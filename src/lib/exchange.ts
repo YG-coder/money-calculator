@@ -21,6 +21,7 @@
 // 조사 근거: docs/policies/EXCHANGE-POLICY-2026-08.md (rev.1)
 
 import { findCurrency, type CurrencyInfo } from "@/lib/policy/currency";
+import { abs, add, div, divInt, mul, ratio, roundHalfUpRatio, sub, type Ratio } from "@/lib/exactDecimal";
 
 /** 원화 → 외화(살 때) / 외화 → 원화(팔 때) */
 export type ExchangeDirection = "buy" | "sell";
@@ -66,19 +67,70 @@ export interface ExchangeResult {
   rateWithPreference: number;
   /** 외화 1단위당 우대 후 적용환율 — 화면의 '실질 환율' */
   unitRateWithPreference: number;
-  /** 우대 전 원화 금액 (살 때: 필요액 / 팔 때: 수령액) */
+  // 아래 원화 5개 필드는 입력을 십진 유리수로 정확히 계산한 뒤 화면 규칙(Math.round, 0.5는 올림)으로
+  // 원 단위에 한 번만 반올림한 값이다. 중간 금액을 소수 자릿수로 먼저 반올림하지 않는다.
+  /** 우대 전 원화 금액 (살 때: 필요액 / 팔 때: 수령액), 원 */
   krwWithoutPreference: number;
-  /** 우대 후 원화 금액 */
+  /** 우대 후 원화 금액, 원 */
   krwWithPreference: number;
-  /** 우대로 아낀(또는 더 받은) 원화 금액. 우대 0%면 0 */
+  /** 우대로 아낀(또는 더 받은) 원화 금액. 우대 0%면 0. 정확한 차액을 원 단위로 반올림 */
   savedKrw: number;
-  /** 매매기준율로만 환전했을 때의 원화 금액 — 수수료 총액 비교 기준 */
+  /** 매매기준율로만 환전했을 때의 원화 금액 — 수수료 총액 비교 기준, 원 */
   krwAtBaseRate: number;
-  /** 우대 후에도 남는 수수료 총액 (원) */
+  /** 우대 후에도 남는 수수료 총액. 정확한 차액을 원 단위로 반올림 */
   feeAfterPreference: number;
 }
 
-/** 부동소수점 잔여 정리 */
+/**
+ * 원화 금액 5개를 정확히 계산한다. 입력 숫자는 가장 짧은 십진 표기(사용자가 입력한 값)로 읽는다.
+ * 소수 자릿수 중간 반올림은 44,288,521.499999645원을 44,288,521.5원으로 만든 뒤 화면에서
+ * 다시 올려 44,288,522원이 되는 이중 반올림을 만든다(정답 44,288,521원).
+ */
+function exactKrwAmounts(
+  input: ExchangeInput,
+  quoteUnit: number,
+  pref: number,
+): Pick<ExchangeResult, "krwWithoutPreference" | "krwWithPreference" | "savedKrw" | "krwAtBaseRate" | "feeAfterPreference"> | null {
+  const values = [input.baseRate, pref, Math.max(0, input.foreignAmount)];
+  if (input.spreadMode === "rate") values.push(input.spreadPercent ?? Number.NaN);
+  else values.push(input.cashRate ?? Number.NaN);
+  if (!values.every(Number.isFinite)) return null;
+
+  const base = ratio(input.baseRate);
+  const hundred: Ratio = { n: BigInt(100), d: BigInt(1) };
+  const one: Ratio = { n: BigInt(1), d: BigInt(1) };
+  // 수수료율(%) — 현찰 환율 방식이면 (현찰 − 기준) ÷ 기준 × 100 을 정확히 역산
+  const spreadPct =
+    input.spreadMode === "rate"
+      ? ratio(input.spreadPercent as number)
+      : mul(
+          div(
+            input.direction === "buy"
+              ? sub(ratio(input.cashRate as number), base)
+              : sub(base, ratio(input.cashRate as number)),
+            base,
+          ),
+          hundred,
+        );
+  const effectivePct = mul(spreadPct, sub(one, divInt(ratio(pref), 100)));
+  const signed = (pct: Ratio): Ratio =>
+    input.direction === "buy" ? add(one, divInt(pct, 100)) : sub(one, divInt(pct, 100));
+  const amount = divInt(ratio(Math.max(0, input.foreignAmount)), quoteUnit);
+
+  const without = mul(mul(base, signed(spreadPct)), amount);
+  const withPref = mul(mul(base, signed(effectivePct)), amount);
+  const atBase = mul(base, amount);
+
+  return {
+    krwWithoutPreference: roundHalfUpRatio(without),
+    krwWithPreference: roundHalfUpRatio(withPref),
+    savedKrw: roundHalfUpRatio(abs(sub(without, withPref))),
+    krwAtBaseRate: roundHalfUpRatio(atBase),
+    feeAfterPreference: roundHalfUpRatio(abs(sub(withPref, atBase))),
+  };
+}
+
+/** 부동소수점 잔여 정리(환율·수수료율 표시용) */
 function round(value: number, digits: number): number {
   const f = 10 ** digits;
   return Math.round(value * f) / f;
@@ -172,6 +224,14 @@ export function calcExchange(
   // 살 때는 덜 내는 금액, 팔 때는 더 받는 금액 — 어느 쪽이든 이득분은 양수
   const savedKrw = Math.abs(krwWithoutPreference - krwWithPreference);
   const feeAfterPreference = Math.abs(krwWithPreference - krwAtBaseRate);
+  // 유한한 입력이면 원화 금액은 정확 계산값을 쓴다. 유한하지 않은 값(NaN·Infinity)만 기존 부동소수 값을 그대로 둔다.
+  const krw = exactKrwAmounts(input, currency.quoteUnit, pref) ?? {
+    krwWithoutPreference,
+    krwWithPreference,
+    savedKrw,
+    krwAtBaseRate,
+    feeAfterPreference,
+  };
 
   return {
     status: "ok",
@@ -184,11 +244,7 @@ export function calcExchange(
       rateWithoutPreference: round(rateWithoutPreference, 4),
       rateWithPreference: round(rateWithPreference, 4),
       unitRateWithPreference: round(perUnit(rateWithPreference), 6),
-      krwWithoutPreference: round(krwWithoutPreference, 2),
-      krwWithPreference: round(krwWithPreference, 2),
-      savedKrw: round(savedKrw, 2),
-      krwAtBaseRate: round(krwAtBaseRate, 2),
-      feeAfterPreference: round(feeAfterPreference, 2),
+      ...krw,
     },
   };
 }

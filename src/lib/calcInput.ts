@@ -6,6 +6,7 @@
 //   2) 파싱 규칙(쉼표·소수점·빈 값·잘못된 입력)은 훅과 무관한 순수 규칙이라 따로 검증하는 편이 낫다.
 //
 // ⚠️ sanitize / toDisplay 는 useCalcState 에 있던 구현을 그대로 옮긴 것이다. 동작 변경 없음.
+//    (예외: toDisplay 의 정수부 쉼표 표기는 2^53을 넘는 숫자 문자열도 자릿수가 바뀌지 않게 BigInt로 한다. 그 이하는 같은 문자열.)
 //    훅은 이 모듈을 import 해 쓰고, 기존 공개 타입은 훅에서 계속 re-export 한다.
 
 export type FieldKind = "money" | "integer" | "decimal";
@@ -161,13 +162,25 @@ export function buildCalcSearchParams(
   return params;
 }
 
+/**
+ * 숫자만 있는 정수 부분을 ko-KR 쉼표 표기로 바꾼다.
+ * Number를 거치면 2^53을 넘는 자릿수가 반올림되어(예: 12345678901234567890 → 12,345,678,901,234,570,000)
+ * 타이핑 중 다음 키가 바뀐 표시값 뒤에 붙고 raw 자체가 달라진다. 숫자 문자열은 BigInt로 쉼표만 넣는다.
+ * 2^53 이하에서는 기존 `Number(x).toLocaleString("ko-KR")`과 같은 문자열이다.
+ */
+function groupIntDigits(intPart: string): string {
+  return /^\d+$/.test(intPart)
+    ? BigInt(intPart).toLocaleString("ko-KR")
+    : Number(intPart).toLocaleString("ko-KR");
+}
+
 /** raw 문자열 → 화면 표시 문자열. 입력 도중의 "1234." / "1234.50" 형태를 보존한다. */
 export function toDisplay(raw: string, kind: FieldKind): string {
   if (!raw) return "";
 
   if (kind === "money" || kind === "integer") {
     if (isNaN(Number(raw))) return raw;
-    return Number(raw).toLocaleString("ko-KR");
+    return groupIntDigits(raw);
   }
 
   if (/\.$/.test(raw) || /\.\d*0$/.test(raw)) {
@@ -175,7 +188,7 @@ export function toDisplay(raw: string, kind: FieldKind): string {
     const formattedInt =
       intPart === "" || isNaN(Number(intPart))
         ? intPart
-        : Number(intPart).toLocaleString("ko-KR");
+        : groupIntDigits(intPart);
 
     return raw.endsWith(".")
       ? `${formattedInt}.`
@@ -187,13 +200,13 @@ export function toDisplay(raw: string, kind: FieldKind): string {
     const formattedInt =
       intPart === "" || isNaN(Number(intPart))
         ? intPart
-        : Number(intPart).toLocaleString("ko-KR");
+        : groupIntDigits(intPart);
 
     return `${formattedInt}.${decPart}`;
   }
 
   if (isNaN(Number(raw))) return raw;
-  return Number(raw).toLocaleString("ko-KR");
+  return groupIntDigits(raw);
 }
 
 // ─────────────────────────────────────────────

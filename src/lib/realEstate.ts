@@ -11,6 +11,17 @@ import {
   NON_METRO_LOW_PRICE_LIMIT_WON,
   type FirstHomeReduction,
 } from "@/lib/policy/acquisitionTax";
+import {
+  abs,
+  add,
+  divInt,
+  floorRatio,
+  floorWonByRate,
+  isPositive,
+  mul,
+  ratio,
+  sub,
+} from "@/lib/exactDecimal";
 
 export type OwnershipType = "first" | "second" | "third" | "fourth_plus";
 
@@ -127,11 +138,13 @@ export function calcAcquisitionTax(
     else farmSpecialTaxRate = 0.002;
   }
 
-  const acquisitionTaxBeforeReduction = Math.floor(priceWon * taxRate);
-  const farmSpecialTaxBeforeReduction = Math.floor(
-    priceWon * farmSpecialTaxRate,
+  // 원 미만 내림은 그대로 두고, 곱셈만 십진 정확 계산한다(정수 경계에서 1원이 빠지지 않게).
+  const acquisitionTaxBeforeReduction = floorWonByRate(priceWon, taxRate);
+  const farmSpecialTaxBeforeReduction = floorWonByRate(
+    priceWon,
+    farmSpecialTaxRate,
   );
-  const localEduTaxBeforeReduction = Math.floor(priceWon * localEduTaxRate);
+  const localEduTaxBeforeReduction = floorWonByRate(priceWon, localEduTaxRate);
   const totalTaxBeforeReduction =
     acquisitionTaxBeforeReduction +
     farmSpecialTaxBeforeReduction +
@@ -155,14 +168,17 @@ export function calcAcquisitionTax(
     } else {
       const limit = firstHomeReductionLimit(firstHomeReduction);
       reductionWon = Math.min(acquisitionTaxBeforeReduction, limit);
-      const reductionRate =
-        acquisitionTaxBeforeReduction > 0
-          ? reductionWon / acquisitionTaxBeforeReduction
-          : 0;
       acquisitionTax -= reductionWon;
-      localEduTax = Math.floor(
-        localEduTaxBeforeReduction * (1 - reductionRate),
-      );
+      // 지방교육세 × (1 − 감면액/취득세)를 정수 비율로 계산해 내림한다.
+      localEduTax =
+        acquisitionTaxBeforeReduction > 0
+          ? floorRatio({
+              n:
+                BigInt(localEduTaxBeforeReduction) *
+                BigInt(acquisitionTaxBeforeReduction - reductionWon),
+              d: BigInt(acquisitionTaxBeforeReduction),
+            })
+          : localEduTaxBeforeReduction;
       farmSpecialTax = 0;
       notes.push(
         `생애최초 취득세 감면 ${reductionWon.toLocaleString("ko-KR")}원 적용`,
@@ -223,9 +239,19 @@ export function calcJeonseVsWolse(
   const wolseDeposOpp = wolseDepositMan * 10_000 * rMonthly;
   const wolseTotal = wolseDeposOpp + wolseMonthlyMan * 10_000;
 
+  // 내림 대상 금액은 십진 정확 계산한다(정확히 정수인 차액에서 1원이 빠지지 않게).
+  const exactInputs = [jeonseDepositMan, wolseDepositMan, wolseMonthlyMan, investRatePct].every(Number.isFinite);
+  const monthlyOppQ = (depositMan: number) =>
+    divInt(mul(ratio(depositMan * 10_000), ratio(investRatePct)), 1200);
+  const jeonseOppQ = exactInputs ? monthlyOppQ(jeonseDepositMan) : null;
+  const wolseTotalQ = exactInputs
+    ? add(monthlyOppQ(wolseDepositMan), ratio(wolseMonthlyMan * 10_000))
+    : null;
+  const rawDiffQ = jeonseOppQ && wolseTotalQ ? sub(wolseTotalQ, jeonseOppQ) : null;
+
   const rawDiff = wolseTotal - jeonseOpp;
-  const jeonseIsBetter = rawDiff > 0;
-  const monthlyDiff = Math.floor(Math.abs(rawDiff));
+  const jeonseIsBetter = rawDiffQ ? isPositive(rawDiffQ) : rawDiff > 0;
+  const monthlyDiff = rawDiffQ ? floorRatio(abs(rawDiffQ)) : Math.floor(Math.abs(rawDiff));
   const yearlyDiff = monthlyDiff * 12;
 
   // 손익분기: jeonseDeposit × r/12 = wolseDeposit × r/12 + wolseMonthly
@@ -237,8 +263,8 @@ export function calcJeonseVsWolse(
       : 0;
 
   return {
-    jeonseMonthlyOpportunityCost: Math.floor(jeonseOpp),
-    wolseMonthlyTotalCost: Math.floor(wolseTotal),
+    jeonseMonthlyOpportunityCost: jeonseOppQ ? floorRatio(jeonseOppQ) : Math.floor(jeonseOpp),
+    wolseMonthlyTotalCost: wolseTotalQ ? floorRatio(wolseTotalQ) : Math.floor(wolseTotal),
     jeonseIsBetter,
     monthlyDiff,
     yearlyDiff,
@@ -327,10 +353,19 @@ export function calcPropertyYield(
   const yieldOn = (denominator: number) =>
     denominator > 0 ? (annualNetIncome / denominator) * 100 : 0;
 
+  // 표시용 내림 금액은 십진 정확 계산한다(정확히 정수인 연 순수익에서 1원이 빠지지 않게).
+  const exactInputs = [rentWon, loanWon, costWon, input.loanRatePct].every(Number.isFinite);
+  const interestQ = !exactInputs
+    ? null
+    : loanWon > 0 && input.loanRatePct > 0
+      ? divInt(mul(ratio(loanWon), ratio(input.loanRatePct)), 1200)
+      : ratio(0);
+  const netQ = interestQ ? sub(sub(ratio(rentWon), interestQ), ratio(costWon)) : null;
+
   return {
-    monthlyInterest: Math.floor(monthlyInterest),
-    monthlyNetIncome: Math.floor(monthlyNetIncome),
-    annualNetIncome: Math.floor(annualNetIncome),
+    monthlyInterest: interestQ ? floorRatio(interestQ) : Math.floor(monthlyInterest),
+    monthlyNetIncome: netQ ? floorRatio(netQ) : Math.floor(monthlyNetIncome),
+    annualNetIncome: netQ ? floorRatio(mul(netQ, ratio(12))) : Math.floor(annualNetIncome),
     extraCostWon,
     investedCapital: Math.floor(investedCapital),
     investedCapitalWithoutExtra: Math.floor(investedCapitalWithoutExtra),
