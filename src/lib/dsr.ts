@@ -638,6 +638,13 @@ export interface DsrEstimateResult {
   warnings: string[];
 }
 
+/** 신용대출 추정 — 표시 금액 기준으로 구간을 다시 판정할 때도 같은 문구를 쓰도록 공개한다(문구 변경 없음). */
+export const CREDIT_ESTIMATE_NO_STRESS_NOTE =
+  "신용대출 총잔액(기존 + 신규)이 1억원 이하라 스트레스 금리가 적용되지 않는 구간입니다.";
+export const CREDIT_ESTIMATE_GATE_CAP_NOTE =
+  "신용대출 총잔액이 1억원을 넘는 순간 스트레스 금리가 붙어 한도가 오히려 줄어듭니다. " +
+  "1억원 경계 직전 금액을 추정치로 표시했습니다.";
+
 /** 원금 1원당 연간 원리금 — 신용대출 원금/5년 + 잔액 전체의 연 이자 기준(원금에 선형) */
 function creditUnitAnnualDebt(ratePercent: number): number {
   return calcCreditAnnualDebtService(1, ratePercent);
@@ -736,9 +743,7 @@ export function estimatePrincipalFromDsr(
     // 구간 1에서 해결 — 스트레스가 붙지 않는다
     estimatedPrincipal = pNoStress;
     effectiveStressRate = 0;
-    notes.push(
-      "신용대출 총잔액(기존 + 신규)이 1억원 이하라 스트레스 금리가 적용되지 않는 구간입니다.",
-    );
+    notes.push(CREDIT_ESTIMATE_NO_STRESS_NOTE);
   } else if (b.existingCreditTotal + pStressed > CREDIT_STRESS_GATE_WON) {
     // 구간 2에서 해결
     estimatedPrincipal = pStressed;
@@ -748,10 +753,7 @@ export function estimatePrincipalFromDsr(
     estimatedPrincipal = room;
     effectiveStressRate = 0;
     cappedAtCreditGate = true;
-    notes.push(
-      "신용대출 총잔액이 1억원을 넘는 순간 스트레스 금리가 붙어 한도가 오히려 줄어듭니다. " +
-        "1억원 경계 직전 금액을 추정치로 표시했습니다.",
-    );
+    notes.push(CREDIT_ESTIMATE_GATE_CAP_NOTE);
   }
 
   if (loan.repaymentKind === "creditLine") {

@@ -18,7 +18,9 @@ import {
   type JeonseInput,
   type NewLoanInput,
   type ExistingDebtInput,
+  type DsrEstimateInput,
 } from "@/lib/dsr";
+import { resolveDsrEstimateDisplay, DSR_BELOW_UNIT_TEXT } from "@/lib/dsrEstimateDisplay";
 import InputField from "@/components/calculator/InputField";
 import ResultCard from "@/components/calculator/ResultCard";
 import ToggleGroup from "@/components/calculator/ToggleGroup";
@@ -189,7 +191,7 @@ export default function DsrCalc() {
     });
   }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled, selectionError]);
 
-  const estimateResult = useMemo(() => {
+  const estimateInput = useMemo((): DsrEstimateInput | null => {
     if (selectionError) return null;
     if (hasFieldErrorIn(state, activeErrorKeys)) return null;
     if (!requiredInputsFilled) return null;
@@ -198,13 +200,18 @@ export default function DsrCalc() {
     if (!income || !rateFilled) return null;
     if (loanKind === "mortgage" && !readNum(state, "months")) return null;
 
-    return estimatePrincipalFromDsr({
+    return {
       annualIncome: income,
       existing,
       limitPercent,
       newLoan,
-    });
+    };
   }, [state, mode, existing, newLoan, limitPercent, rateFilled, loanKind, activeErrorKeys, requiredInputsFilled, selectionError]);
+
+  const estimateResult = useMemo(
+    () => (estimateInput ? estimatePrincipalFromDsr(estimateInput) : null),
+    [estimateInput],
+  );
 
   // 정책 레이어가 값을 돌려주지 않는 조건(미선택·미지원·유예 만료)은
   // 임의 대체값 없이 사유를 그대로 화면에 노출한다.
@@ -214,6 +221,18 @@ export default function DsrCalc() {
   const estimateOk =
     estimateResult?.status === "ok" ? estimateResult.value : null;
   const shown = checkOk ?? estimateOk;
+  // 추정 가능액은 재입력 가능한 만원 정수로 내리고, 같은 조건의 DSR 확인 결과로 다시 검증한 금액만 보인다.
+  const estimateDisplay = useMemo(
+    () =>
+      estimateInput && estimateOk && estimateOk.availableForNew > 0
+        ? resolveDsrEstimateDisplay(estimateInput, estimateOk)
+        : null,
+    [estimateInput, estimateOk],
+  );
+  const shownNotes =
+    mode === "estimate" && estimateDisplay && estimateDisplay.kind !== "unverified"
+      ? estimateDisplay.notes
+      : (shown?.notes ?? []);
 
   return (
     <div className="space-y-5">
@@ -598,6 +617,10 @@ export default function DsrCalc() {
               기존 부채가 이미 목표 DSR({limitPercent}%) 한도에 도달해, DSR 기준
               추정 가능액이 없습니다.
             </div>
+          ) : estimateDisplay?.kind === "unverified" ? (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-800">
+              {estimateDisplay.reason}
+            </div>
           ) : (
             <>
               <ResultCard
@@ -606,20 +629,22 @@ export default function DsrCalc() {
                     ? "DSR 기준 추정 가능 약정한도"
                     : "DSR 기준 추정 가능 대출액"
                 }
-                value={formatUnit(estimateOk.estimatedPrincipal)}
+                value={estimateDisplay?.kind === "amount" ? estimateDisplay.text : DSR_BELOW_UNIT_TEXT}
                 sub={
-                  loanKind === "mortgage"
-                    ? `원리금균등 · 스트레스 금리 ${trimPct(estimateOk.stressedRatePercent)}% 기준`
-                    : `산정만기 5년 · 적용금리 ${trimPct(estimateOk.stressedRatePercent)}% 기준`
+                  estimateDisplay?.kind !== "amount"
+                    ? "추정액이 금액 입력 최소 단위(1만원)보다 작습니다"
+                    : loanKind === "mortgage"
+                      ? `원리금균등 · 스트레스 금리 ${trimPct(estimateDisplay.stressedRatePercent)}% 기준 · 만원 미만 버림`
+                      : `산정만기 5년 · 적용금리 ${trimPct(estimateDisplay.stressedRatePercent)}% 기준 · 만원 미만 버림`
                 }
                 highlight
               />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {loanKind === "mortgage" && (
+                {loanKind === "mortgage" && estimateDisplay?.kind === "amount" && (
                   <ResultCard
                     label="참고 · 월 상환액"
-                    value={formatKRW(estimateOk.monthlyPaymentActual)}
-                    sub="실제 금리 기준 원리금균등"
+                    value={formatKRW(estimateDisplay.monthlyPaymentActual ?? 0)}
+                    sub="표시 금액·실제 금리 원리금균등"
                   />
                 )}
                 <ResultCard
@@ -655,12 +680,12 @@ export default function DsrCalc() {
       )}
 
       {/* ── 산정 근거 메모 ── */}
-      {shown && (shown.notes.length > 0 || shown.breakdown.jeonseNote) && (
+      {shown && (shownNotes.length > 0 || shown.breakdown.jeonseNote) && (
         <ul className="space-y-1.5 rounded-2xl bg-slate-50 p-4 text-xs leading-relaxed text-slate-600">
           {shown.breakdown.jeonseNote && (
             <li>· {shown.breakdown.jeonseNote}</li>
           )}
-          {shown.notes.map((n) => (
+          {shownNotes.map((n) => (
             <li key={n}>· {n}</li>
           ))}
         </ul>
