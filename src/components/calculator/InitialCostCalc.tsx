@@ -215,18 +215,43 @@ export default function InitialCostCalc() {
       )}
 
       {ownership === "second" && (
-        <label className="flex items-start gap-2 rounded-2xl border border-slate-200 p-4 text-sm text-slate-600">
-          <input
-            type="checkbox"
-            checked={isTemporaryTwoHouse}
-            onChange={(e) => setIsTemporaryTwoHouse(e.target.checked)}
-            className="mt-0.5 accent-brand-600"
-          />
-          <span>
-            일시적 2주택 — 신규주택 취득일(잔금청산일)로부터 3년 이내 종전주택을
-            처분할 예정입니다.
-          </span>
-        </label>
+        <div className="space-y-2 rounded-2xl border border-slate-200 p-4">
+          <label className="flex items-start gap-2 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={isTemporaryTwoHouse}
+              onChange={(e) => setIsTemporaryTwoHouse(e.target.checked)}
+              aria-describedby="ic-temporary-two-house-help"
+              className="mt-0.5 accent-brand-600"
+            />
+            <span>
+              일시적 2주택 — 해당되는 법정 처분기한 안에 종전 주택등을 처분할
+              예정입니다.
+            </span>
+          </label>
+          <div
+            id="ic-temporary-two-house-help"
+            className="space-y-1 text-xs leading-relaxed text-slate-500"
+          >
+            <p>
+              처분기한(지방세법 시행령 제28조의5)은 신규 주택 취득 후 원칙
+              3년입니다. 종전 주택등과 신규 주택이 모두 조정대상지역에 있으면
+              2년입니다.
+            </p>
+            <p>
+              2년 기준은 2026년 10월 1일 시행 이후 납세의무가 성립하는 경우부터
+              적용됩니다. 종전 주택등 1개를 소유한 1세대가 2026년 8월 26일
+              이전에 다른 1주택의 매매계약(공동주택 분양계약 포함)을 체결하고
+              계약금을 지급한 사실이 증명서류로 확인되면 개정 전 규정을 따릅니다.
+            </p>
+            <p>
+              이 계산기는 종전 주택의 지역, 계약일, 계약금 지급·증빙 여부를
+              확인하지 않고 체크 여부만 세율 계산에 반영합니다. 분양권·입주권이
+              관련된 경우를 포함해 기산일과 개별 적용 요건은 관할 시·군·구청에서
+              확인하세요.
+            </p>
+          </div>
+        </div>
       )}
 
       {ownership !== "first" && (
